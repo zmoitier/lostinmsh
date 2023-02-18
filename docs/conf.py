@@ -19,8 +19,8 @@ except ImportError:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "lostinmsh"
-copyright = "2023, Camille Carvalho, Zoïs Moitier"
-author = "Camille Carvalho, Zoïs Moitier"
+copyright = f"2023, {lostinmsh.__author__}"
+author = lostinmsh.__author__
 release = lostinmsh.__version__
 
 # -- General configuration ---------------------------------------------------
@@ -35,12 +35,25 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "classic"
+html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 
 # -- Extensions --------------------------------------------------------------
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",
     "sphinx.ext.coverage",
     "sphinx.ext.githubpages",
+    "sphinx_rtd_theme",
+    "sphinx_copybutton",
 ]
+
+
+#     "sphinx.ext.linkcode",
+# def linkcode_resolve(domain, info):
+#     if domain != "py":
+#         return None
+#     if not info["module"]:
+#         return None
+#     filename = info["module"].replace(".", "/")
+#     return f"https://github.com/zmoitier/lostinmsh/{filename}.py"

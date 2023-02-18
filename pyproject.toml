@@ -1,0 +1,39 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "tmesh"
+authors = [
+    { name = "Zoïs Moitier", email = "zois.moitier@ensta-paris.fr" },
+    { name = "Camille Carvalho", email = "camille.carvalho@insa-lyon.fr" },
+]
+readme = "README.md"
+license = { file = "LICENSE" }
+classifiers = ["License :: OSI Approved :: MIT License"]
+dynamic = ["version", "description"]
+dependencies = ["gmsh", "numpy"]
+
+[project.urls]
+Home = "https://github.com/zmoitier/lostinmsh"
+
+[project.optional-dependencies]
+all = ["matplotlib"]
+dev = ["black", "flit", "isort", "mypy", "pylint", "pytest", "pytest-cov"]
+doc = ["Sphinx", "sphinx-copybutton"]
+
+[tool.black]
+line-length = 88
+target-version = ['py310']
+
+[tool.isort]
+profile = "black"
+
+[tool.pylint.format]
+max-line-length = "88"
+
+[tool.pylint.messages_control]
+disable = ["invalid-name", "non-ascii-name", "too-many-locals", "too-many-arguments"]
+
+[tool.mypy]
+ignore_missing_imports = true

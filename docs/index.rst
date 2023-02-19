@@ -1,3 +1,5 @@
+.. https://sphinx-tutorial.readthedocs.io/cheatsheet/
+
 Welcome to lostinmsh's documentation!
 =====================================
 

@@ -3,10 +3,10 @@ requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "tmesh"
+name = "lostinmsh"
 authors = [
-    { name = "Zoïs Moitier", email = "zois.moitier@ensta-paris.fr" },
     { name = "Camille Carvalho", email = "camille.carvalho@insa-lyon.fr" },
+    { name = "Zoïs Moitier", email = "zois.moitier@ensta-paris.fr" },
 ]
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -20,7 +20,7 @@ Home = "https://github.com/zmoitier/lostinmsh"
 [project.optional-dependencies]
 all = ["matplotlib"]
 dev = ["black", "flit", "isort", "mypy", "pylint", "pytest", "pytest-cov"]
-doc = ["Sphinx", "sphinx-copybutton"]
+doc = ["Sphinx", "sphinx-copybutton", "sphinx_rtd_theme"]
 
 [tool.black]
 line-length = 88

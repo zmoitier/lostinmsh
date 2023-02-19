@@ -25,11 +25,8 @@ case "$1" in
     remove_file ".coverage"
     ;;
 -d)
-    cd docs/ || exit
-    make html
-    cd ..
+    make -C ./docs/ html
     ;;
-
 -f)
     python3 -m isort .
     python3 -m black .

@@ -1,3 +1,5 @@
+[![docs](https://img.shields.io/badge/-doc-brightgreen?style=flat-square)](https://zmoitier.github.io/lostinmsh)
+
 # lostinmsh
 
 The Python toolbox `lostinmsh` (_LOcally STructured polygonal INterface MeSH_), is a package using GMSH to construct locally structured triangular meshes of polygons which are useful for sign changing PDE problem.

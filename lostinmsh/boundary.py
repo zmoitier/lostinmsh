@@ -62,7 +62,15 @@ class Rectangular(Border):
 
 @dataclass(kw_only=True, slots=True)
 class AutoBorder:
-    """Auto border class."""
+    """Auto border class.
+
+    Attributes
+    ----------
+    border_factor : float
+        a
+    thickness_factor : Optional[float] = None
+        b
+    """
 
     border_factor: float
     thickness_factor: Optional[float] = None
@@ -74,10 +82,24 @@ class AutoBorder:
 
 @dataclass(kw_only=True, slots=True)
 class AutoCircular(AutoBorder):
-    """Auto circular"""
+    """Auto circular
+
+    Attributes
+    ----------
+    border_factor : float
+        a
+    thickness_factor : Optional[float] = None
+        b
+    """
 
     def get_border(self, points: NDArray) -> Circular:
-        """Auto set."""
+        """Auto set.
+
+        Parameters
+        ----------
+        points : NDArray
+            list of points should be an array of shape (N, 2) with N ≥ 1.
+        """
         center, radius = smallest_circle(points)
 
         r0 = radius * (1 + self.border_factor)

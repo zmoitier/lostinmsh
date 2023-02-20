@@ -46,6 +46,8 @@
               <div class="local-toc"><ul>
 <li><a class="reference internal" href="#">Welcome to lostinmsh’s documentation!</a><ul>
 <li><a class="reference internal" href="#lostinmsh.AutoCircular"><code class="docutils literal notranslate"><span class="pre">AutoCircular</span></code></a><ul>
+<li><a class="reference internal" href="#lostinmsh.AutoCircular.border_factor"><code class="docutils literal notranslate"><span class="pre">AutoCircular.border_factor</span></code></a></li>
+<li><a class="reference internal" href="#lostinmsh.AutoCircular.thickness_factor"><code class="docutils literal notranslate"><span class="pre">AutoCircular.thickness_factor</span></code></a></li>
 <li><a class="reference internal" href="#lostinmsh.AutoCircular.get_border"><code class="docutils literal notranslate"><span class="pre">AutoCircular.get_border()</span></code></a></li>
 </ul>
 </li>
@@ -118,10 +120,37 @@
 <dt class="sig sig-object py" id="lostinmsh.AutoCircular">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lostinmsh.</span></span><span class="sig-name descname"><span class="pre">AutoCircular</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lostinmsh.AutoCircular" title="Permalink to this definition"></a></dt>
 <dd><p>Auto circular</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lostinmsh.AutoCircular.border_factor">
+<span class="sig-name descname"><span class="pre">border_factor</span></span><a class="headerlink" href="#lostinmsh.AutoCircular.border_factor" title="Permalink to this definition"></a></dt>
+<dd><p>a</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lostinmsh.AutoCircular.thickness_factor">
+<span class="sig-name descname"><span class="pre">thickness_factor</span></span><a class="headerlink" href="#lostinmsh.AutoCircular.thickness_factor" title="Permalink to this definition"></a></dt>
+<dd><p>b</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[float] = None</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="lostinmsh.AutoCircular.get_border">
 <span class="sig-name descname"><span class="pre">get_border</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">ScalarType</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#lostinmsh.Circular" title="lostinmsh.boundary.Circular"><span class="pre">Circular</span></a></span></span><a class="headerlink" href="#lostinmsh.AutoCircular.get_border" title="Permalink to this definition"></a></dt>
 <dd><p>Auto set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>NDArray</em>) – list of points should be an array of shape (N, 2) with N ≥ 1.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

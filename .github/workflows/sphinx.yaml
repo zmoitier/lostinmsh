@@ -31,11 +31,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python3 -m pip install -e .
           python3 -m pip install -r ./requirements-doc.txt
 
       - name: build sphinx
         run: |
+          touch gmsh.py
+          touch numpy.py
           make -C ./docs/ html
 
       - name: Deploy

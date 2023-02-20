@@ -9,7 +9,7 @@ from typing import Iterable, Union
 
 from numpy import asarray, vstack
 
-from .boundary import AutoBorder, Border
+from .border import AutoBorder, Border
 from .closest_points import min_dist
 from .polygon import Polygon
 

@@ -4,7 +4,7 @@
 import gmsh
 from numpy.typing import NDArray
 
-from .boundary import Border, Circular, Rectangular
+from .border import Border, Circular, Rectangular
 from .circular_iterable import circular_pairwise
 
 

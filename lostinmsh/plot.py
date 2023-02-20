@@ -3,10 +3,10 @@
 
 from numpy import pi
 
-from .boundary import Circular, Rectangular
+from .border import Circular, Rectangular
 from .geometry import Geometry
 from .gmsh_context_manager import C_PML, C_POLYGON, C_VACUUM
-from .mesh_Tconform import to_global
+from .mesh_lost import to_global
 from .polygon import Polygon
 from .smallest_boundary import smallest_circle
 

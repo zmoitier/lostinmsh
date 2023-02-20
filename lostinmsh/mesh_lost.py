@@ -36,7 +36,7 @@ class EgdeTag:
 SurfaceTags: TypeAlias = list[int]
 
 
-def mesh_Tconform(
+def mesh_loc_struct(
     geometry: Geometry,
     mesh_size: float,
     *,

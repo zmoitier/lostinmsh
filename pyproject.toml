@@ -15,7 +15,8 @@ dynamic = ["version", "description"]
 dependencies = ["gmsh", "numpy"]
 
 [project.urls]
-Home = "https://github.com/zmoitier/lostinmsh"
+Documentation = "https://zmoitier.github.io/lostinmsh/"
+Source = "https://github.com/zmoitier/lostinmsh"
 
 [project.optional-dependencies]
 all = ["matplotlib"]

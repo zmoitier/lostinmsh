@@ -1,4 +1,7 @@
-[![docs](https://img.shields.io/badge/-doc-brightgreen?style=flat-square)](https://zmoitier.github.io/lostinmsh)
+<!-- [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat-square&labelColor=ef8336)](https://pycqa.github.io/isort/) -->
+[![license](https://img.shields.io/github/license/zmoitier/lostinmsh)](https://github.com/zmoitier/lostinmsh/blob/main/LICENSE)
+[![docs](https://github.com/zmoitier/lostinmsh/actions/workflows/docs.yaml/badge.svg)](https://zmoitier.github.io/lostinmsh)
 
 # lostinmsh
 

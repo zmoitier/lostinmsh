@@ -1,6 +1,6 @@
 """ GMSH toolbox for T-coforme meshes on polygon. """
 
-__version__ = "0.0.0"
+__version__ = "0.0.1"
 
 __author__ = "Camille Carvalho, Zoïs Moitier"
 
@@ -10,7 +10,7 @@ __all__ = [
     "Circular",
     "Geometry",
     "mesh",
-    "mesh_Tconform",
+    "mesh_lost",
     "Polygon",
     "plot_geometry",
     "plot_polygon",
@@ -18,9 +18,9 @@ __all__ = [
 ]
 
 
-from .boundary import AutoCircular, AutoRectangular, Circular, Rectangular
+from .border import AutoCircular, AutoRectangular, Circular, Rectangular
 from .geometry import Geometry
 from .mesh import mesh
-from .mesh_Tconform import mesh_Tconform
+from .mesh_lost import mesh_loc_struct
 from .plot import plot_geometry, plot_polygon
 from .polygon import Polygon

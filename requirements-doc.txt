@@ -1,3 +1,4 @@
 Sphinx
-sphinx-copybutton
+sphinx-autodoc-typehints
 sphinx_rtd_theme
+sphinx-copybutton

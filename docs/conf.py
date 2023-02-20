@@ -42,6 +42,7 @@ html_static_path = ["_static"]
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
+    "sphinx_autodoc_typehints",
     "sphinx.ext.coverage",
     "sphinx.ext.githubpages",
     "sphinx_rtd_theme",

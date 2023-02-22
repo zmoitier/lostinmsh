@@ -1,4 +1,4 @@
-""" Polygon class. """
+"""Polygon class."""
 
 
 from __future__ import annotations
@@ -72,9 +72,11 @@ class Corner:
         return (-a, -b)
 
     def elementary_angle(self) -> Angle:
-        """
-        Compute the elementary angle of a corner. We compute p and q such that
+        """Compute the elementary angle of a corner.
+
+        We compute p and q such that
         a / b = 2p / (p+q) and p, q >= 2 and return the angle 2/(p+q).
+
         """
         a, b = self.angle.numerator, self.angle.denominator
         if a % 2 == 0:

@@ -1,4 +1,4 @@
-""" Mesh a polygon. """
+"""Mesh a polygon."""
 
 
 from pathlib import PurePath

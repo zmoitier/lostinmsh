@@ -1,4 +1,4 @@
-""" GMSH toolbox for T-coforme meshes on polygon. """
+"""GMSH toolbox for T-coforme meshes on polygon."""
 
 __version__ = "0.0.1"
 

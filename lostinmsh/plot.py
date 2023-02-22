@@ -1,4 +1,4 @@
-""" Plot polygon and geometry. """
+"""Plot polygon and geometry."""
 
 
 from numpy import pi

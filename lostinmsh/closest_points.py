@@ -1,8 +1,10 @@
-""" Find the smallest distance of a set of points.
+"""Find the smallest distance of a set of points.
 
-https://www.geeksforgeeks.org/closest-pair-of-points-using-divide-and-conquer-algorithm/
-https://stackoverflow.com/questions/39681407/find-minimum-distance-between-points
+https://www.geeksforgeeks.org/closest-pair-of-points-using-divide-and-
+conquer- algorithm/ https://stackoverflow.com/questions/39681407/find-
+minimum-distance-between- points
 https://sites.cs.ucsb.edu/~suri/cs235/ClosestPair.pdf
+
 """
 
 

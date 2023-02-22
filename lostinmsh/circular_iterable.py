@@ -1,4 +1,4 @@
-""" Helper functions for circular iteration. """
+"""Helper functions for circular iteration."""
 
 
 from collections.abc import Collection

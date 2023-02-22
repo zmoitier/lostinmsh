@@ -1,4 +1,4 @@
-""" Comptute the smallest enclosing circle or rectangle. """
+"""Comptute the smallest enclosing circle or rectangle."""
 
 
 from numpy import arange, asarray, lexsort, ones, sort, sqrt, stack
@@ -32,6 +32,7 @@ def convex_hull(points: NDArray) -> NDArray:
     -------
     convex_hull : NDArray
         the points defining the convex hull
+
     """
     if (n := points.shape[0]) <= 1:
         return arange(n)
@@ -66,10 +67,8 @@ def _cross_product(o: NDArray, u: NDArray, v: NDArray) -> float:
 
 
 def smallest_circle(points: NDArray) -> Circle:
-    """
-    Compute the smallest enclosing circle of a collection of vertices using the
-    Welzl's algorithm, see https://doi.org/10.1007/BFb0038202.
-    """
+    """Compute the smallest enclosing circle of a collection of vertices using
+    the Welzl's algorithm, see https://doi.org/10.1007/BFb0038202."""
 
     if points.shape[0] == 3:
         return _smallest_circle_3_points(*points)
@@ -141,10 +140,8 @@ def _is_inside(circle: Circle, A: NDArray) -> bool:
 
 
 def _circumcircle_triangle(A: NDArray, B: NDArray, C: NDArray) -> Circle:
-    """
-    Compute the circumcircle of a three points, see
-    https://en.wikipedia.org/wiki/Circumscribed_circle.
-    """
+    """Compute the circumcircle of a three points, see
+    https://en.wikipedia.org/wiki/Circumscribed_circle."""
     points = asarray([A, B, C])
 
     norm2 = norm(points, axis=1) ** 2

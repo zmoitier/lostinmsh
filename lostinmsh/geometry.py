@@ -1,4 +1,4 @@
-""" Geometry class. """
+"""Geometry class."""
 
 
 from __future__ import annotations

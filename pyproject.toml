@@ -30,6 +30,10 @@ target-version = ['py310']
 [tool.isort]
 profile = "black"
 
+[tool.docformatter]
+recursive = true
+blank = true
+
 [tool.pylint.format]
 max-line-length = "88"
 

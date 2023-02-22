@@ -1,4 +1,4 @@
-""" T-conform mesh a polygon. """
+"""T-conform mesh a polygon."""
 
 
 from dataclasses import dataclass
@@ -52,7 +52,7 @@ def mesh_loc_struct(
     save_compress: bool = False,
     hide_model_Entities: bool = True,
 ) -> OptionalPathLike:
-    """T-confrom mesh a polygon"""
+    """T-confrom mesh a polygon."""
 
     corner_radius = geometry.max_corner_radius() * corner_radius_shrink
 

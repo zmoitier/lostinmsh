@@ -1,4 +1,4 @@
-""" Class for boundary. """
+"""Class for boundary."""
 
 
 from dataclasses import dataclass
@@ -20,8 +20,9 @@ class Border:
     def dist_to_inner_boundary(self, points: NDArray) -> float:
         """Sign distance to the inner boundary.
 
-        It is positive is all the points are inside and it is negative if at least one
-        point is outside.
+        It is positive is all the points are inside and it is negative
+        if at least one point is outside.
+
         """
         raise NotImplementedError()
 
@@ -35,8 +36,9 @@ class Circular(Border):
     def dist_to_inner_boundary(self, points: NDArray) -> float:
         """Sign distance to the inner boundary.
 
-        It is positive is all the points are inside and it is negative if at least one
-        point is outside.
+        It is positive is all the points are inside and it is negative
+        if at least one point is outside.
+
         """
         return self.radius - norm(points - self.center, axis=1).max()
 
@@ -51,8 +53,9 @@ class Rectangular(Border):
     def dist_to_inner_boundary(self, points: NDArray) -> float:
         """Sign distance to the inner boundary.
 
-        It is positive is all the points are inside and it is negative if at least one
-        point is outside.
+        It is positive is all the points are inside and it is negative
+        if at least one point is outside.
+
         """
         pts = points - self.center
         return min(
@@ -70,6 +73,7 @@ class AutoBorder:
         a
     thickness_factor : Optional[float] = None
         b
+
     """
 
     border_factor: float
@@ -82,7 +86,7 @@ class AutoBorder:
 
 @dataclass(kw_only=True, slots=True)
 class AutoCircular(AutoBorder):
-    """Auto circular
+    """Auto circular.
 
     Attributes
     ----------
@@ -90,6 +94,7 @@ class AutoCircular(AutoBorder):
         a
     thickness_factor : Optional[float] = None
         b
+
     """
 
     def get_border(self, points: NDArray) -> Circular:
@@ -99,6 +104,7 @@ class AutoCircular(AutoBorder):
         ----------
         points : NDArray
             list of points should be an array of shape (N, 2) with N ≥ 1.
+
         """
         center, radius = smallest_circle(points)
 
@@ -113,7 +119,7 @@ class AutoCircular(AutoBorder):
 
 @dataclass(kw_only=True, slots=True)
 class AutoRectangular(AutoBorder):
-    """Auto circular"""
+    """Auto circular."""
 
     def get_border(self, points: NDArray) -> Rectangular:
         """Auto set."""

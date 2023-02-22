@@ -1,4 +1,4 @@
-""" GMSH as a context manager. """
+"""GMSH as a context manager."""
 
 
 from contextlib import AbstractContextManager
@@ -13,7 +13,7 @@ OptionalPathLike: TypeAlias = Union[None, str, PurePath]
 
 @dataclass(frozen=True, slots=True)
 class GmshContextManager(AbstractContextManager):
-    """Context manager for GMSH"""
+    """Context manager for GMSH."""
 
     # pylint: disable=too-many-instance-attributes
 
@@ -144,7 +144,7 @@ C_PML = Color("C1", 255, 127, 14)
 
 
 def _set_options_graphical(hide_model_Entities: bool) -> None:
-    """Set"""
+    """Set."""
     # Hide the small axes.
     gmsh.option.setNumber("General.SmallAxes", 0)
 

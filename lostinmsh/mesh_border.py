@@ -1,4 +1,4 @@
-""" Helper function for meshes function. """
+"""Helper function for meshes function."""
 
 
 import gmsh

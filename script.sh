@@ -28,23 +28,27 @@ case "$1" in
     make -C ./docs/ clean html
     ;;
 -f)
-    python3 -m isort .
-    python3 -m black .
+    echo ">> run isort"
+    python -m isort ./
+    echo ">> run docformatter"
+    python -m docformatter --in-place ./
+    echo ">> run black"
+    python -m black ./
     ;;
 -i)
-    python3 -m flit install --symlink --user
+    python -m flit install --symlink --user
     ;;
 -t)
-    python3 -m mypy lostinmsh/
-    python3 -m pylint lostinmsh/
-    # python3 -m pytest tests/
+    python -m mypy ./lostinmsh/
+    python -m pylint ./lostinmsh/
+    # python3 -m pytest ./tests/
     ;;
 -u)
-    python3 -m pip install --user --upgrade pip
-    python3 -m pip install --user --upgrade -r requirements.txt
-    python3 -m pip install --user --upgrade -r requirements-all.txt
-    python3 -m pip install --user --upgrade -r requirements-dev.txt
-    python3 -m pip install --user --upgrade -r requirements-doc.txt
+    python -m pip install --user --upgrade pip
+    python -m pip install --user --upgrade -r requirements.txt
+    python -m pip install --user --upgrade -r requirements-all.txt
+    python -m pip install --user --upgrade -r requirements-dev.txt
+    python -m pip install --user --upgrade -r requirements-doc.txt
     ;;
 *)
     echo "The choice are:"

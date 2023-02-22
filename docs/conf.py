@@ -1,4 +1,4 @@
-""" Config file for sphinx. """
+"""Config file for sphinx."""
 
 try:
     import lostinmsh

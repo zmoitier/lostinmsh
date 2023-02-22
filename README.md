@@ -13,12 +13,12 @@ The Python toolbox `lostinmsh` (_LOcally STructured polygonal INterface MeSH_), 
 ## Requirements
 
 - Python ≥ 3.10
-- GMSH ≥ 4 (and `import gmsh` must work)
-- numpy
+- [GMSH](https://gmsh.info) ≥ 4 (and `import gmsh` must work)
+- [numpy](https://github.com/numpy/numpy)
 
 ## Optional requirements
 
-- matplotlib (only use for plotting)
+- [matplotlib](https://github.com/matplotlib/matplotlib) (only use for plotting)
 
 ## Acknowledgements
 

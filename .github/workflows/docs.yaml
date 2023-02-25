@@ -56,7 +56,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt-get install pandoc
+          sudo apt-get -y install pandoc
           # To mock `python3 -m pip install gmsh` since in order to have `import gmsh`
           # to work we also need to install the full dependencies of gmsh which we do
           # not want to do.

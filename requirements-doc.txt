@@ -1,3 +1,4 @@
+ipython
 nbsphinx
 Sphinx
 sphinx-autodoc-typehints

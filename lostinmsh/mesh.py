@@ -8,45 +8,35 @@ import gmsh
 
 from .circular_iterable import circular_pairwise
 from .geometry import Geometry
-from .gmsh_context_manager import GmshContextManager, OptionalPathLike
+from .gmsh_context_manager import GmshContextManager, GmshOptions
 from .mesh_border import _mesh_border
 from .polygon import Polygon
 
 
 def mesh(
-    geom: Geometry,
-    mesh_size: float,
-    *,
-    element_order: int = 1,
-    terminal: bool = False,
-    gui: bool = False,
-    filename: OptionalPathLike = None,
-    msh_file_version: Optional[float] = None,
-    save_width: Optional[int] = None,
-    save_height: Optional[int] = None,
-    save_compress: bool = False,
-    hide_model_Entities: bool = True,
-) -> OptionalPathLike:
-    """Mesh a geometry."""
+    geom: Geometry, mesh_size: float, gmsh_options: Optional[GmshOptions] = None
+) -> Optional[PurePath]:
+    """Mesh a geometry.
 
-    with GmshContextManager(
-        element_order=element_order,
-        terminal=terminal,
-        gui=gui,
-        filename=PurePath(filename) if filename is not None else None,
-        msh_file_version=msh_file_version,
-        save_width=save_width,
-        save_height=save_height,
-        save_compress=save_compress,
-        hide_model_Entities=hide_model_Entities,
-    ):
+    Parameters
+    ----------
+    geom : Geometry
+    mesh_size : float
+    gmsh_options: GmshOptions, optional
+
+    """
+
+    if gmsh_options is None:
+        gmsh_options = GmshOptions()
+
+    with GmshContextManager(gmsh_options):
         loop_polygons = [_mesh_polygon(polygon, mesh_size) for polygon in geom.polygons]
         loop_border = _mesh_border(geom.border, mesh_size)
 
         s_vac = gmsh.model.geo.addPlaneSurface([loop_border, *loop_polygons])
         gmsh.model.addPhysicalGroup(dim=2, tags=[s_vac], name="Vacuum")
 
-    return filename
+    return gmsh_options.filename
 
 
 def _mesh_polygon(polygon: Polygon, h: float) -> int:

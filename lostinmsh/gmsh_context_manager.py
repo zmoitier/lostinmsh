@@ -2,13 +2,89 @@
 
 
 from contextlib import AbstractContextManager
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import PurePath
-from typing import NamedTuple, Optional, TypeAlias, Union
+from typing import Any, NamedTuple, Optional, TypeAlias, Union
 
 import gmsh
 
 OptionalPathLike: TypeAlias = Union[None, str, PurePath]
+
+
+@dataclass(slots=True)
+class GmshOptions:
+    """GMSH Options.
+
+    http://gmsh.info/doc/texinfo/gmsh.html#Gmsh-options
+
+    Attributes
+    ----------
+    element_order : int, default=1
+    terminal : bool, default=False
+    gui : bool,default=False
+    filename : OptionalPathLike, optional
+    hide_model_entities : bool, default=True
+    additional_options : dict[str, Any], optional
+
+    """
+
+    gui: bool = False
+    filename: Optional[PurePath] = None
+    hide_model_entities: bool = True
+    option_value: dict[str, Any] = field(default_factory=dict)
+
+    def __init__(
+        self,
+        *,
+        element_order: int = 1,
+        terminal: bool = False,
+        gui: bool = False,
+        filename: OptionalPathLike = None,
+        hide_model_entities: bool = True,
+        additional_options: Optional[dict[str, Any]] = None,
+    ) -> None:
+        if element_order < 1:
+            raise ValueError("Element order must be an integer greater or equal to 1.")
+
+        self.gui = gui
+        self.filename = PurePath(filename) if filename is not None else None
+        self.hide_model_entities = hide_model_entities
+
+        option_value = {
+            "General.Terminal": int(terminal),
+            "General.SmallAxes": 0,
+            "Geometry.CopyMeshingMethod": 1,
+            "Mesh.ElementOrder": element_order,
+            "Mesh.TransfiniteTri": 1,
+            "Mesh.Smoothing": 0,
+            "Mesh.SurfaceFaces": 1,
+            "Mesh.ColorCarousel": 2,
+        }
+        if additional_options is not None:
+            option_value = {**option_value, **additional_options}
+
+        self.option_value = option_value
+
+    def __str__(self) -> str:
+        data = [
+            ("Gmsh options", ""),
+            ("  Launch GMSH GUI", self.gui),
+            ("  filename", self.filename),
+            ("  Hide model entities", self.hide_model_entities),
+            ("#", ""),
+            ("Gmsh options", ""),
+        ]
+        data.extend(((f"  {key}", val) for key, val in self.option_value.items()))
+        return _pretty_print(data)
+
+
+def _pretty_print(data: list[tuple[str, Any]]) -> str:
+    """Pretty print."""
+    max_len = max(len(d[0]) for d in data) + 1
+    return "".join(
+        f"{d[0]} {'.' * (max_len - len(d[0]))} {d[1]}\n" if d[0][0] != "#" else "\n"
+        for d in data
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -17,51 +93,20 @@ class GmshContextManager(AbstractContextManager):
 
     # pylint: disable=too-many-instance-attributes
 
-    element_order: int = 1
-
-    terminal: bool = False
-    gui: bool = False
-
-    filename: Optional[PurePath] = None
-    msh_file_version: Optional[float] = None
-    save_width: Optional[int] = None
-    save_height: Optional[int] = None
-    save_compress: bool = False
-
-    hide_model_Entities: bool = True
+    gmsh_options: GmshOptions
 
     def __enter__(self):
         # Initialize the Gmsh API.
         gmsh.initialize()
 
-        if self.terminal:
-            # Information is printed on the terminal.
-            gmsh.option.setNumber("General.Terminal", 1)
-        else:
-            # Information is not printed on the terminal.
-            gmsh.option.setNumber("General.Terminal", 0)
-
-        # Copy meshing method transfinite when duplicating geometrical entities with
-        # built-in geometry kernel.
-        gmsh.option.setNumber("Geometry.CopyMeshingMethod", 1)
-
-        # Use alternative transfinite arrangement when meshing 3-sided surfaces.
-        gmsh.option.setNumber("Mesh.TransfiniteTri", 1)
-
-        # Element order.
-        if self.element_order >= 1:
-            gmsh.option.setNumber("Mesh.ElementOrder", self.element_order)
-        else:
-            raise ValueError("Element order must be an integer greater or equal to 1.")
-
-        # Number of smoothing steps applied to the final mesh.
-        gmsh.option.setNumber("Mesh.Smoothing", 0)
+        for key, val in self.gmsh_options.option_value.items():
+            gmsh.option.setNumber(key, val)
 
         # Add a new model and set it as the current model.
-        if self.filename is None:
+        if self.gmsh_options.filename is None:
             gmsh.model.add("mesh")
         else:
-            gmsh.model.add(self.filename.stem)
+            gmsh.model.add(self.gmsh_options.filename.stem)
 
     def __exit__(self, exc_type, exc_value, exc_tb):
         # Synchronize the built-in CAD representation with the current Gmsh model.
@@ -70,23 +115,21 @@ class GmshContextManager(AbstractContextManager):
         # Generate a mesh of the current model, up to dimension dim 2.
         gmsh.model.mesh.generate(2)
 
-        _set_options_graphical(self.hide_model_Entities)
+        _set_options_graphical(self.gmsh_options.hide_model_entities)
 
-        if self.gui:
+        if self.gmsh_options.gui:
             # Create and run the FLTK graphical user interface.
             gmsh.fltk.run()
 
-        if self.filename is not None:
-            match self.filename.suffix:
+        if self.gmsh_options.filename is not None:
+            # Write a file. The export format is determined by the file extension.
+            match self.gmsh_options.filename.suffix:
                 case ".msh":
-                    _save_msh(self.filename, self.msh_file_version)
+                    gmsh.write(str(self.gmsh_options.filename))
                 case _:
-                    _save_ext(
-                        self.filename,
-                        self.save_width,
-                        self.save_height,
-                        self.save_compress,
-                    )
+                    gmsh.fltk.initialize()
+                    gmsh.write(str(self.gmsh_options.filename))
+                    gmsh.fltk.finalize()
 
         # Finalize the Gmsh API.
         gmsh.finalize()
@@ -145,19 +188,11 @@ C_PML = Color("C1", 255, 127, 14)
 
 def _set_options_graphical(hide_model_Entities: bool) -> None:
     """Set."""
-    # Hide the small axes.
-    gmsh.option.setNumber("General.SmallAxes", 0)
 
     # Hide the model entities of dimensions 0 and 1.
     if hide_model_Entities:
         gmsh.model.setVisibility(gmsh.model.getEntities(0), 0)
         gmsh.model.setVisibility(gmsh.model.getEntities(1), 0)
-
-    # Display faces of surface mesh
-    gmsh.option.setNumber("Mesh.SurfaceFaces", 1)
-
-    # Mesh coloring by physical group
-    gmsh.option.setNumber("Mesh.ColorCarousel", 2)
 
     name_to_color = {
         gmsh.model.getPhysicalName(dim=d, tag=t): f"Mesh.Color.{INT_TO_STR[t]}"
@@ -173,42 +208,3 @@ def _set_options_graphical(hide_model_Entities: bool) -> None:
             gmsh.option.setColor(
                 color, C_POLYGON.r, C_POLYGON.g, C_POLYGON.b, C_POLYGON.a
             )
-
-
-def _save_msh(filename: PurePath, msh_file_version: Optional[float]) -> None:
-    """Save msh."""
-    if msh_file_version is not None:
-        # Version of the MSH file format to use.
-        gmsh.option.setNumber("Mesh.MshFileVersion", msh_file_version)
-
-    # Write a file. The export format is determined by the file extension.
-    gmsh.write(str(filename))
-
-
-def _save_ext(
-    filename: PurePath,
-    save_width: Optional[int],
-    save_height: Optional[int],
-    save_compress: bool,
-) -> None:
-    """Save ext."""
-    if save_compress:
-        # Compress PostScript/PDF output using zlib.
-        gmsh.option.setNumber("Print.EpsCompress", 1)
-
-    if save_width is not None:
-        # Width of printed image.
-        gmsh.option.setNumber("Print.Width", save_width)
-
-    if save_height is not None:
-        # Height of printed image.
-        gmsh.option.setNumber("Print.Height", save_height)
-
-    # Create the FLTK graphical user interface.
-    gmsh.fltk.initialize()
-
-    # Write a file. The export format is determined by the file extension.
-    gmsh.write(str(filename))
-
-    # Close the FLTK graphical user interface.
-    gmsh.fltk.finalize()

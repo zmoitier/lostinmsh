@@ -21,7 +21,14 @@ except ImportError:
 
 
 def plot_polygon(polygon: Polygon, ax=None) -> None:
-    """Plot polygon."""
+    """Plot polygon.
+
+    Parameters
+    ----------
+    polygon : Polygon
+    ax : plt.Axes, optional
+
+    """
 
     if ENABLE_PLOT:
         _plot_polygon(polygon, ax=ax)
@@ -62,11 +69,18 @@ def _plot_polygon(polygon: Polygon, ax=None) -> None:
 
     ax.axis("equal")
     ax.grid(zorder=1)
-    ax.legend()
+    ax.legend(loc=1)
 
 
 def plot_geometry(geometry: Geometry, ax=None) -> None:
-    """Plot geometry."""
+    """Plot geometry.
+
+    Parameters
+    ----------
+    geometry : Geometry
+    ax : plt.Axes, optional
+
+    """
 
     if ENABLE_PLOT:
         _plot_geometry(geometry, ax=ax)
@@ -121,7 +135,7 @@ def _plot_geometry(geometry: Geometry, ax=None) -> None:
 
     ax.axis("equal")
     ax.grid(zorder=1)
-    ax.legend()
+    ax.legend(loc=1)
 
 
 def _add_circular(ax, circ: Circular, options_vac, options_pml):

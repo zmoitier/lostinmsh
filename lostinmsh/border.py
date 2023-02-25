@@ -12,7 +12,14 @@ from .smallest_boundary import smallest_circle, smallest_rectangle
 
 @dataclass(kw_only=True, slots=True)
 class Border:
-    """Border class."""
+    """Border class.
+
+    Attributes
+    ----------
+    center : NDArray
+    thickness : float, optional
+
+    """
 
     center: NDArray
     thickness: Optional[float] = None
@@ -22,6 +29,11 @@ class Border:
 
         It is positive is all the points are inside and it is negative
         if at least one point is outside.
+
+        Parameters
+        ----------
+        points : NDArray
+            list of points should be an array of shape (N, 2) with N ≥ 1.
 
         """
         raise NotImplementedError()
@@ -34,12 +46,6 @@ class Circular(Border):
     radius: float
 
     def dist_to_inner_boundary(self, points: NDArray) -> float:
-        """Sign distance to the inner boundary.
-
-        It is positive is all the points are inside and it is negative
-        if at least one point is outside.
-
-        """
         return self.radius - norm(points - self.center, axis=1).max()
 
 
@@ -51,12 +57,6 @@ class Rectangular(Border):
     half_height: float
 
     def dist_to_inner_boundary(self, points: NDArray) -> float:
-        """Sign distance to the inner boundary.
-
-        It is positive is all the points are inside and it is negative
-        if at least one point is outside.
-
-        """
         pts = points - self.center
         return min(
             self.half_width - pts[:, 0].max(), self.half_height - pts[:, 1].max()
@@ -65,14 +65,12 @@ class Rectangular(Border):
 
 @dataclass(kw_only=True, slots=True)
 class AutoBorder:
-    """Auto border class.
+    """Auto border.
 
     Attributes
     ----------
     border_factor : float
-        a
-    thickness_factor : Optional[float] = None
-        b
+    thickness_factor : float, optional
 
     """
 
@@ -80,7 +78,14 @@ class AutoBorder:
     thickness_factor: Optional[float] = None
 
     def get_border(self, points: NDArray) -> Border:
-        """Get border."""
+        """Auto set.
+
+        Parameters
+        ----------
+        points : NDArray
+            list of points should be an array of shape (N, 2) with N ≥ 1.
+
+        """
         raise NotImplementedError()
 
 
@@ -91,21 +96,11 @@ class AutoCircular(AutoBorder):
     Attributes
     ----------
     border_factor : float
-        a
-    thickness_factor : Optional[float] = None
-        b
+    thickness_factor :float, optional
 
     """
 
     def get_border(self, points: NDArray) -> Circular:
-        """Auto set.
-
-        Parameters
-        ----------
-        points : NDArray
-            list of points should be an array of shape (N, 2) with N ≥ 1.
-
-        """
         center, radius = smallest_circle(points)
 
         r0 = radius * (1 + self.border_factor)
@@ -119,10 +114,16 @@ class AutoCircular(AutoBorder):
 
 @dataclass(kw_only=True, slots=True)
 class AutoRectangular(AutoBorder):
-    """Auto circular."""
+    """Auto rectangular.
+
+    Attributes
+    ----------
+    border_factor : float
+    thickness_factor : float, optional
+
+    """
 
     def get_border(self, points: NDArray) -> Rectangular:
-        """Auto set."""
         center, lengths = smallest_rectangle(points)
 
         r = float(norm(lengths))

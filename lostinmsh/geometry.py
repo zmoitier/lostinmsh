@@ -16,7 +16,14 @@ from .polygon import Polygon
 
 @dataclass(kw_only=True, slots=True)
 class Geometry:
-    """Geometry class."""
+    """Geometry class.
+
+    Attributes
+    ----------
+    polygons : list[Polygon]
+    border : Border
+
+    """
 
     polygons: list[Polygon]
     border: Border
@@ -25,7 +32,14 @@ class Geometry:
     def from_polygon(
         cls, polygon: Polygon, border: Union[Border, AutoBorder]
     ) -> Geometry:
-        """Create a geometry from a polygon."""
+        """Create a geometry from a polygon.
+
+        Parameters
+        ----------
+        polygon : Polygon
+        border : Union[Border, AutoBorder]
+
+        """
 
         if isinstance(border, AutoBorder):
             return cls(
@@ -41,7 +55,14 @@ class Geometry:
     def from_polygons(
         cls, polygons: Iterable[Polygon], border: Union[Border, AutoBorder]
     ) -> Geometry:
-        """Create a geometry from polygons."""
+        """Create a geometry from polygons.
+
+        Parameters
+        ----------
+        polygon : Iterable[Polygon]
+        border : Union[Border, AutoBorder]
+
+        """
 
         points = vstack([polygon.get_vertices() for polygon in polygons])
 

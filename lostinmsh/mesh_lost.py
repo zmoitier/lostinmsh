@@ -10,7 +10,7 @@ from numpy import cos, linspace, pi, sin, sqrt
 
 from .circular_iterable import circular_pairwise
 from .geometry import Geometry
-from .gmsh_context_manager import GmshContextManager, OptionalPathLike
+from .gmsh_context_manager import GmshContextManager, GmshOptions
 from .mesh_border import _mesh_border
 from .polygon import Angle, Corner, Polygon
 
@@ -39,34 +39,29 @@ SurfaceTags: TypeAlias = list[int]
 def mesh_loc_struct(
     geometry: Geometry,
     mesh_size: float,
+    gmsh_options: Optional[GmshOptions],
     *,
     corner_radius_shrink: float = 0.75,
     corner_geometric_coef: float = 1.5,
-    element_order: int = 1,
-    terminal: bool = False,
-    gui: bool = False,
-    filename: OptionalPathLike = None,
-    msh_file_version: Optional[float] = None,
-    save_width: Optional[int] = None,
-    save_height: Optional[int] = None,
-    save_compress: bool = False,
-    hide_model_Entities: bool = True,
-) -> OptionalPathLike:
-    """T-confrom mesh a polygon."""
+) -> Optional[PurePath]:
+    """T-confrom mesh a polygon.
+
+    Parameters
+    ----------
+    geom : Geometry
+    mesh_size : float
+    gmsh_options: GmshOptions, optional
+    corner_radius_shrink : float, default=0.75
+    corner_geometric_coef : float, default=1.5
+
+    """
+
+    if gmsh_options is None:
+        gmsh_options = GmshOptions()
 
     corner_radius = geometry.max_corner_radius() * corner_radius_shrink
 
-    with GmshContextManager(
-        element_order=element_order,
-        terminal=terminal,
-        gui=gui,
-        filename=PurePath(filename) if filename is not None else None,
-        msh_file_version=msh_file_version,
-        save_width=save_width,
-        save_height=save_height,
-        save_compress=save_compress,
-        hide_model_Entities=hide_model_Entities,
-    ):
+    with GmshContextManager(gmsh_options):
         loop_polygons = []
         surfaces_vac = []
         for polygon in geometry.polygons:
@@ -86,7 +81,7 @@ def mesh_loc_struct(
 
         gmsh.model.addPhysicalGroup(dim=2, tags=surfaces_vac, name="Vacuum")
 
-    return filename
+    return gmsh_options.filename
 
 
 def _tmesh_polygon(

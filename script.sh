@@ -55,7 +55,7 @@ case "$1" in
     echo "  > [-c] for cleaning the temporary python file;"
     echo "  > [-d] generate the documentation;"
     echo "  > [-f] for formatting the code;"
-    echo "  > [-i] localy locally lostinmsh;"
+    echo "  > [-i] locally install lostinmsh;"
     echo "  > [-t] for testing the code;"
     echo "  > [-u] for updating the python package."
     exit 1

@@ -5,12 +5,19 @@ build-backend = "flit_core.buildapi"
 [project]
 name = "lostinmsh"
 authors = [
-    { name = "Camille Carvalho", email = "camille.carvalho@insa-lyon.fr" },
     { name = "Zoïs Moitier", email = "zois.moitier@ensta-paris.fr" },
+    { name = "Camille Carvalho", email = "camille.carvalho@insa-lyon.fr" },
 ]
 readme = "README.md"
 license = { file = "LICENSE" }
-classifiers = ["License :: OSI Approved :: MIT License"]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+requires-python = ">=3.10"
 dynamic = ["version", "description"]
 dependencies = ["gmsh", "numpy"]
 

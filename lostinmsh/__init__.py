@@ -1,8 +1,8 @@
 """GMSH toolbox for locally structured meshes on polygon."""
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
-__author__ = "Camille Carvalho, Zoïs Moitier"
+__author__ = "Zoïs Moitier, Camille Carvalho"
 
 __all__ = [
     "Polygon",

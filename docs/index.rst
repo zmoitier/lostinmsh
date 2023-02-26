@@ -13,6 +13,28 @@ The Python toolbox ``lostinmsh`` (*LOcally STructured polygonal INterface MeSH*)
 **Zoïs Moitier**
     *POEMS, CNRS, Inria, ENSTA Paris, Institut Polytechnique de Paris, 91120 Palaiseau, France*
 
+Installation
+------------
+
+Use `pip <https://pip.pypa.io/en/stable/>`_
+
+.. code-block:: shell
+
+       $ pip install --user lostinmsh
+
+or clone the repository
+
+.. code-block:: shell
+
+       $ git clone https://github.com/zmoitier/lostinmsh.git
+
+and then you can locally install it via `flit <https://flit.pypa.io/en/stable/>`_
+
+.. code-block:: shell
+
+       $ flit install --symlink --user
+
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:

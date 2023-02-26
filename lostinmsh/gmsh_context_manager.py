@@ -61,16 +61,15 @@ class GmshOptions:
             "Mesh.ColorCarousel": 2,
         }
         if additional_options is not None:
-            option_value = {**option_value, **additional_options}
+            option_value.update(additional_options)
 
         self.option_value = option_value
 
     def __str__(self) -> str:
         data = [
-            ("Gmsh options", ""),
-            ("  Launch GMSH GUI", self.gui),
-            ("  filename", self.filename),
-            ("  Hide model entities", self.hide_model_entities),
+            ("Launch GMSH GUI", self.gui),
+            ("filename", self.filename),
+            ("Hide model entities", self.hide_model_entities),
             ("#", ""),
             ("Gmsh options", ""),
         ]
@@ -90,8 +89,6 @@ def _pretty_print(data: list[tuple[str, Any]]) -> str:
 @dataclass(frozen=True, slots=True)
 class GmshContextManager(AbstractContextManager):
     """Context manager for GMSH."""
-
-    # pylint: disable=too-many-instance-attributes
 
     gmsh_options: GmshOptions
 

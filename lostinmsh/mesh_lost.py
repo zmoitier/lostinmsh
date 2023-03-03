@@ -39,7 +39,7 @@ SurfaceTags: TypeAlias = list[int]
 def mesh_loc_struct(
     geometry: Geometry,
     mesh_size: float,
-    gmsh_options: Optional[GmshOptions],
+    gmsh_options: Optional[GmshOptions] = None,
     *,
     corner_radius_shrink: float = 0.75,
     corner_geometric_coef: float = 1.5,
@@ -90,7 +90,7 @@ def _tmesh_polygon(
     """T-coform mesh of a polygon."""
 
     ϕ = polygon.get_elementary_angle()
-    r = min(corner_radius, h / (2 * sin(ϕ.value / 2)))
+    r = min(corner_radius, h)  # / (2 * sin(ϕ.value / 2)))
     h_corner = sqrt(h * r * 2 * sin(ϕ.value / 2))
 
     corners_tag = []

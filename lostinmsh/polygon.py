@@ -76,7 +76,6 @@ class Corner:
 
         We compute p and q such that
         a / b = 2p / (p+q) and p, q >= 2 and return the angle 2/(p+q).
-
         """
         a, b = self.angle.numerator, self.angle.denominator
         if a % 2 == 0:

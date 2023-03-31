@@ -7,7 +7,20 @@ from typing import Iterable
 
 
 def circular_pairwise(collection: Collection, start: int = 0) -> Iterable:
-    """Circular pairwise."""
+    """Return the circular pairwise iterator from a collection.
+
+    Parameters
+    ----------
+    collection : Collection
+        sequence-like object with a length
+    start : int, optional
+        starting index, by default 0
+
+    Returns
+    -------
+    Iterable
+        circular pairwise iterator
+    """
     end = start + len(collection)
     return zip(
         islice(cycle(collection), start, end),
@@ -16,7 +29,20 @@ def circular_pairwise(collection: Collection, start: int = 0) -> Iterable:
 
 
 def circular_triplewise(collection: Collection, start: int = 0) -> Iterable:
-    """Circular triplewise."""
+    """Return the circular triplewise iterator from a collection.
+
+    Parameters
+    ----------
+    collection : Collection
+        sequence-like object with a length
+    start : int, optional
+        starting index, by default 0
+
+    Returns
+    -------
+    Iterable
+        circular triplewise iterator
+    """
     end = start + len(collection)
     return zip(
         islice(cycle(collection), start, end),

@@ -23,7 +23,6 @@ def mesh(
     geom : Geometry
     mesh_size : float
     gmsh_options: GmshOptions, optional
-
     """
 
     if gmsh_options is None:

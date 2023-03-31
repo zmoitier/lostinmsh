@@ -22,7 +22,6 @@ class Geometry:
     ----------
     polygons : list[Polygon]
     border : Border
-
     """
 
     polygons: list[Polygon]
@@ -38,7 +37,6 @@ class Geometry:
         ----------
         polygon : Polygon
         border : Union[Border, AutoBorder]
-
         """
 
         if isinstance(border, AutoBorder):
@@ -61,7 +59,6 @@ class Geometry:
         ----------
         polygon : Iterable[Polygon]
         border : Union[Border, AutoBorder]
-
         """
 
         points = vstack([polygon.get_vertices() for polygon in polygons])

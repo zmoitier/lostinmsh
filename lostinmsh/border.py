@@ -18,7 +18,6 @@ class Border:
     ----------
     center : NDArray
     thickness : float, optional
-
     """
 
     center: NDArray
@@ -34,7 +33,6 @@ class Border:
         ----------
         points : NDArray
             list of points should be an array of shape (N, 2) with N ≥ 1.
-
         """
         raise NotImplementedError()
 
@@ -71,7 +69,6 @@ class AutoBorder:
     ----------
     border_factor : float
     thickness_factor : float, optional
-
     """
 
     border_factor: float
@@ -84,7 +81,6 @@ class AutoBorder:
         ----------
         points : NDArray
             list of points should be an array of shape (N, 2) with N ≥ 1.
-
         """
         raise NotImplementedError()
 
@@ -97,7 +93,6 @@ class AutoCircular(AutoBorder):
     ----------
     border_factor : float
     thickness_factor :float, optional
-
     """
 
     def get_border(self, points: NDArray) -> Circular:
@@ -120,7 +115,6 @@ class AutoRectangular(AutoBorder):
     ----------
     border_factor : float
     thickness_factor : float, optional
-
     """
 
     def get_border(self, points: NDArray) -> Rectangular:

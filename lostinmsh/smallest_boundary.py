@@ -32,7 +32,6 @@ def convex_hull(points: NDArray) -> NDArray:
     -------
     convex_hull : NDArray
         the points defining the convex hull
-
     """
     if (n := points.shape[0]) <= 1:
         return arange(n)

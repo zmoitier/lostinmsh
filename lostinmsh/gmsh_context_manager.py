@@ -25,7 +25,6 @@ class GmshOptions:
     filename : OptionalPathLike, optional
     hide_model_entities : bool, default=True
     additional_options : dict[str, Any], optional
-
     """
 
     gui: bool = False

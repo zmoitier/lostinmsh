@@ -53,7 +53,6 @@ def mesh_loc_struct(
     gmsh_options: GmshOptions, optional
     corner_radius_shrink : float, default=0.75
     corner_geometric_coef : float, default=1.5
-
     """
 
     if gmsh_options is None:

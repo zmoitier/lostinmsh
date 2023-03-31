@@ -27,7 +27,6 @@ def plot_polygon(polygon: Polygon, ax=None) -> None:
     ----------
     polygon : Polygon
     ax : plt.Axes, optional
-
     """
 
     if ENABLE_PLOT:
@@ -79,7 +78,6 @@ def plot_geometry(geometry: Geometry, ax=None) -> None:
     ----------
     geometry : Geometry
     ax : plt.Axes, optional
-
     """
 
     if ENABLE_PLOT:

@@ -1,11 +1,4 @@
-"""Find the smallest distance of a set of points.
-
-https://www.geeksforgeeks.org/closest-pair-of-points-using-divide-and-
-conquer- algorithm/ https://stackoverflow.com/questions/39681407/find-
-minimum-distance-between- points
-https://sites.cs.ucsb.edu/~suri/cs235/ClosestPair.pdf
-
-"""
+"""Find the smallest distance of a set of points."""
 
 
 from numpy import absolute, argsort, inf, less, where
@@ -14,7 +7,19 @@ from numpy.typing import NDArray
 
 
 def min_dist_naive(points: NDArray) -> float:
-    """Smallest distance of a set of points."""
+    """Return the minimum euclidean distance between 2d points via a boucle
+    over all possible pairs of points.
+
+    Parameters
+    ----------
+    points : NDArray
+        array of shape (N, 2)
+
+    Returns
+    -------
+    float
+        minimum euclidean distance
+    """
     n = points.shape[0]
 
     min_d = inf
@@ -28,13 +33,37 @@ def min_dist_naive(points: NDArray) -> float:
 
 
 def min_dist(points: NDArray) -> float:
-    """Smallest distance of a set of points."""
+    """Return the minimum euclidean distance between 2d points using a divide-
+    and-conquer algorithm, see
+    https://en.wikipedia.org/wiki/Closest_pair_of_points_problem.
+
+    Parameters
+    ----------
+    points : NDArray
+        array of shape (N, 2)
+
+    Returns
+    -------
+    float
+        minimum euclidean distance
+    """
     idx_sort_x = argsort(points[:, 0])
     return _min_dist_rec(points[idx_sort_x, :])
 
 
 def _min_dist_rec(points: NDArray) -> float:
-    """Smallest distance square of a set of points."""
+    """Return the minimum euclidean distance between 2d points.
+
+    Parameters
+    ----------
+    points : NDArray
+        array of shape (N, 2)
+
+    Returns
+    -------
+    float
+        minimum euclidean distance
+    """
     n = points.shape[0]
 
     if n <= 3:
@@ -53,7 +82,20 @@ def _min_dist_rec(points: NDArray) -> float:
 
 
 def _min_dist_strip(points: NDArray, d: float) -> float:
-    """Smallest distance strip."""
+    """Return the minimum euclidean distance in a strip of width d.
+
+    Parameters
+    ----------
+    points : NDArray
+        array of shape (N, 2)
+    d : float
+        width of the strip
+
+    Returns
+    -------
+    float
+        minimum euclidean distance
+    """
     n = points.shape[0]
     min_d = d
 

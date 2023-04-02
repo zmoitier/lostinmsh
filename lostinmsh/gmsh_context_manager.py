@@ -58,6 +58,7 @@ class GmshOptions:
             "Mesh.Smoothing": 0,
             "Mesh.SurfaceFaces": 1,
             "Mesh.ColorCarousel": 2,
+            "Mesh.Algorithm": 5,  # The Delaunay is better than the Frontal-Delaunay at capturing sharp mesh size transitions.
         }
         if additional_options is not None:
             option_value.update(additional_options)

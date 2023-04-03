@@ -12,15 +12,17 @@ def main() -> None:
     shift = np.array([1, 0])
 
     polygons = [
-        lsm.Polygon.from_vertices(vertices - shift, "Cavity1"),
-        lsm.Polygon.from_vertices(vertices + shift, "Cavity2"),
+        lsm.Polygon.from_vertices(vertices - shift, "Cavity"),
+        lsm.Polygon.from_vertices(vertices + shift, "Cavity"),
     ]
 
-    border = lsm.AutoCircular(border_factor=0.25, thickness_factor=0.125)
+    border = lsm.AutoCircular(border_factor=0.3, thickness_factor=0.125)
     geometry = lsm.Geometry.from_polygons(polygons, border)
 
-    lsm.mesh_unstructured(geometry, 0.1, lsm.GmshOptions(gui=True, terminal=True))
-    # lsm.mesh_loc_struct(geometry, 0.1, lsm.GmshOptions(gui=True))
+    # lsm.mesh_unstructured(geometry, 0.25, lsm.GmshOptions(gui=True, terminal=True))
+    lsm.mesh_loc_struct(
+        geometry, 0.25, lsm.GmshOptions(gui=True, terminal=1, filename="mesh.msh")
+    )
 
 
 if __name__ == "__main__":

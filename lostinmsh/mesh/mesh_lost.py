@@ -3,7 +3,7 @@
 
 from dataclasses import dataclass
 from pathlib import PurePath
-from typing import Optional, TypeAlias
+from typing import Optional
 
 import gmsh
 from numpy import cos, linspace, pi, sin, sqrt
@@ -11,6 +11,7 @@ from numpy import cos, linspace, pi, sin, sqrt
 from ..circular_iterable import circular_pairwise
 from ..geometry import Angle, Corner, Geometry, Polygon
 from .gmsh_context_manager import GmshContextManager, GmshOptions
+from .helper_type import Domain, DomainTags, SurfaceTags, update_domain_tags
 from .mesh_border import _mesh_border
 
 
@@ -30,9 +31,6 @@ class EgdeTag:
 
     line_cav: int
     line_vac: int
-
-
-SurfaceTags: TypeAlias = list[int]
 
 
 def mesh_loc_struct(
@@ -57,9 +55,11 @@ def mesh_loc_struct(
     if gmsh_options is None:
         gmsh_options = GmshOptions()
 
+    domain_tags: DomainTags = {}
+
     corner_radius = geometry.max_corner_radius() * corner_radius_shrink
 
-    with GmshContextManager(gmsh_options):
+    with GmshContextManager(gmsh_options) as gmsh_context_manager:
         loop_polygons = []
         surfaces_vac = []
         for polygon in geometry.polygons:
@@ -69,15 +69,20 @@ def mesh_loc_struct(
             loop_polygons.append(l_poly)
             surfaces_vac.extend(s_vac)
 
-            gmsh.model.addPhysicalGroup(dim=2, tags=s_poly, name=polygon.name)
+            update_domain_tags(domain_tags, {Domain(polygon.name, 2): s_poly})
 
-        loop_border = _mesh_border(geometry.border, mesh_size)
+        loop_tag_inn, dom_tags = _mesh_border(geometry.border, mesh_size)
+        domain_tags.update(dom_tags)
 
-        surfaces_vac.append(
-            gmsh.model.geo.addPlaneSurface([loop_border, *loop_polygons])
+        domain_tags.update(
+            {
+                Domain(geometry.border.background_name, 2): [
+                    gmsh.model.geo.addPlaneSurface([loop_tag_inn, *loop_polygons])
+                ],
+            }
         )
 
-        gmsh.model.addPhysicalGroup(dim=2, tags=surfaces_vac, name="Vacuum")
+        gmsh_context_manager.domain_tags.update(domain_tags)
 
     return gmsh_options.filename
 

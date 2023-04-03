@@ -29,7 +29,7 @@ DomainTags: TypeAlias = dict[Domain, Tags]
 
 
 def update_domain_tags(domain_tags: DomainTags, dom_tags_to_add: DomainTags) -> None:
-    """Update DomainTags with dom_tags_to_add
+    """Update DomainTags with dom_tags_to_add.
 
     Parameters
     ----------
@@ -40,6 +40,6 @@ def update_domain_tags(domain_tags: DomainTags, dom_tags_to_add: DomainTags) -> 
     """
     for dom, tags in dom_tags_to_add.items():
         if dom in domain_tags:
-            domain_tags[dom].append(tags)
+            domain_tags[dom].extend(tags)
         else:
             domain_tags[dom] = tags

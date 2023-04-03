@@ -8,7 +8,7 @@ from typing import Any, NamedTuple, Optional, TypeAlias, Union
 
 import gmsh
 
-from .helper_type import Domain, Tags
+from .helper_type import DomainTags
 
 OptionalPathLike: TypeAlias = Union[None, str, PurePath]
 
@@ -93,7 +93,7 @@ class GmshContextManager(AbstractContextManager):
     """Context manager for GMSH."""
 
     gmsh_options: GmshOptions
-    domain_tags: dict[Domain, Tags] = field(default_factory=dict)
+    domain_tags: DomainTags = field(default_factory=dict)
 
     def __enter__(self):
         # Initialize the Gmsh API.

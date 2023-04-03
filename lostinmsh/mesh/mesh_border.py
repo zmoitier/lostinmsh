@@ -60,7 +60,7 @@ def _mesh_circular(
     """
 
     loop_tag_inn, line_tags = _loop_circle(circ.center, circ.radius, mesh_size)
-    domain_tags = {Domain(circ.boundary_name, 1): line_tags}
+    domain_tags = {Domain(f"{circ.background_name}_boundary", 1): line_tags}
 
     if circ.thickness is not None:
         loop_tag_out, line_tags = _loop_circle(
@@ -71,7 +71,7 @@ def _mesh_circular(
                 Domain(circ.thickness_name, 2): [
                     gmsh.model.geo.addPlaneSurface([loop_tag_out, loop_tag_inn])
                 ],
-                Domain(circ.boundary_name, 1): line_tags,
+                Domain(f"{circ.thickness_name}_boundary", 1): line_tags,
             }
         )
 
@@ -99,7 +99,7 @@ def _mesh_rectangular(
     loop_tag_inn, line_tags = _loop_rectangle(
         rect.center, rect.half_width, rect.half_height, mesh_size
     )
-    domain_tags = {Domain(rect.boundary_name, 1): line_tags}
+    domain_tags = {Domain(f"{rect.background_name}_boundary", 1): line_tags}
 
     if rect.thickness is not None:
         loop_tag_out, line_tags = _loop_rectangle(
@@ -113,7 +113,7 @@ def _mesh_rectangular(
                 Domain(rect.thickness_name, 2): [
                     gmsh.model.geo.addPlaneSurface([loop_tag_out, loop_tag_inn])
                 ],
-                Domain(rect.boundary_name, 1): line_tags,
+                Domain(f"{rect.thickness_name}_boundary", 1): line_tags,
             }
         )
 

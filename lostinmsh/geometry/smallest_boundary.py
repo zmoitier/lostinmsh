@@ -6,7 +6,7 @@ from numpy.linalg import det, norm
 from numpy.random import shuffle
 from numpy.typing import NDArray
 
-from .circular_iterable import circular_triplewise
+from ..circular_iterable import circular_triplewise
 
 Circle = tuple[NDArray, float]
 

@@ -8,6 +8,8 @@ from typing import Any, NamedTuple, Optional, TypeAlias, Union
 
 import gmsh
 
+from .helper_type import Domain, Tags
+
 OptionalPathLike: TypeAlias = Union[None, str, PurePath]
 
 
@@ -91,6 +93,7 @@ class GmshContextManager(AbstractContextManager):
     """Context manager for GMSH."""
 
     gmsh_options: GmshOptions
+    domain_tags: dict[Domain, Tags] = field(default_factory=dict)
 
     def __enter__(self):
         # Initialize the Gmsh API.
@@ -105,14 +108,19 @@ class GmshContextManager(AbstractContextManager):
         else:
             gmsh.model.add(self.gmsh_options.filename.stem)
 
+        return self
+
     def __exit__(self, exc_type, exc_value, exc_tb):
         # Synchronize the built-in CAD representation with the current Gmsh model.
         gmsh.model.geo.synchronize()
 
+        for domain, tags in self.domain_tags.items():
+            gmsh.model.addPhysicalGroup(dim=domain.dim, tags=tags, name=domain.name)
+
         # Generate a mesh of the current model, up to dimension dim 2.
         gmsh.model.mesh.generate(2)
 
-        _set_options_graphical(self.gmsh_options.hide_model_entities)
+        # _set_options_graphical(self.gmsh_options.hide_model_entities)
 
         if self.gmsh_options.gui:
             # Create and run the FLTK graphical user interface.

@@ -21,7 +21,9 @@ class Border:
     """
 
     center: NDArray
+    background_name: str = "background"
     thickness: Optional[float] = None
+    thickness_name: str = "PML"
 
     def dist_to_inner_boundary(self, points: NDArray) -> float:
         """Sign distance to the inner boundary.

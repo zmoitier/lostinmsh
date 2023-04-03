@@ -8,11 +8,10 @@ from typing import Optional, TypeAlias
 import gmsh
 from numpy import cos, linspace, pi, sin, sqrt
 
-from .circular_iterable import circular_pairwise
-from .geometry import Geometry
+from ..circular_iterable import circular_pairwise
+from ..geometry import Angle, Corner, Geometry, Polygon
 from .gmsh_context_manager import GmshContextManager, GmshOptions
 from .mesh_border import _mesh_border
-from .polygon import Angle, Corner, Polygon
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)

@@ -11,7 +11,7 @@ from numpy import arctan2, asarray, greater, lexsort, pi
 from numpy.linalg import norm
 from numpy.typing import ArrayLike, NDArray
 
-from .circular_iterable import circular_triplewise
+from ..circular_iterable import circular_triplewise
 
 
 class Angle(Fraction):

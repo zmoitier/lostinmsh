@@ -1,6 +1,6 @@
 """GMSH toolbox for locally structured meshes on polygon."""
 
-__version__ = "0.0.2"
+__version__ = "0.0.3.dev"
 
 __author__ = "Zoïs Moitier, Camille Carvalho"
 
@@ -12,16 +12,19 @@ __all__ = [
     "AutoCircular",
     "AutoRectangular",
     "GmshOptions",
-    "mesh",
+    "mesh_unstructured",
     "mesh_loc_struct",
     "plot_geometry",
     "plot_polygon",
 ]
 
-from .border import AutoCircular, AutoRectangular, Circular, Rectangular
-from .geometry import Geometry
-from .gmsh_context_manager import GmshOptions
-from .mesh import mesh
-from .mesh_lost import mesh_loc_struct
+from .geometry import (
+    AutoCircular,
+    AutoRectangular,
+    Circular,
+    Geometry,
+    Polygon,
+    Rectangular,
+)
+from .mesh import GmshOptions, mesh_loc_struct, mesh_unstructured
 from .plot import plot_geometry, plot_polygon
-from .polygon import Polygon

@@ -1,7 +1,7 @@
 """Domain."""
 
 
-from typing import NamedTuple, TypeAlias
+from typing import NamedTuple, TypeAlias, Union
 
 NodeTag: TypeAlias = int
 NodeTags: TypeAlias = list[NodeTag]
@@ -15,7 +15,8 @@ LoopTags: TypeAlias = list[LoopTag]
 SurfaceTag: TypeAlias = int
 SurfaceTags: TypeAlias = list[SurfaceTag]
 
-Tags: TypeAlias = list[int]
+Tag = Union[NodeTag, CurveTag, LoopTag, SurfaceTag]
+Tags: TypeAlias = list[Tag]
 
 
 class Domain(NamedTuple):

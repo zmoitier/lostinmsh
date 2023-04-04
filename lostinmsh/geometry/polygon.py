@@ -96,8 +96,8 @@ class Polygon:
     """Polygon class."""
 
     corners: list[Corner]
-    name: str
     lengths: NDArray = field(repr=False)
+    name: str
 
     @classmethod
     def from_vertices(
@@ -122,7 +122,7 @@ class Polygon:
             corner.c = corner.c + vector
 
     def get_vertices(self) -> NDArray:
-        """Get verttices."""
+        """Get vertices."""
         return asarray([corner.c for corner in self.corners])
 
     def get_elementary_angle(self) -> Angle:
@@ -217,7 +217,6 @@ def _normalize(vector: NDArray) -> NDArray:
 
 def _compute_angle(u: NDArray, v: NDArray, max_denominator: int) -> Angle:
     """Compute the angle between two vector."""
-
     _cos = u[0] * v[0] + u[1] * v[1]
     _sin = u[0] * v[1] - u[1] * v[0]
     angle = Fraction(arctan2(_sin, _cos) / pi).limit_denominator(max_denominator)

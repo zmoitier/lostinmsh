@@ -80,7 +80,6 @@ def smallest_circle(points: NDArray) -> Circle:
 
 def welzl(points: list[NDArray], boundary: list[NDArray], lenght: int) -> Circle:
     """Welzl algorithm."""
-
     if lenght == 0 or len(boundary) == 3:
         return trivial_circle(boundary)
 
@@ -115,7 +114,6 @@ def trivial_circle(R: list[NDArray]) -> Circle:
 
 def _smallest_circle_2_points(A: NDArray, B: NDArray) -> Circle:
     """Compute the smallest enclosing circle of two points."""
-
     center = asarray([(A[0] + B[0]) / 2, (A[1] + B[1]) / 2])
     radius = sqrt((A[0] - B[0]) ** 2 + (A[1] - B[1]) ** 2) / 2
     return (center, radius)
@@ -123,7 +121,6 @@ def _smallest_circle_2_points(A: NDArray, B: NDArray) -> Circle:
 
 def _smallest_circle_3_points(A: NDArray, B: NDArray, C: NDArray) -> Circle:
     """Compute the smallest enclosing circle of three points."""
-
     for P, Q, R in circular_triplewise((A, B, C)):
         center, radius = _smallest_circle_2_points(P, Q)
         if _is_inside((center, radius), R):

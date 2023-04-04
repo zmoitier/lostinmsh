@@ -137,7 +137,6 @@ def _loop_circle(center: NDArray, radius: float, h: float) -> tuple[LoopTag, Cur
     tuple[LoopTag, CurveTags]
         return inner loop tag and the list of lineTag
     """
-
     cx, cy = center
 
     C = gmsh.model.geo.addPoint(cx, cy, 0, h)

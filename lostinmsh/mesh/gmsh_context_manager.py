@@ -60,7 +60,8 @@ class GmshOptions:
             "Mesh.Smoothing": 0,
             "Mesh.SurfaceFaces": 1,
             "Mesh.ColorCarousel": 2,
-            "Mesh.Algorithm": 5,  # The Delaunay is better than the Frontal-Delaunay at capturing sharp mesh size transitions.
+            "Mesh.Algorithm": 6,  # 5 is better than 6 at capturing sharp mesh size transitions.
+            "Mesh.MeshSizeExtendFromBoundary": 0,
         }
         if additional_options is not None:
             option_value.update(additional_options)
@@ -193,7 +194,6 @@ C_PML = Color("C1", 255, 127, 14)
 
 def _set_options_graphical(hide_model_Entities: bool) -> None:
     """Set."""
-
     # Hide the model entities of dimensions 0 and 1.
     if hide_model_Entities:
         gmsh.model.setVisibility(gmsh.model.getEntities(0), 0)

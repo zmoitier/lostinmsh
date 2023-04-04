@@ -24,7 +24,6 @@ def plot_polygon(polygon: Polygon, ax=None) -> None:
     polygon : Polygon
     ax : plt.Axes, optional
     """
-
     if ENABLE_PLOT:
         _plot_polygon(polygon, ax=ax)
     else:
@@ -35,7 +34,6 @@ def plot_polygon(polygon: Polygon, ax=None) -> None:
 
 def _plot_polygon(polygon: Polygon, ax=None) -> None:
     """Plot polygon."""
-
     if ax is None:
         _, ax = plt.subplots()
 
@@ -80,7 +78,6 @@ def plot_geometry(geometry: Geometry, ax=None) -> None:
     geometry : Geometry
     ax : plt.Axes, optional
     """
-
     if ENABLE_PLOT:
         _plot_geometry(geometry, ax=ax)
     else:
@@ -91,7 +88,6 @@ def plot_geometry(geometry: Geometry, ax=None) -> None:
 
 def _plot_geometry(geometry: Geometry, ax=None) -> None:
     """Plot geometry."""
-
     if ax is None:
         _, ax = plt.subplots()
 

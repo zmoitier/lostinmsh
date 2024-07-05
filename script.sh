@@ -44,11 +44,11 @@ case "$1" in
     # python3 -m pytest ./tests/
     ;;
 -u)
-    python -m pip install --user --upgrade pip
-    python -m pip install --user --upgrade -r requirements.txt
-    python -m pip install --user --upgrade -r requirements-all.txt
-    python -m pip install --user --upgrade -r requirements-dev.txt
-    python -m pip install --user --upgrade -r requirements-doc.txt
+    python -m pip install --upgrade pip
+    python -m pip install --upgrade -r requirements.txt
+    python -m pip install --upgrade -r requirements-all.txt
+    python -m pip install --upgrade -r requirements-dev.txt
+    python -m pip install --upgrade -r requirements-doc.txt
     ;;
 *)
     echo "The choice are:"

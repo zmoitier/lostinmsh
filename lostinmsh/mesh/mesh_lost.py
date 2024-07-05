@@ -119,6 +119,8 @@ def _tmesh_polygon(
 
     surfaces_cav.append(gmsh.model.geo.addPlaneSurface([loop_inn]))
 
+    print(surfaces_vac)
+
     return (loop_out, surfaces_cav, surfaces_vac)
 
 

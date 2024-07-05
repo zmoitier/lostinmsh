@@ -1,8 +1,5 @@
-black
 docformatter[tomli]
 flit
-isort
 mypy
 pylint
-pytest
-pytest-cov
+ruff

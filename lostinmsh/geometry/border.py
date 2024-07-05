@@ -1,6 +1,5 @@
 """Class for boundary."""
 
-
 from dataclasses import dataclass
 from typing import Optional
 

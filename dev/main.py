@@ -16,28 +16,29 @@ def main() -> None:
     border = lsm.AutoCircular(border_factor=0.3, thickness_factor=0.2)
     geometry = lsm.Geometry.from_polygons(polygons, border)
 
-    lsm.mesh_unstructured(
+    # lsm.mesh_unstructured(
+    #     geometry,
+    #     0.1,
+    #     lsm.GmshOptions(
+    #         element_order=2,
+    #         gui=False,
+    #         terminal=True,
+    #         filename="mesh.msh",
+    #         additional_options={"Mesh.MeshSizeMin": 0.1, "Mesh.MeshSizeMax": 0.1},
+    #     ),
+    # )
+
+    lsm.mesh_loc_struct(
         geometry,
         0.1,
         lsm.GmshOptions(
             element_order=2,
             gui=False,
-            terminal=1,
+            terminal=True,
             filename="mesh.msh",
             additional_options={"Mesh.MeshSizeMin": 0.1, "Mesh.MeshSizeMax": 0.1},
         ),
     )
-
-    # lsm.mesh_loc_struct(
-    #     geometry,
-    #     0.1,
-    #     lsm.GmshOptions(element_order=2,
-    #         gui=False,
-    #         terminal=1,
-    #         filename="mesh.msh",
-    #         additional_options={"Mesh.MeshSizeMin": 0.1, "Mesh.MeshSizeMax": 0.1},
-    #     ),
-    # )
 
 
 if __name__ == "__main__":

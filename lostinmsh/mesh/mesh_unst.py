@@ -1,6 +1,5 @@
 """Mesh a polygon."""
 
-
 from pathlib import PurePath
 from typing import Optional
 

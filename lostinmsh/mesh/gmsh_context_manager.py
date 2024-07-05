@@ -1,6 +1,5 @@
 """GMSH as a context manager."""
 
-
 from contextlib import AbstractContextManager
 from dataclasses import dataclass, field
 from pathlib import PurePath

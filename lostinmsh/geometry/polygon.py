@@ -1,6 +1,5 @@
 """Polygon class."""
 
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -74,8 +73,8 @@ class Corner:
     def elementary_angle(self) -> Angle:
         """Compute the elementary angle of a corner.
 
-        We compute p and q such that
-        a / b = 2p / (p+q) and p, q >= 2 and return the angle 2/(p+q).
+        We compute p and q such that a / b = 2p / (p+q) and p, q >= 2
+        and return the angle 2/(p+q).
         """
         a, b = self.angle.numerator, self.angle.denominator
         if a % 2 == 0:
@@ -136,9 +135,9 @@ class Polygon:
         """Get the critical interval."""
         a, b = self.corners[0].critical_interval()
         for corner in self.corners[1:]:
-            I = corner.critical_interval()
-            a = min(a, I[0])
-            b = max(b, I[1])
+            interval = corner.critical_interval()
+            a = min(a, interval[0])
+            b = max(b, interval[1])
 
         return (a, b)
 

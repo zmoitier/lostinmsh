@@ -1,6 +1,5 @@
 """Helper functions for circular iteration."""
 
-
 from collections.abc import Collection
 from itertools import cycle, islice
 from typing import Iterable

@@ -1,6 +1,5 @@
 """Domain."""
 
-
 from typing import NamedTuple, TypeAlias, Union
 
 NodeTag: TypeAlias = int

@@ -1,5 +1,13 @@
 #!/bin/sh
 
+check_venv() {
+    # python -c "import sys; print(sys.prefix != sys.base_prefix)"
+    if [ "$VIRTUAL_ENV" = "" ]; then
+        echo "Must be in a virtual environment to update."
+        exit 1
+    fi
+}
+
 remove_directory() {
     find . -name "$1" -type d \
         -exec echo "removing {}" \; \
@@ -28,19 +36,17 @@ case "$1" in
     make -C ./docs/ clean html
     ;;
 -f)
-    echo ">> run isort"
-    python -m isort ./
+    echo ">> run ruff format"
+    python -m ruff format .
     echo ">> run docformatter"
     python -m docformatter --in-place ./
-    echo ">> run black"
-    python -m black ./
     ;;
 -i)
-    python -m flit install --symlink --user
+    python -m flit install --symlink
     ;;
 -t)
     python -m mypy ./lostinmsh/
-    python -m pylint ./lostinmsh/
+    python3 -m ruff check ./lostinmsh/
     # python3 -m pytest ./tests/
     ;;
 -u)

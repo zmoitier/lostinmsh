@@ -26,25 +26,21 @@ Documentation = "https://zmoitier.github.io/lostinmsh/"
 Source = "https://github.com/zmoitier/lostinmsh"
 
 [project.optional-dependencies]
-all = ["matplotlib"]
-dev = ["black", "flit", "isort", "mypy", "pylint", "pytest", "pytest-cov"]
-doc = ["Sphinx", "sphinx-copybutton", "sphinx_rtd_theme"]
+dev = ["docformatter[tomli]", "flit", "mypy", "pylint", "ruff"]
+doc = [
+    "ipython",
+    "nbsphinx",
+    "Sphinx",
+    "sphinx-autodoc-typehints",
+    "sphinx_rtd_theme",
+    "sphinx-copybutton",
+]
 
-[tool.black]
-line-length = 88
-target-version = ['py310']
-
-[tool.isort]
-profile = "black"
+[tool.ruff]
+target-version = "py312"
 
 [tool.docformatter]
 recursive = true
-
-[tool.pylint.format]
-max-line-length = "88"
-
-[tool.pylint.messages_control]
-disable = ["invalid-name", "non-ascii-name", "too-many-locals", "too-many-arguments"]
 
 [tool.mypy]
 ignore_missing_imports = true

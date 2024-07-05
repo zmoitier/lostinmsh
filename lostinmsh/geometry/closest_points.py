@@ -1,6 +1,5 @@
 """Find the smallest distance of a set of points."""
 
-
 from numpy import absolute, argsort, inf, less, where
 from numpy.linalg import norm
 from numpy.typing import NDArray

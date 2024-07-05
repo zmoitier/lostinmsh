@@ -1,6 +1,5 @@
 """T-conform mesh a polygon."""
 
-
 from dataclasses import dataclass
 from pathlib import PurePath
 from typing import Optional
@@ -108,8 +107,8 @@ def _tmesh_polygon(
         surfaces_vac.extend(s_vac)
 
     edges_tag = []
-    for l, (C, D) in zip(polygon.lengths, circular_pairwise(corners_tag)):
-        N_edge = max(2, round(1 + (l - 2 * r) / h_corner))
+    for length, (C, D) in zip(polygon.lengths, circular_pairwise(corners_tag)):
+        N_edge = max(2, round(1 + (length - 2 * r) / h_corner))
         e_tag, s_cav, s_vac = _mesh_edge(C, D, N_edge)
         edges_tag.append(e_tag)
         surfaces_cav.extend(s_cav)
@@ -118,8 +117,6 @@ def _tmesh_polygon(
     loop_inn, loop_out = _get_loops(corners_tag, edges_tag)
 
     surfaces_cav.append(gmsh.model.geo.addPlaneSurface([loop_inn]))
-
-    print(surfaces_vac)
 
     return (loop_out, surfaces_cav, surfaces_vac)
 
@@ -229,6 +226,6 @@ def _get_loops(
         loop_out.append(e.line_vac)
 
     return (
-        gmsh.model.geo.addCurveLoop([-l for l in loop_inn]),
+        gmsh.model.geo.addCurveLoop([-loop for loop in loop_inn]),
         gmsh.model.geo.addCurveLoop(loop_out),
     )

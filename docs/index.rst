@@ -11,7 +11,7 @@ The Python toolbox ``lostinmsh`` (*LOcally STructured polygonal INterface MeSH*)
     *Department of Applied Mathematics, University of California Merced, 5200 North Lake Road, Merced, CA 95343, USA*
 
 **Zoïs Moitier**
-    *POEMS, CNRS, Inria, ENSTA Paris, Institut Polytechnique de Paris, 91120 Palaiseau, France*
+    *IDEFIX, Inria, ENSTA Paris, Institut Polytechnique de Paris, 91120 Palaiseau, France*
 
 Installation
 ------------
@@ -20,7 +20,7 @@ Use `pip <https://pip.pypa.io/en/stable/>`_
 
 .. code-block:: shell
 
-       $ pip install --user lostinmsh
+       $ pip install lostinmsh
 
 or clone the repository
 
@@ -32,7 +32,7 @@ and then you can locally install it via `flit <https://flit.pypa.io/en/stable/>`
 
 .. code-block:: shell
 
-       $ flit install --symlink --user
+       $ flit install --symlink
 
 
 .. toctree::

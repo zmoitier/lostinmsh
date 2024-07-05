@@ -1,6 +1,5 @@
 """Helper function for meshes function."""
 
-
 import gmsh
 from numpy.typing import NDArray
 

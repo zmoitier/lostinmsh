@@ -1,5 +1,4 @@
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Doc formatter: docformatter](https://img.shields.io/badge/%20formatter-docformatter-fedcba.svg)](https://github.com/PyCQA/docformatter)
 [![Doc style: numpy](https://img.shields.io/badge/%20style-numpy-459db9.svg)](https://numpydoc.readthedocs.io/en/latest/format.html)
 
@@ -17,7 +16,7 @@ The Python toolbox `lostinmsh` (_LOcally STructured polygonal INterface MeSH_), 
 Use [`pip`](https://pip.pypa.io/en/stable/)
 
 ```bash
-$ pip install --user lostinmsh
+$ pip install lostinmsh
 ```
 
 or clone the repository
@@ -29,7 +28,7 @@ $ git clone https://github.com/zmoitier/lostinmsh.git
 and then you can locally install it via [`flit`](https://flit.pypa.io/en/stable/)
 
 ```bash
-$ flit install --symlink --user
+$ flit install --symlink
 ```
 
 ## [Documentation](https://zmoitier.github.io/lostinmsh)

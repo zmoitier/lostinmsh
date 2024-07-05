@@ -1,6 +1,5 @@
 """Plot polygon and geometry."""
 
-
 from numpy import pi
 
 from .geometry import Circular, Geometry, Polygon, Rectangular, smallest_rectangle

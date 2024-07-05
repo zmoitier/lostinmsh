@@ -1,6 +1,5 @@
 """Comptute the smallest enclosing circle or rectangle."""
 
-
 from numpy import arange, asarray, lexsort, ones, sort, sqrt, stack
 from numpy.linalg import det, norm
 from numpy.random import shuffle

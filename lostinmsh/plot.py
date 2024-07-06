@@ -2,7 +2,14 @@
 
 from numpy import pi
 
-from .geometry import Circular, Geometry, Polygon, Rectangular, smallest_rectangle
+from .geometry import (
+    Angle,
+    Circular,
+    Geometry,
+    Polygon,
+    Rectangular,
+    smallest_rectangle,
+)
 from .mesh import C_PML, C_POLYGON, C_VACUUM, to_global
 
 ENABLE_PLOT = True
@@ -54,7 +61,7 @@ def _plot_polygon(polygon: Polygon, ax=None) -> None:
         else:
             angle = corner.angle.value / 2
         pts = to_global(corner, 0.15 * l_min, angle)
-        ax.text(pts[0], pts[1], corner.angle.latex(), va="center", ha="center")
+        ax.text(pts[0], pts[1], latex(corner.angle), va="center", ha="center")
 
     center, lengths = smallest_rectangle(polygon.get_vertices())
     lengths *= 1.2
@@ -67,6 +74,22 @@ def _plot_polygon(polygon: Polygon, ax=None) -> None:
     ax.axis("equal")
     ax.grid(zorder=1)
     ax.legend(loc=1)
+
+
+def latex(angle: Angle) -> str:
+    """Get latex representation."""
+
+    if angle.numerator == 0:
+        return r"$0$"
+
+    if angle.numerator == 1:
+        str_num = ""
+    elif angle.numerator == -1:
+        str_num = "-"
+    else:
+        str_num = f"{angle.numerator}"
+
+    return rf"$\dfrac{{{str_num}\pi}}{{{angle.denominator}}}$"
 
 
 def plot_geometry(geometry: Geometry, ax=None) -> None:

@@ -1,19 +1,21 @@
 """Geometry module."""
 
 __all__ = [
-    "Geometry",
+    "Angle",
+    "critical_interval",
+    "elementary_angle",
+    "Corner",
     "Polygon",
+    "Geometry",
     "Border",
     "Circular",
     "Rectangular",
-    "AutoCircular",
-    "AutoRectangular",
+    "circular",
+    "rectangular",
     "smallest_rectangle",
-    "Angle",
-    "Corner",
 ]
 
-from .border import AutoCircular, AutoRectangular, Border, Circular, Rectangular
+from .border import Border, Circular, Rectangular, circular, rectangular
 from .geometry import Geometry
-from .polygon import Angle, Corner, Polygon
+from .polygon import Angle, Corner, Polygon, critical_interval, elementary_angle
 from .smallest_boundary import smallest_rectangle

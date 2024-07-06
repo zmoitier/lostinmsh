@@ -1,4 +1,4 @@
-"""Comptute the smallest enclosing circle or rectangle."""
+"""Compute the smallest enclosing circle or rectangle."""
 
 from numpy import arange, asarray, lexsort, ones, sort, sqrt, stack
 from numpy.linalg import det, norm
@@ -19,7 +19,7 @@ def convex_hull(points: NDArray) -> NDArray:
     Implements Andrew's monotone chain algorithm from:
     A. M. Andrew, Another efficient algorithm for convex hulls in two dimensions
     https://doi.org/10.1016/0020-0190(79)90072-3
-    and is heavly inspire by:
+    and is heavily inspire by:
     https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Monotone_chain
 
     Parameters
@@ -77,19 +77,19 @@ def smallest_circle(points: NDArray) -> Circle:
     return welzl(list(pts), [], pts.shape[0])
 
 
-def welzl(points: list[NDArray], boundary: list[NDArray], lenght: int) -> Circle:
+def welzl(points: list[NDArray], boundary: list[NDArray], length: int) -> Circle:
     """Welzl algorithm."""
-    if lenght == 0 or len(boundary) == 3:
+    if length == 0 or len(boundary) == 3:
         return trivial_circle(boundary)
 
-    P = points[lenght - 1]
+    P = points[length - 1]
 
-    center, radius = welzl(points, boundary.copy(), lenght - 1)
+    center, radius = welzl(points, boundary.copy(), length - 1)
     if _is_inside((center, radius), P):
         return (center, radius)
 
     boundary.append(P)
-    return welzl(points, boundary.copy(), lenght - 1)
+    return welzl(points, boundary.copy(), length - 1)
 
 
 def trivial_circle(R: list[NDArray]) -> Circle:
@@ -151,7 +151,7 @@ def _circumcircle_triangle(A: NDArray, B: NDArray, C: NDArray) -> Circle:
 
 
 def _det_col(A: NDArray, B: NDArray, C: NDArray) -> float:
-    """Compute the det of the matrix define by the colunm [A, B, C]."""
+    """Compute the det of the matrix define by the column [A, B, C]."""
     return det(stack((A, B, C), axis=1))
 
 

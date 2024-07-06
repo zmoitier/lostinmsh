@@ -70,7 +70,7 @@ def _mesh_polygon(polygon: Polygon, h: float) -> tuple[LoopTag, dict[Domain, Tag
         return the loop tag and the domain and its associated tags
     """
     node_tags = [
-        gmsh.model.geo.addPoint(corner.c[0], corner.c[1], 0, h)
+        gmsh.model.geo.addPoint(corner.center[0], corner.center[1], 0, h)
         for corner in polygon.corners
     ]
 

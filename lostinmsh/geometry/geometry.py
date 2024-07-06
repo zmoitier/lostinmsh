@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from fractions import Fraction
-from typing import Iterable, Union
+from typing import Iterable
 
 from numpy import asarray, vstack
 
-from .border import AutoBorder, Border
+from .border import Border
 from .closest_points import min_dist
 from .polygon import Polygon
 
@@ -27,9 +27,7 @@ class Geometry:
     border: Border
 
     @classmethod
-    def from_polygon(
-        cls, polygon: Polygon, border: Union[Border, AutoBorder]
-    ) -> Geometry:
+    def from_polygon(cls, polygon: Polygon, border: Border) -> Geometry:
         """Create a geometry from a polygon.
 
         Parameters
@@ -38,7 +36,7 @@ class Geometry:
         border : Union[Border, AutoBorder]
         """
 
-        if isinstance(border, AutoBorder):
+        if isinstance(border, Border):
             return cls(
                 polygons=[polygon], border=border.get_border(polygon.get_vertices())
             )
@@ -49,9 +47,7 @@ class Geometry:
         raise ValueError("Unknown border shape.")
 
     @classmethod
-    def from_polygons(
-        cls, polygons: Iterable[Polygon], border: Union[Border, AutoBorder]
-    ) -> Geometry:
+    def from_polygons(cls, polygons: Iterable[Polygon], border: Border) -> Geometry:
         """Create a geometry from polygons.
 
         Parameters
@@ -62,7 +58,7 @@ class Geometry:
 
         points = vstack([polygon.get_vertices() for polygon in polygons])
 
-        if isinstance(border, AutoBorder):
+        if isinstance(border, Border):
             return cls(polygons=list(polygons), border=border.get_border(points))
 
         if isinstance(border, Border):

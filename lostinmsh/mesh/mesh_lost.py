@@ -128,7 +128,7 @@ def _mesh_corner(
 
     p, q = _compute_pq(corner.angle, ϕ)
 
-    C = gmsh.model.geo.addPoint(corner.c[0], corner.c[1], 0, h)
+    C = gmsh.model.geo.addPoint(corner.center[0], corner.center[1], 0, h)
     points = [
         gmsh.model.geo.addPoint(*to_global(corner, r, θ), 0, h)
         for θ in linspace(0, 2 * pi, num=p + q, endpoint=False)
@@ -175,8 +175,8 @@ def to_global(corner: Corner, r: float, θ: float) -> tuple[float, float]:
     """Transform the local corner coordinate to global coordinate."""
     cosθ, sinθ = cos(θ), sin(θ)
     return (
-        corner.c[0] + r * (cosθ * corner.v1[0] - sinθ * corner.v1[1]),
-        corner.c[1] + r * (sinθ * corner.v1[0] + cosθ * corner.v1[1]),
+        corner.center[0] + r * (cosθ * corner.e1[0] - sinθ * corner.e1[1]),
+        corner.center[1] + r * (sinθ * corner.e1[0] + cosθ * corner.e1[1]),
     )
 
 

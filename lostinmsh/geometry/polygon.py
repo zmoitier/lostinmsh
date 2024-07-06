@@ -1,10 +1,9 @@
 """Polygon class."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from fractions import Fraction
 from math import gcd, lcm
+from typing import Self, TypeAlias
 
 from numpy import arctan2, asarray, greater, lexsort, pi
 from numpy.linalg import norm
@@ -12,9 +11,12 @@ from numpy.typing import ArrayLike, NDArray
 
 from ..circular_iterable import circular_triplewise
 
+Vec2: TypeAlias = NDArray
+MatNx2: TypeAlias = NDArray
+
 
 class Angle(Fraction):
-    """Angle class."""
+    """Represent the angle `r * π` where `r` is a fraction."""
 
     @property
     def value(self) -> float:
@@ -34,60 +36,75 @@ class Angle(Fraction):
 
         return f"{str_num}π/{self.denominator}"
 
-    __repr__ = __str__
 
-    def latex(self) -> str:
-        """Get latex representation."""
-        if self.numerator == 0:
-            return r"$0$"
+def critical_interval(angle: Angle) -> tuple[Fraction, Fraction]:
+    """Return the critical interval of an angle.
 
-        if self.numerator == 1:
-            str_num = ""
-        elif self.numerator == -1:
-            str_num = "-"
-        else:
-            str_num = f"{self.numerator}"
+    Parameters
+    ----------
+    angle : Angle
 
-        return rf"$\dfrac{{{str_num}\pi}}{{{self.denominator}}}$"
+    Returns
+    -------
+    tuple[Fraction, Fraction]
+        The critical interval of the angle.
+    """
+
+    a = (2 - angle) / angle
+    b = 1 / a
+
+    if angle > 1:
+        return (-b, -a)
+
+    return (-a, -b)
+
+
+def elementary_angle(angle: Angle) -> Angle:
+    """Compute the elementary angle.
+
+    We compute p and q such that a / b = 2p / (p+q) and p, q >= 2
+    and return the angle 2/(p+q).
+
+    Parameters
+    ----------
+    angle : Angle
+
+    Returns
+    -------
+    Angle
+    """
+
+    match angle:
+        case 0:
+            return Angle(0, 1)
+        case 2:
+            return Angle(2, 1)
+        case _:
+            r = angle / (2 - angle)
+            p, q = r.numerator, r.denominator
+
+    # if p == 1:
+    #     return Angle(1, p + q)
+
+    return Angle(2, p + q)
 
 
 @dataclass(kw_only=True, slots=True)
 class Corner:
     """Corner class."""
 
-    c: NDArray
+    center: Vec2
     angle: Angle
-    v1: NDArray = field(repr=False)
-    v2: NDArray = field(repr=False)
+    e1: Vec2 = field(repr=False)
+    e2: Vec2 = field(repr=False)
 
     def critical_interval(self) -> tuple[Fraction, Fraction]:
         """Get the critical interval."""
-        a = (2 - self.angle) / self.angle
-        b = 1 / a
-
-        if self.angle > 1:
-            return (-b, -a)
-
-        return (-a, -b)
+        return critical_interval(self.angle)
 
     def elementary_angle(self) -> Angle:
-        """Compute the elementary angle of a corner.
-
-        We compute p and q such that a / b = 2p / (p+q) and p, q >= 2
-        and return the angle 2/(p+q).
-        """
-        a, b = self.angle.numerator, self.angle.denominator
-        if a % 2 == 0:
-            p = a // 2
-            q = b - p
-        else:
-            p = a
-            q = 2 * b - a
-
-        if (p == 1) or (q == 1):
-            p, q = 2 * p, 2 * q
-
-        return Angle(2, p + q)
+        """Get the elementary angle."""
+        return elementary_angle(self.angle)
 
 
 @dataclass(kw_only=True, slots=True)
@@ -101,7 +118,7 @@ class Polygon:
     @classmethod
     def from_vertices(
         cls, vertices: ArrayLike, name: str, *, max_denominator: int = 32
-    ) -> Polygon:
+    ) -> Self:
         """Create a polygon from the vertices."""
         pts = _fix_orientation(_to_array(vertices))
 
@@ -111,22 +128,22 @@ class Polygon:
         return cls(corners=corners, name=name, lengths=lengths)
 
     @property
-    def nbside(self) -> int:
+    def nb_side(self) -> int:
         """Return the angle value."""
         return len(self.lengths)
 
-    def translate(self, vector: NDArray) -> None:
+    def translate(self, vector: Vec2) -> None:
         """Translate the vertices of the polygon."""
         for corner in self.corners:
-            corner.c = corner.c + vector
+            corner.center = corner.center + vector
 
-    def get_vertices(self) -> NDArray:
+    def get_vertices(self) -> MatNx2:
         """Get vertices."""
-        return asarray([corner.c for corner in self.corners])
+        return asarray([corner.center for corner in self.corners])
 
     def get_elementary_angle(self) -> Angle:
         """Get the elementary angle."""
-        angles = {c.elementary_angle() for c in self.corners}
+        angles = {corner.elementary_angle() for corner in self.corners}
         return Angle(
             gcd(*{a.numerator for a in angles}), lcm(*{a.denominator for a in angles})
         )
@@ -194,7 +211,7 @@ def _compute_corners(vertices: NDArray, max_denominator: int) -> list[Corner]:
         AB = _normalize(B - A)
         AC = _normalize(C - A)
         angle = _compute_angle(AB, AC, max_denominator)
-        corners.append(Corner(c=A, angle=angle, v1=AB, v2=AC))
+        corners.append(Corner(center=A, angle=angle, e1=AB, e2=AC))
 
     if sum(c.angle for c in corners) != n - 2:
         raise ValueError(
@@ -209,12 +226,12 @@ def _compute_corners(vertices: NDArray, max_denominator: int) -> list[Corner]:
     return corners
 
 
-def _normalize(vector: NDArray) -> NDArray:
+def _normalize(vector: Vec2) -> Vec2:
     """Normalize vector."""
     return vector / norm(vector)
 
 
-def _compute_angle(u: NDArray, v: NDArray, max_denominator: int) -> Angle:
+def _compute_angle(u: Vec2, v: Vec2, max_denominator: int) -> Angle:
     """Compute the angle between two vector."""
     _cos = u[0] * v[0] + u[1] * v[1]
     _sin = u[0] * v[1] - u[1] * v[0]

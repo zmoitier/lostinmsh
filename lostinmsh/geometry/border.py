@@ -1,8 +1,8 @@
 """Class for boundary."""
 
 from dataclasses import dataclass
-from typing import Optional
 
+from numpy import asarray
 from numpy.linalg import norm
 from numpy.typing import NDArray
 
@@ -16,18 +16,24 @@ class Border:
     Attributes
     ----------
     center : NDArray
+        Center of the border.
+    background_name : str
+        Name of the background.
     thickness : float, optional
+        Thickness of the border.
+    thickness_name : str
+        Name of the thickness.
     """
 
-    center: NDArray
+    center: tuple[float, float]
     background_name: str = "background"
-    thickness: Optional[float] = None
+    thickness: float | None = None
     thickness_name: str = "PML"
 
     def dist_to_inner_boundary(self, points: NDArray) -> float:
         """Sign distance to the inner boundary.
 
-        It is positive is all the points are inside and it is negative
+        It is positive if all the points are inside and it is negative
         if at least one point is outside.
 
         Parameters
@@ -45,7 +51,7 @@ class Circular(Border):
     radius: float
 
     def dist_to_inner_boundary(self, points: NDArray) -> float:
-        return self.radius - norm(points - self.center, axis=1).max()
+        return self.radius - norm(points - asarray(self.center), axis=1).max()
 
 
 @dataclass(kw_only=True, slots=True)
@@ -62,72 +68,39 @@ class Rectangular(Border):
         )
 
 
-@dataclass(kw_only=True, slots=True)
-class AutoBorder:
-    """Auto border.
+def circular(
+    points: NDArray, border_factor: float, thickness_factor: float | None = None
+) -> Circular:
+    """Compute the circular boundary."""
+    center, radius = smallest_circle(points)
 
-    Attributes
-    ----------
-    border_factor : float
-    thickness_factor : float, optional
-    """
+    r0 = radius * (1 + border_factor)
+    if thickness_factor is not None:
+        thickness = radius * thickness_factor
+    else:
+        thickness = None
 
-    border_factor: float
-    thickness_factor: Optional[float] = None
-
-    def get_border(self, points: NDArray) -> Border:
-        """Auto set.
-
-        Parameters
-        ----------
-        points : NDArray
-            list of points should be an array of shape (N, 2) with N ≥ 1.
-        """
-        raise NotImplementedError()
+    return Circular(center=(center[0], center[1]), radius=r0, thickness=thickness)
 
 
-@dataclass(kw_only=True, slots=True)
-class AutoCircular(AutoBorder):
-    """Auto circular.
+def rectangular(
+    points: NDArray,
+    border_factor: float,
+    thickness_factor: float | None = None,
+) -> Rectangular:
+    """Compute the rectangular boundary."""
+    center, lengths = smallest_rectangle(points)
 
-    Attributes
-    ----------
-    border_factor : float
-    thickness_factor :float, optional
-    """
+    r = float(norm(lengths))
+    l0 = lengths + r * border_factor
+    if thickness_factor is not None:
+        thickness = r * thickness_factor
+    else:
+        thickness = None
 
-    def get_border(self, points: NDArray) -> Circular:
-        center, radius = smallest_circle(points)
-
-        r0 = radius * (1 + self.border_factor)
-        if self.thickness_factor is not None:
-            thickness = radius * self.thickness_factor
-        else:
-            thickness = None
-
-        return Circular(center=center, radius=r0, thickness=thickness)
-
-
-@dataclass(kw_only=True, slots=True)
-class AutoRectangular(AutoBorder):
-    """Auto rectangular.
-
-    Attributes
-    ----------
-    border_factor : float
-    thickness_factor : float, optional
-    """
-
-    def get_border(self, points: NDArray) -> Rectangular:
-        center, lengths = smallest_rectangle(points)
-
-        r = float(norm(lengths))
-        l0 = lengths + r * self.border_factor
-        if self.thickness_factor is not None:
-            thickness = r * self.thickness_factor
-        else:
-            thickness = None
-
-        return Rectangular(
-            center=center, half_width=l0[0], half_height=l0[1], thickness=thickness
-        )
+    return Rectangular(
+        center=(center[0], center[1]),
+        half_width=l0[0],
+        half_height=l0[1],
+        thickness=thickness,
+    )

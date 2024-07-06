@@ -9,8 +9,6 @@ __all__ = [
     "Geometry",
     "Circular",
     "Rectangular",
-    "AutoCircular",
-    "AutoRectangular",
     "GmshOptions",
     "mesh_unstructured",
     "mesh_loc_struct",
@@ -18,13 +16,6 @@ __all__ = [
     "plot_polygon",
 ]
 
-from .geometry import (
-    AutoCircular,
-    AutoRectangular,
-    Circular,
-    Geometry,
-    Polygon,
-    Rectangular,
-)
+from .geometry import Circular, Geometry, Polygon, Rectangular
 from .mesh import GmshOptions, mesh_loc_struct, mesh_unstructured
 from .plot import plot_geometry, plot_polygon

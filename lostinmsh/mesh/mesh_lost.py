@@ -8,7 +8,7 @@ import gmsh
 from numpy import cos, linspace, pi, sin, sqrt
 
 from ..circular_iterable import circular_pairwise
-from ..geometry import Angle, Corner, Geometry, Polygon
+from ..geometry import Corner, Geometry, Polygon, RationalAngle
 from .gmsh_context_manager import GmshContextManager, GmshOptions
 from .helper_type import Domain, DomainTags, SurfaceTags, update_domain_tags
 from .mesh_border import _mesh_border
@@ -122,7 +122,7 @@ def _tmesh_polygon(
 
 
 def _mesh_corner(
-    corner: Corner, r: float, ϕ: Angle, h: float, N: int, f: float
+    corner: Corner, r: float, ϕ: RationalAngle, h: float, N: int, f: float
 ) -> tuple[CornerTag, list[int], list[int]]:
     """Mesh corner."""
 
@@ -166,7 +166,7 @@ def _mesh_corner(
     )
 
 
-def _compute_pq(angle: Angle, ϕ: Angle) -> tuple[int, int]:
+def _compute_pq(angle: RationalAngle, ϕ: RationalAngle) -> tuple[int, int]:
     "Compute p and q such that a / b = 2p / (p+q) and p, q >= 2."
     return (int(angle / ϕ), int((2 - angle) / ϕ))
 

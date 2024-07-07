@@ -44,3 +44,8 @@ recursive = true
 
 [tool.mypy]
 ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--cov=lostinmsh --ff -x --no-cov-on-fail --durations=10"
+testpaths = ["tests"]

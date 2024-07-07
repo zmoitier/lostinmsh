@@ -15,7 +15,7 @@ Vec2: TypeAlias = NDArray
 MatNx2: TypeAlias = NDArray
 
 
-class Angle(Fraction):
+class RationalAngle(Fraction):
     """Represent the angle `r * π` where `r` is a fraction."""
 
     @property
@@ -37,7 +37,15 @@ class Angle(Fraction):
         return f"{str_num}π/{self.denominator}"
 
 
-def critical_interval(angle: Angle) -> tuple[Fraction, Fraction]:
+def fraction_gcd(*args: RationalAngle) -> RationalAngle:
+    """Compute the gcd of the angles."""
+    return RationalAngle(
+        gcd(*{a.numerator for a in args}),
+        lcm(*{a.denominator for a in args}),
+    )
+
+
+def critical_interval(angle: RationalAngle) -> tuple[Fraction, Fraction]:
     """Return the critical interval of an angle.
 
     Parameters
@@ -59,11 +67,11 @@ def critical_interval(angle: Angle) -> tuple[Fraction, Fraction]:
     return (-a, -b)
 
 
-def elementary_angle(angle: Angle) -> Angle:
+def elementary_angle(angle: RationalAngle) -> RationalAngle:
     """Compute the elementary angle.
 
-    We compute p and q such that a / b = 2p / (p+q) and p, q >= 2
-    and return the angle 2/(p+q).
+    For an angle `aπ/b` we compute a rational `r` such that there exists integers
+    `p, q, k` such that `p, q > 1`, `a/b = pr`, `2 - a/b = qr`, and `2 = kr`.
 
     Parameters
     ----------
@@ -74,19 +82,14 @@ def elementary_angle(angle: Angle) -> Angle:
     Angle
     """
 
-    match angle:
-        case 0:
-            return Angle(0, 1)
-        case 2:
-            return Angle(2, 1)
-        case _:
-            r = angle / (2 - angle)
-            p, q = r.numerator, r.denominator
+    a, b = angle.numerator, angle.denominator
+    c = gcd(a, 2 * b - a)
+    p, q = a // c, (2 * b - a) // c
 
-    # if p == 1:
-    #     return Angle(1, p + q)
+    if p == 1 or q == 1:
+        return RationalAngle(1, p + q)
 
-    return Angle(2, p + q)
+    return RationalAngle(2, p + q)
 
 
 @dataclass(kw_only=True, slots=True)
@@ -94,7 +97,7 @@ class Corner:
     """Corner class."""
 
     center: Vec2
-    angle: Angle
+    angle: RationalAngle
     e1: Vec2 = field(repr=False)
     e2: Vec2 = field(repr=False)
 
@@ -102,7 +105,7 @@ class Corner:
         """Get the critical interval."""
         return critical_interval(self.angle)
 
-    def elementary_angle(self) -> Angle:
+    def elementary_angle(self) -> RationalAngle:
         """Get the elementary angle."""
         return elementary_angle(self.angle)
 
@@ -141,10 +144,10 @@ class Polygon:
         """Get vertices."""
         return asarray([corner.center for corner in self.corners])
 
-    def get_elementary_angle(self) -> Angle:
+    def get_elementary_angle(self) -> RationalAngle:
         """Get the elementary angle."""
         angles = {corner.elementary_angle() for corner in self.corners}
-        return Angle(
+        return RationalAngle(
             gcd(*{a.numerator for a in angles}), lcm(*{a.denominator for a in angles})
         )
 
@@ -231,7 +234,7 @@ def _normalize(vector: Vec2) -> Vec2:
     return vector / norm(vector)
 
 
-def _compute_angle(u: Vec2, v: Vec2, max_denominator: int) -> Angle:
+def _compute_angle(u: Vec2, v: Vec2, max_denominator: int) -> RationalAngle:
     """Compute the angle between two vector."""
     _cos = u[0] * v[0] + u[1] * v[1]
     _sin = u[0] * v[1] - u[1] * v[0]
@@ -240,4 +243,4 @@ def _compute_angle(u: Vec2, v: Vec2, max_denominator: int) -> Angle:
     if angle < 0:
         angle = 2 + angle
 
-    return Angle(angle)
+    return RationalAngle(angle)

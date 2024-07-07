@@ -47,7 +47,7 @@ case "$1" in
 -t)
     python -m mypy ./lostinmsh/
     python3 -m ruff check ./lostinmsh/
-    # python3 -m pytest ./tests/
+    python3 -m pytest ./tests/
     ;;
 -u)
     python -m pip install --upgrade pip

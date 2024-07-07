@@ -3,10 +3,10 @@
 from numpy import pi
 
 from .geometry import (
-    Angle,
     Circular,
     Geometry,
     Polygon,
+    RationalAngle,
     Rectangular,
     smallest_rectangle,
 )
@@ -76,7 +76,7 @@ def _plot_polygon(polygon: Polygon, ax=None) -> None:
     ax.legend(loc=1)
 
 
-def latex(angle: Angle) -> str:
+def latex(angle: RationalAngle) -> str:
     """Get latex representation."""
 
     if angle.numerator == 0:

@@ -3,11 +3,11 @@
 from numpy import pi
 
 from .geometry import (
-    Circular,
+    CircularBorder,
     Geometry,
     Polygon,
     RationalAngle,
-    Rectangular,
+    RectangularBorder,
     smallest_rectangle,
 )
 from .mesh import C_PML, C_POLYGON, C_VACUUM, to_global
@@ -143,9 +143,9 @@ def _plot_geometry(geometry: Geometry, ax=None) -> None:
         "label": "PML",
     }
 
-    if isinstance(geometry.border, Circular):
+    if isinstance(geometry.border, CircularBorder):
         _add_circular(ax, geometry.border, options_vac, options_pml)
-    elif isinstance(geometry.border, Rectangular):
+    elif isinstance(geometry.border, RectangularBorder):
         _add_rectangular(ax, geometry.border, options_vac, options_pml)
     else:
         raise ValueError("Unknown border shape.")
@@ -155,17 +155,17 @@ def _plot_geometry(geometry: Geometry, ax=None) -> None:
     ax.legend(loc=1)
 
 
-def _add_circular(ax, circ: Circular, options_vac, options_pml):
+def _add_circular(ax, circ: CircularBorder, options_vac, options_pml):
     """Add circular border."""
     ax.add_patch(mpl_Circle(circ.center, circ.radius, **options_vac))
 
     if circ.thickness is not None:
         ax.add_patch(
-            mpl_Circle(circ.center, circ.radius * (1 + circ.thickness), **options_pml)
+            mpl_Circle(circ.center, circ.radius + circ.thickness, **options_pml)
         )
 
 
-def _add_rectangular(ax, rect: Rectangular, options_vac, options_pml):
+def _add_rectangular(ax, rect: RectangularBorder, options_vac, options_pml):
     """Add circular border."""
     x, y = rect.center
     ax.add_patch(

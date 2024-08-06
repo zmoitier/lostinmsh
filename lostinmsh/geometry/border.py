@@ -2,10 +2,11 @@
 
 from dataclasses import dataclass
 
-from numpy import asarray
+from numpy import asarray, vstack
 from numpy.linalg import norm
 from numpy.typing import NDArray
 
+from .polygon import MatNx2, Polygon
 from .smallest_boundary import smallest_circle, smallest_rectangle
 
 
@@ -45,7 +46,7 @@ class Border:
 
 
 @dataclass(kw_only=True, slots=True)
-class Circular(Border):
+class CircularBorder(Border):
     """Circular boundary."""
 
     radius: float
@@ -55,7 +56,7 @@ class Circular(Border):
 
 
 @dataclass(kw_only=True, slots=True)
-class Rectangular(Border):
+class RectangularBorder(Border):
     """Rectangular boundary."""
 
     half_width: float
@@ -68,39 +69,43 @@ class Rectangular(Border):
         )
 
 
-def circular(
-    points: NDArray, border_factor: float, thickness_factor: float | None = None
-) -> Circular:
+def circular_border(
+    polygons: list[Polygon], inner_factor: float, thickness_factor: float | None = None
+) -> CircularBorder:
     """Compute the circular boundary."""
-    center, radius = smallest_circle(points)
 
-    r0 = radius * (1 + border_factor)
+    center, radius = smallest_circle(_get_vertices(polygons))
+
+    r0 = radius * (1 + inner_factor)
     if thickness_factor is not None:
         thickness = radius * thickness_factor
     else:
         thickness = None
 
-    return Circular(center=(center[0], center[1]), radius=r0, thickness=thickness)
+    return CircularBorder(center=(center[0], center[1]), radius=r0, thickness=thickness)
 
 
-def rectangular(
-    points: NDArray,
-    border_factor: float,
-    thickness_factor: float | None = None,
-) -> Rectangular:
+def rectangular_border(
+    polygons: list[Polygon], inner_factor: float, thickness_factor: float | None = None
+) -> RectangularBorder:
     """Compute the rectangular boundary."""
-    center, lengths = smallest_rectangle(points)
+    center, lengths = smallest_rectangle(_get_vertices(polygons))
 
     r = float(norm(lengths))
-    l0 = lengths + r * border_factor
+    l0 = lengths + r * inner_factor
     if thickness_factor is not None:
         thickness = r * thickness_factor
     else:
         thickness = None
 
-    return Rectangular(
+    return RectangularBorder(
         center=(center[0], center[1]),
         half_width=l0[0],
         half_height=l0[1],
         thickness=thickness,
     )
+
+
+def _get_vertices(polygons: list[Polygon]) -> MatNx2:
+    """Get the vertices."""
+    return vstack([polygon.get_vertices() for polygon in polygons])

@@ -4,7 +4,7 @@ import gmsh
 from numpy.typing import NDArray
 
 from ..circular_iterable import circular_pairwise
-from ..geometry import Border, Circular, Rectangular
+from ..geometry import Border, CircularBorder, RectangularBorder
 from .helper_type import CurveTags, Domain, LoopTag, Tags
 
 
@@ -31,17 +31,17 @@ def _mesh_border(
         Unknown border shape
     """
 
-    if isinstance(border, Circular):
+    if isinstance(border, CircularBorder):
         return _mesh_circular(border, mesh_size)
 
-    if isinstance(border, Rectangular):
+    if isinstance(border, RectangularBorder):
         return _mesh_rectangular(border, mesh_size)
 
     raise ValueError("Unknown border shape.")
 
 
 def _mesh_circular(
-    circ: Circular, mesh_size: float
+    circ: CircularBorder, mesh_size: float
 ) -> tuple[LoopTag, dict[Domain, Tags]]:
     """Mesh circular mesh.
 
@@ -78,7 +78,7 @@ def _mesh_circular(
 
 
 def _mesh_rectangular(
-    rect: Rectangular, mesh_size: float
+    rect: RectangularBorder, mesh_size: float
 ) -> tuple[LoopTag, dict[Domain, Tags]]:
     """Mesh circular mesh.
 

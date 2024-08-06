@@ -7,8 +7,10 @@ __author__ = "Zoïs Moitier, Camille Carvalho"
 __all__ = [
     "Polygon",
     "Geometry",
-    "Circular",
-    "Rectangular",
+    "CircularBorder",
+    "circular_border",
+    "RectangularBorder",
+    "rectangular_border",
     "GmshOptions",
     "mesh_unstructured",
     "mesh_loc_struct",
@@ -16,6 +18,13 @@ __all__ = [
     "plot_polygon",
 ]
 
-from .geometry import Circular, Geometry, Polygon, Rectangular
+from .geometry import (
+    CircularBorder,
+    Geometry,
+    Polygon,
+    RectangularBorder,
+    circular_border,
+    rectangular_border,
+)
 from .mesh import GmshOptions, mesh_loc_struct, mesh_unstructured
 from .plot import plot_geometry, plot_polygon

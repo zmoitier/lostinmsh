@@ -1,7 +1,0 @@
-docformatter[tomli]
-flit
-mypy
-pylint
-pytest
-pytest-cov
-ruff

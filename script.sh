@@ -1,27 +1,26 @@
 #!/bin/sh
 
-check_venv() {
-    # python -c "import sys; print(sys.prefix != sys.base_prefix)"
-    if [ "$VIRTUAL_ENV" = "" ]; then
-        echo "Must be in a virtual environment to update."
-        exit 1
-    fi
-}
+# shellcheck source=/dev/null
+. "./.venv/bin/activate"
 
 remove_directory() {
-    find . -name "$1" -type d \
+    find . \
+        -type d \
+        -name "$1" \
         -exec echo "removing {}" \; \
         -exec rm -dr {} +
 }
 
 remove_file() {
-    find . -name "$1" -type f \
+    find . \
+        -type f \
+        -name "$1" \
         -exec echo "removing {}" \; \
         -exec rm {} +
 }
 
 case "$1" in
--c)
+-c | --clean)
     remove_directory "__pycache__"
     remove_directory ".ipynb_checkpoints"
 
@@ -32,38 +31,37 @@ case "$1" in
     remove_directory "htmlcov"
     remove_file ".coverage"
     ;;
--d)
+-d | --docs)
     make -C ./docs/ clean html
     ;;
--f)
+-f | --format)
     echo ">> run ruff format"
     python -m ruff format .
     echo ">> run docformatter"
     python -m docformatter --in-place ./
     ;;
--i)
+-i | --install)
     python -m flit install --symlink
     ;;
--t)
+-t | --test)
     python -m mypy ./lostinmsh/
     python3 -m ruff check ./lostinmsh/
     python3 -m pytest ./tests/
     ;;
--u)
-    python -m pip install --upgrade pip
-    python -m pip install --upgrade -r requirements.txt
-    python -m pip install --upgrade -r requirements-all.txt
-    python -m pip install --upgrade -r requirements-dev.txt
-    python -m pip install --upgrade -r requirements-doc.txt
+-u | --update)
+    uv self update
+    rm uv.lock
+    uv sync --extra dev
+    uv export --format requirements.txt --frozen --no-hashes --no-annotate -o requirements.txt
     ;;
 *)
     echo "The choice are:"
-    echo "  > [-c] for cleaning the temporary python file;"
-    echo "  > [-d] generate the documentation;"
-    echo "  > [-f] for formatting the code;"
-    echo "  > [-i] locally install lostinmsh;"
-    echo "  > [-t] for testing the code;"
-    echo "  > [-u] for updating the python package."
+    echo "  > [-c | --clean] for cleaning the temporary python file;"
+    echo "  > [-d | --docs] generate the documentation;"
+    echo "  > [-f | --format] for formatting the code;"
+    echo "  > [-i | --install] locally install lostinmsh;"
+    echo "  > [-t | --test] for testing the code;"
+    echo "  > [-u | --update] for updating the python package."
     exit 1
     ;;
 esac

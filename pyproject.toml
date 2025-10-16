@@ -17,8 +17,8 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Mathematics",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-requires-python = ">=3.10"
 dynamic = ["version", "description"]
+requires-python = ">=3.13"
 dependencies = ["gmsh", "numpy"]
 
 [project.urls]
@@ -26,18 +26,21 @@ Documentation = "https://zmoitier.github.io/lostinmsh/"
 Source = "https://github.com/zmoitier/lostinmsh"
 
 [project.optional-dependencies]
-dev = ["docformatter[tomli]", "flit", "mypy", "pylint", "ruff"]
-doc = [
+dev = [
+    "matplotlib",
+    "mypy",
+    "ruff",
+    "docformatter[tomli]",
+    "pytest",
+    "pytest-cov",
     "ipython",
     "nbsphinx",
     "Sphinx",
     "sphinx-autodoc-typehints",
     "sphinx_rtd_theme",
     "sphinx-copybutton",
+    "flit",
 ]
-
-[tool.ruff]
-target-version = "py312"
 
 [tool.docformatter]
 recursive = true

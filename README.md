@@ -35,7 +35,7 @@ $ flit install --symlink
 
 ## Requirements
 
-- Python ≥ 3.10
+- Python ≥ 3.13
 - [GMSH](https://gmsh.info) ≥ 4 (and `import gmsh` must work)
 - [numpy](https://github.com/numpy/numpy)
 

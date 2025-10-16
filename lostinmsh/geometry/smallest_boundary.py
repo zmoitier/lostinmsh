@@ -1,19 +1,20 @@
 """Compute the smallest enclosing circle or rectangle."""
 
-from numpy import arange, asarray, lexsort, ones, sort, sqrt, stack
-from numpy.linalg import det, norm
+from numpy import amax, amin, float64, int64, lexsort, sort, sum
+from numpy.linalg import norm
 from numpy.random import shuffle
 from numpy.typing import NDArray
 
 from ..circular_iterable import circular_triplewise
+from .helper_type import Float, MatNx2, Vec2
 
-Circle = tuple[NDArray, float]
+type Circle = tuple[Vec2, Float]
 
-EPS_ADD: float = 1e-12
-EPS_MUL: float = 1 + EPS_ADD
+EPS_ADD: Float = float64(1e-12)
+EPS_MUL: Float = float64(1) + EPS_ADD
 
 
-def convex_hull(points: NDArray) -> NDArray:
+def convex_hull(points: MatNx2) -> MatNx2:
     """Computes the convex hull of a set of distinct 2D points.
 
     Implements Andrew's monotone chain algorithm from:
@@ -24,16 +25,16 @@ def convex_hull(points: NDArray) -> NDArray:
 
     Parameters
     ----------
-    points : NDArray of shape (N, 2)
+    points : MatNx2
         set of 2D points
 
     Returns
     -------
-    convex_hull : NDArray
+    convex_hull : MatNx2
         the points defining the convex hull
     """
-    if (n := points.shape[0]) <= 1:
-        return arange(n)
+    if points.shape[0] <= 3:
+        return points
 
     idx_sort = lexsort((points[:, 1], points[:, 0]))
 
@@ -43,9 +44,9 @@ def convex_hull(points: NDArray) -> NDArray:
     return points[sort([*lower[:-1], *upper[:-1]]), :]
 
 
-def _lower_hull(pts: NDArray, idx_sort: NDArray) -> list[int]:
+def _lower_hull(pts: MatNx2, idx_sort: NDArray[int64]) -> list[int64]:
     """Lower hull."""
-    lower: list[int] = []
+    lower: list[int64] = []
     for i in idx_sort:
         while (
             len(lower) >= 2
@@ -59,17 +60,17 @@ def _lower_hull(pts: NDArray, idx_sort: NDArray) -> list[int]:
     return lower
 
 
-def _cross_product(o: NDArray, u: NDArray, v: NDArray) -> float:
+def _cross_product(o: Vec2, u: Vec2, v: Vec2) -> float64:
     """Cross product."""
     return (u[0] - o[0]) * (v[1] - o[1]) - (u[1] - o[1]) * (v[0] - o[0])
 
 
-def smallest_circle(points: NDArray) -> Circle:
+def smallest_circle(points: MatNx2) -> Circle:
     """Compute the smallest enclosing circle of a collection of vertices using
     the Welzl's algorithm, see https://doi.org/10.1007/BFb0038202."""
 
-    if points.shape[0] == 3:
-        return _smallest_circle_3_points(*points)
+    if points.shape[0] <= 3:
+        return trivial_circle(list(points))
 
     pts = convex_hull(points)
     shuffle(pts)
@@ -77,9 +78,9 @@ def smallest_circle(points: NDArray) -> Circle:
     return welzl(list(pts), [], pts.shape[0])
 
 
-def welzl(points: list[NDArray], boundary: list[NDArray], length: int) -> Circle:
+def welzl(points: list[Vec2], boundary: list[Vec2], length: int) -> Circle:
     """Welzl algorithm."""
-    if length == 0 or len(boundary) == 3:
+    if length == 0 or len(boundary) <= 3:
         return trivial_circle(boundary)
 
     P = points[length - 1]
@@ -92,75 +93,61 @@ def welzl(points: list[NDArray], boundary: list[NDArray], length: int) -> Circle
     return welzl(points, boundary.copy(), length - 1)
 
 
-def trivial_circle(R: list[NDArray]) -> Circle:
+def trivial_circle(pts: list[Vec2]) -> Circle:
     """Trivial circle."""
-    match len(R):
-        case 0:
-            return (asarray([0, 0]), 0)
-
+    match len(pts):
         case 1:
-            return (R[0], 0)
+            return (pts[0], float64(0))
 
         case 2:
-            return _smallest_circle_2_points(R[0], R[1])
+            return _smallest_circle_2_points(pts[0], pts[1])
 
         case 3:
-            return _smallest_circle_3_points(R[0], R[1], R[2])
+            return _smallest_circle_3_points(pts[0], pts[1], pts[2])
 
         case _:
-            raise ValueError("The length of R must be ≤ 3.")
+            raise ValueError("Must have 1 ≤ len(pts) ≤ 3.")
 
 
-def _smallest_circle_2_points(A: NDArray, B: NDArray) -> Circle:
+def _smallest_circle_2_points(a: Vec2, b: Vec2) -> Circle:
     """Compute the smallest enclosing circle of two points."""
-    center = asarray([(A[0] + B[0]) / 2, (A[1] + B[1]) / 2])
-    radius = sqrt((A[0] - B[0]) ** 2 + (A[1] - B[1]) ** 2) / 2
+    center = (a + b) / 2
+    radius = norm(a - b) / 2
     return (center, radius)
 
 
-def _smallest_circle_3_points(A: NDArray, B: NDArray, C: NDArray) -> Circle:
+def _smallest_circle_3_points(a: Vec2, b: Vec2, c: Vec2) -> Circle:
     """Compute the smallest enclosing circle of three points."""
-    for P, Q, R in circular_triplewise((A, B, C)):
-        center, radius = _smallest_circle_2_points(P, Q)
-        if _is_inside((center, radius), R):
-            return (center, radius)
+    for p, q, r in circular_triplewise((a, b, c)):
+        circle = _smallest_circle_2_points(p, q)
+        if _is_inside(circle, r):
+            return circle
 
-    return _circumcircle_triangle(A, B, C)
+    return _circumcircle_triangle(a, b, c)
 
 
-def _is_inside(circle: Circle, A: NDArray) -> bool:
+def _is_inside(circle: Circle, a: Vec2) -> bool:
     """Check if the point A is inside the circle."""
-    C, r = circle
-    return (A[0] - C[0]) ** 2 + (A[1] - C[1]) ** 2 < r**2 * EPS_MUL
+    c, r = circle
+    return (a[0] - c[0]) ** 2 + (a[1] - c[1]) ** 2 < r**2 * EPS_MUL
 
 
-def _circumcircle_triangle(A: NDArray, B: NDArray, C: NDArray) -> Circle:
+def _circumcircle_triangle(a: Vec2, b: Vec2, c: Vec2) -> Circle:
     """Compute the circumcircle of a three points, see
-    https://en.wikipedia.org/wiki/Circumscribed_circle."""
-    points = asarray([A, B, C])
+    https://en.wikipedia.org/wiki/Circumcircle#Circumcenter_vector."""
+    ab_n2 = sum((b - a) ** 2)
+    ac_n2 = sum((c - a) ** 2)
+    bc_n2 = sum((c - b) ** 2)
 
-    norm2 = norm(points, axis=1) ** 2
+    a_c = bc_n2 * (ac_n2 + ab_n2 - bc_n2)
+    b_c = ac_n2 * (bc_n2 + ab_n2 - ac_n2)
+    c_c = ab_n2 * (bc_n2 + ac_n2 - ab_n2)
 
-    a = _det_col(points[:, 0], points[:, 1], ones(3))
-    b = _det_col(points[:, 0], points[:, 1], norm2)
-
-    cx = _det_col(norm2, points[:, 1], ones(3)) / (2 * a)
-    cy = _det_col(points[:, 0], norm2, ones(3)) / (2 * a)
-
-    return (asarray([cx, cy]), sqrt(b / a + cx * cx + cy * cy))
-
-
-def _det_col(A: NDArray, B: NDArray, C: NDArray) -> float:
-    """Compute the det of the matrix define by the column [A, B, C]."""
-    return det(stack((A, B, C), axis=1))
+    center = (a_c * a + b_c * b + c_c * c) / (a_c + b_c + c_c)
+    radius = norm(center - a)
+    return (center, radius)
 
 
-def smallest_rectangle(points: NDArray) -> tuple[NDArray, NDArray]:
+def smallest_rectangle(points: MatNx2) -> tuple[Vec2, Vec2]:
     """Find the smallest rectangle align with the coordinate axis."""
-    xmin, xmax = points[:, 0].min(), points[:, 0].max()
-    ymin, ymax = points[:, 1].min(), points[:, 1].max()
-
-    center = asarray(((xmin + xmax) / 2, (ymin + ymax) / 2))
-    lengths = asarray((xmax, ymax)) - center
-
-    return (center, lengths)
+    return (amin(points, axis=0), amax(points, axis=0))

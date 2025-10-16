@@ -17,7 +17,7 @@ class RationalAngle(Fraction):
     """Represent the angle `r * π` where `r` is a fraction."""
 
     @property
-    def value(self) -> float:
+    def value(self: Self) -> float:
         """Return the angle value."""
         return float(self) * pi
 

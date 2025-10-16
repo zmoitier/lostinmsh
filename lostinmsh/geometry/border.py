@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 
-from numpy import amax, amin, array, inf, vstack
+from numpy import amax, amin, vstack
 from numpy.linalg import norm
-from numpy.typing import NDArray
 
 from .helper_type import MatNx2, Vec2
 from .polygon import Polygon
@@ -27,7 +26,7 @@ class Border:
     thickness: float | None = None
     thickness_name: str = "PML"
 
-    def dist_to_inner_boundary(self, points: NDArray) -> float:
+    def dist_to_inner_boundary(self, points: MatNx2) -> float:
         """Sign distance to the inner boundary.
 
         It is positive if all the points are inside and it is negative

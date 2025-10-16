@@ -1,12 +1,11 @@
-"""Class for boundary."""
-
 from dataclasses import dataclass
 
-from numpy import asarray, vstack
+from numpy import amax, amin, array, inf, vstack
 from numpy.linalg import norm
 from numpy.typing import NDArray
 
-from .polygon import MatNx2, Polygon
+from .helper_type import MatNx2, Vec2
+from .polygon import Polygon
 from .smallest_boundary import smallest_circle, smallest_rectangle
 
 
@@ -16,8 +15,6 @@ class Border:
 
     Attributes
     ----------
-    center : NDArray
-        Center of the border.
     background_name : str
         Name of the background.
     thickness : float, optional
@@ -26,7 +23,6 @@ class Border:
         Name of the thickness.
     """
 
-    center: tuple[float, float]
     background_name: str = "background"
     thickness: float | None = None
     thickness_name: str = "PML"
@@ -49,24 +45,11 @@ class Border:
 class CircularBorder(Border):
     """Circular boundary."""
 
+    center: Vec2
     radius: float
 
-    def dist_to_inner_boundary(self, points: NDArray) -> float:
-        return self.radius - norm(points - asarray(self.center), axis=1).max()
-
-
-@dataclass(kw_only=True, slots=True)
-class RectangularBorder(Border):
-    """Rectangular boundary."""
-
-    half_width: float
-    half_height: float
-
-    def dist_to_inner_boundary(self, points: NDArray) -> float:
-        pts = points - self.center
-        return min(
-            self.half_width - pts[:, 0].max(), self.half_height - pts[:, 1].max()
-        )
+    def dist_to_inner_boundary(self, points: MatNx2) -> float:
+        return self.radius - norm(points - self.center, axis=1).max()
 
 
 def circular_border(
@@ -82,7 +65,20 @@ def circular_border(
     else:
         thickness = None
 
-    return CircularBorder(center=(center[0], center[1]), radius=r0, thickness=thickness)
+    return CircularBorder(center=center, radius=r0, thickness=thickness)
+
+
+@dataclass(kw_only=True, slots=True)
+class RectangularBorder(Border):
+    """Rectangular boundary."""
+
+    corner_low: Vec2
+    corner_high: Vec2
+
+    def dist_to_inner_boundary(self, points: MatNx2) -> float:
+        _max = amax(points, axis=0)
+        _min = amin(points, axis=0)
+        return min(amin(_min - self.corner_low), amin(self.corner_high - _max))
 
 
 def rectangular_border(
@@ -99,7 +95,7 @@ def rectangular_border(
         thickness = None
 
     return RectangularBorder(
-        center=(center[0], center[1]),
+        center=center,
         half_width=l0[0],
         half_height=l0[1],
         thickness=thickness,

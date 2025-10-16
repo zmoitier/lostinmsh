@@ -3,16 +3,14 @@
 from dataclasses import dataclass, field
 from fractions import Fraction
 from math import gcd, lcm
-from typing import Self, TypeAlias
+from typing import Self
 
 from numpy import arctan2, asarray, greater, lexsort, pi
 from numpy.linalg import norm
 from numpy.typing import ArrayLike, NDArray
 
 from ..circular_iterable import circular_triplewise
-
-Vec2: TypeAlias = NDArray
-MatNx2: TypeAlias = NDArray
+from .helper_type import MatNx2, Vec2
 
 
 class RationalAngle(Fraction):

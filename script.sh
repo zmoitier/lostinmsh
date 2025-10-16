@@ -36,6 +36,7 @@ case "$1" in
     ;;
 -f | --format)
     echo ">> run ruff format"
+    python -m ruff check --select I --fix .
     python -m ruff format .
     echo ">> run docformatter"
     python -m docformatter --in-place ./

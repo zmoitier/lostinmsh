@@ -9,8 +9,8 @@ import lostinmsh as lsm
 def main() -> None:
     """Main."""
 
-    a = np.random.rand(10, 2)
-    print(np.amax(a, axis=1))
+    a = np.array([lsm.geometry.RationalAngle(i, 10) for i in range(11)])
+    print(a[1:] - a[:-1])
 
     # t = np.linspace(0, 2 * np.pi, num=4, endpoint=False)
     # vertices = np.array([[x, y] for x, y in zip(np.cos(t), np.sin(t))])

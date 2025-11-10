@@ -5,13 +5,13 @@ __version__ = "0.1.0"
 __author__ = "Zoïs Moitier, Camille Carvalho"
 
 __all__: list[str] = [
-    "geometry"
-    # "Polygon",
+    "geometry",
+    "Polygon",
+    "CircularBoundary",
+    "circular_boundary",
+    "RectangularBoundary",
+    "rectangular_boundary",
     # "Geometry",
-    # "CircularBorder",
-    # "circular_border",
-    # "RectangularBorder",
-    # "rectangular_border",
     # "GmshOptions",
     # "mesh_unstructured",
     # "mesh_loc_struct",
@@ -20,3 +20,10 @@ __all__: list[str] = [
 ]
 
 from . import geometry
+from .geometry import (
+    Polygon,
+    CircularBoundary,
+    RectangularBoundary,
+    circular_boundary,
+    rectangular_boundary,
+)

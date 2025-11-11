@@ -1,67 +1,15 @@
-from numpy import amax, amin, float64, lexsort, sort, sum
+from numpy import amax, amin, array, float64, inf, sum
 from numpy.linalg import norm
 from numpy.random import shuffle
-from numpy.typing import NDArray
+from scipy.spatial import ConvexHull
 
 from ..circular_iterable import circular_triplewise
-from .helper_type import Float, Int, MatNx2, Vec2
+from .helper_type import Float, MatNx2, Vec2
 
 type Circle = tuple[Vec2, Float]
 
 EPS_ADD: Float = float64(1e-12)
 EPS_MUL: Float = float64(1) + EPS_ADD
-
-
-def convex_hull(points: MatNx2) -> MatNx2:
-    """Computes the convex hull of a set of distinct 2D points.
-
-    Implements Andrew's monotone chain algorithm from:
-    A. M. Andrew, Another efficient algorithm for convex hulls in two dimensions
-    https://doi.org/10.1016/0020-0190(79)90072-3
-    and is heavily inspire by:
-    https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Monotone_chain
-
-    Parameters
-    ----------
-    points : MatNx2
-
-    Returns
-    -------
-    convex_hull : MatNx2
-    """
-
-    if points.shape[0] <= 3:
-        return points
-
-    idx_sort = lexsort((points[:, 1], points[:, 0]))
-
-    lower = _lower_hull(points, idx_sort)
-    upper = _lower_hull(points, idx_sort[::-1])
-
-    return points[sort([*lower[:-1], *upper[:-1]]), :]
-
-
-def _lower_hull(pts: MatNx2, idx_sort: NDArray[Int]) -> list[Int]:
-    """Lower hull."""
-
-    lower: list[Int] = []
-    for i in idx_sort:
-        while (
-            len(lower) >= 2
-            and _cross_product(pts[lower[-2], :], pts[lower[-1], :], pts[i, :])
-            <= EPS_ADD
-        ):
-            lower.pop()
-
-        lower.append(i)
-
-    return lower
-
-
-def _cross_product(o: Vec2, u: Vec2, v: Vec2) -> Float:
-    """Cross product."""
-
-    return (u[0] - o[0]) * (v[1] - o[1]) - (u[1] - o[1]) * (v[0] - o[0])
 
 
 def smallest_circle(points: MatNx2) -> Circle:
@@ -80,16 +28,17 @@ def smallest_circle(points: MatNx2) -> Circle:
     if points.shape[0] <= 3:
         return trivial_circle(list(points))
 
-    pts = convex_hull(points)
+    ch = ConvexHull(points)
+    pts = ch.points[ch.vertices]
     shuffle(pts)
 
-    return welzl(list(pts), [], pts.shape[0])
+    return welzl(pts, [], pts.shape[0])
 
 
-def welzl(points: list[Vec2], boundary: list[Vec2], length: int) -> Circle:
+def welzl(points: MatNx2, boundary: list[Vec2], length: int) -> Circle:
     """Welzl algorithm."""
 
-    if length == 0 or len(boundary) <= 3:
+    if length == 0 or len(boundary) == 3:
         return trivial_circle(boundary)
 
     P = points[length - 1]
@@ -106,6 +55,9 @@ def trivial_circle(pts: list[Vec2]) -> Circle:
     """Trivial circle."""
 
     match len(pts):
+        case 0:
+            return (array([inf, inf], dtype=float64), float64(0))
+
         case 1:
             return (pts[0], float64(0))
 
@@ -116,7 +68,7 @@ def trivial_circle(pts: list[Vec2]) -> Circle:
             return _smallest_circle_3_points(pts[0], pts[1], pts[2])
 
         case _:
-            raise ValueError("Must have 1 ≤ len(pts) ≤ 3.")
+            raise ValueError("Must have 0 ≤ len(pts) ≤ 3.")
 
 
 def _smallest_circle_2_points(a: Vec2, b: Vec2) -> Circle:

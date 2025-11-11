@@ -155,17 +155,17 @@ def rectangular_boundary(
     """
 
     corner_low, corner_high = smallest_rectangle(_get_vertices(polygons))
-
-    r = float(norm(corner_high - corner_low, ord=inf) * (1 + inner_factor) / 2)
+    r = float(norm(corner_high - corner_low, ord=inf) * inner_factor / 2)
 
     if thickness_factor is not None:
-        thickness = float(r * thickness_factor)
+        thickness = r * thickness_factor
     else:
         thickness = None
 
+    d = r * inner_factor
     return RectangularBoundary(
-        corner_low=corner_low - r,
-        corner_high=corner_high + r,
+        corner_low=corner_low - d,
+        corner_high=corner_high + d,
         background_name=background_name,
         thickness=thickness,
         thickness_name=thickness_name,

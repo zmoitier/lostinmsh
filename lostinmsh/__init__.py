@@ -11,19 +11,21 @@ __all__: list[str] = [
     "circular_boundary",
     "RectangularBoundary",
     "rectangular_boundary",
-    # "Geometry",
+    "Geometry",
+    "plot_polygon",
+    "plot_geometry",
     # "GmshOptions",
     # "mesh_unstructured",
     # "mesh_loc_struct",
-    # "plot_geometry",
-    # "plot_polygon",
 ]
 
 from . import geometry
 from .geometry import (
-    Polygon,
     CircularBoundary,
+    Geometry,
+    Polygon,
     RectangularBoundary,
     circular_boundary,
     rectangular_boundary,
 )
+from .plot import plot_geometry, plot_polygon  # type: ignore

@@ -19,7 +19,7 @@ classifiers = [
 ]
 dynamic = ["version", "description"]
 requires-python = ">=3.13"
-dependencies = ["gmsh", "numpy"]
+dependencies = ["gmsh", "numpy", "scipy"]
 
 [project.urls]
 Documentation = "https://zmoitier.github.io/lostinmsh/"
@@ -28,6 +28,7 @@ Source = "https://github.com/zmoitier/lostinmsh"
 [project.optional-dependencies]
 dev = [
     "matplotlib",
+    "scipy-stubs",
     "mypy",
     "ruff",
     "docformatter[tomli]",

@@ -10,6 +10,7 @@ __all__: list[str] = [
     "circular_boundary",
     "RectangularBoundary",
     "rectangular_boundary",
+    "Geometry",
 ]
 
 from .boundary import (
@@ -19,5 +20,6 @@ from .boundary import (
     circular_boundary,
     rectangular_boundary,
 )
+from .geometry import Geometry
 from .polygon import Polygon, RationalAngle
 from .smallest_boundary import smallest_circle, smallest_rectangle

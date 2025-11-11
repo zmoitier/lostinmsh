@@ -149,7 +149,7 @@ class Polygon:
 def _validate_vertices(vertices: ArrayLike) -> MatNx2:
     """Validate the shape of the vertices array."""
 
-    pts = asarray(vertices)
+    pts = asarray(vertices, dtype=float)
 
     if len(pts.shape) != 2:
         raise ValueError("Vertices must be a two dimensional array.")

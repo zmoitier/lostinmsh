@@ -119,6 +119,7 @@ def _plot_geometry(geometry: Geometry, ax=None) -> None:
                 polygon.vertices,
                 linewidth=2,
                 color=f"C{i}",
+                alpha=0.75,
                 zorder=4,
                 label=polygon.name,
             )
@@ -129,6 +130,7 @@ def _plot_geometry(geometry: Geometry, ax=None) -> None:
         "linestyle": "--",
         "edgecolor": "k",
         "facecolor": f"C{k + 1}",
+        "alpha": 0.75,
         "zorder": 3,
         "label": geometry.boundary.background_name,
     }
@@ -137,6 +139,7 @@ def _plot_geometry(geometry: Geometry, ax=None) -> None:
         "linestyle": "-.",
         "edgecolor": "k",
         "facecolor": f"C{k + 2}",
+        "alpha": 0.75,
         "zorder": 2,
         "label": geometry.boundary.thickness_name,
     }

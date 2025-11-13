@@ -4,7 +4,7 @@ from numpy.random import shuffle
 from scipy.spatial import ConvexHull
 
 from ..circular_iterable import circular_triplewise
-from .helper_type import Float, MatNx2, Vec2
+from ..type_alias import Float, MatNx2, Vec2
 
 type Circle = tuple[Vec2, Float]
 

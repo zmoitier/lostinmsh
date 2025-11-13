@@ -7,6 +7,7 @@ from typing import Optional
 import gmsh
 from numpy import cos, linspace, pi, sin, sqrt
 
+# from scipy.spatial.distance import pdist
 from ..circular_iterable import circular_pairwise
 from ..geometry import Corner, Geometry, Polygon, RationalAngle
 from .gmsh_context_manager import GmshContextManager, GmshOptions

@@ -25,27 +25,23 @@ def main() -> None:
         [-3 / 2, -np.sqrt(3) / 2],
     ]
 
-    polygon = lsm.Polygon.from_vertices(vertices, "Cavity")
-    boundary = lsm.rectangular_boundary([polygon], 0.25, 0.125)
+    polygon = lsm.Polygon.from_vertices(vertices, "cavity")
+    boundary = lsm.rectangular_boundary([polygon], 0.25, 0.25)
     geometry = lsm.Geometry.from_polygons([polygon], boundary)
 
-    print(geometry.critical_interval())
+    # lsm.plot_geometry(geometry)
+    # plt.show()
 
-    lsm.plot_geometry(geometry)
-
-    plt.show()
-
-    # # lsm.mesh_unstructured(
-    # #     geometry,
-    # #     0.1,
-    # #     lsm.GmshOptions(
-    # #         element_order=2,
-    # #         gui=False,
-    # #         terminal=True,
-    # #         filename="mesh.msh",
-    # #         additional_options={"Mesh.MeshSizeMin": 0.1, "Mesh.MeshSizeMax": 0.1},
-    # #     ),
-    # # )
+    lsm.mesh_unstructured(
+        geometry,
+        0.1,
+        lsm.GmshOptions(
+            show_gui=True,
+            filename="mesh.msh",
+            additional_options={"Mesh.MeshSizeMin": 0.1, "Mesh.MeshSizeMax": 0.1},
+            renumber_nodes=None,
+        ),
+    )
 
     # lsm.mesh_loc_struct(
     #     geometry,

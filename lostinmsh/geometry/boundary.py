@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from numpy import amax, amin, inf, vstack
 from numpy.linalg import norm
 
-from .helper_type import MatNx2, Vec2
+from ..type_alias import MatNx2, Vec2
 from .polygon import Polygon
 from .smallest_boundary import smallest_circle, smallest_rectangle
 
@@ -37,6 +37,7 @@ class ExteriorBoundary:
         points : NDArray
             list of points should be an array of shape (N, 2) with N ≥ 1.
         """
+
         raise NotImplementedError()
 
 

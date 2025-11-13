@@ -10,7 +10,7 @@ from numpy.linalg import norm
 from numpy.typing import ArrayLike
 
 from ..circular_iterable import circular_triplewise
-from .helper_type import MatNx2, Vec2, VecN
+from ..type_alias import MatNx2, Vec2, VecN
 
 
 class RationalAngle(Fraction):

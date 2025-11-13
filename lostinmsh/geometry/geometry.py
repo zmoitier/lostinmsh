@@ -1,12 +1,9 @@
-"""Geometry class."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
 from fractions import Fraction
 from typing import Iterable, Self
 
-# from scipy.spatial.distance import pdist
 from .boundary import ExteriorBoundary
 from .polygon import Polygon
 
@@ -52,9 +49,5 @@ class Geometry:
 
     def critical_interval(self: Self) -> dict[str, tuple[Fraction, Fraction]]:
         """Get the critical interval."""
-        return {polygon.name: polygon.critical_interval() for polygon in self.polygons}
 
-    # def max_corner_radius(self) -> float:
-    #     """Maximum corner radius."""
-    #     points = vstack([polygon.get_vertices() for polygon in self.polygons])
-    #     return min(min_dist(points) / 2, self.border.dist_to_inner_boundary(points))
+        return {polygon.name: polygon.critical_interval() for polygon in self.polygons}

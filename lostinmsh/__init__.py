@@ -14,12 +14,13 @@ __all__: list[str] = [
     "Geometry",
     "plot_polygon",
     "plot_geometry",
-    # "GmshOptions",
-    # "mesh_unstructured",
+    "mesh",
+    "GmshOptions",
+    "mesh_unstructured",
     # "mesh_loc_struct",
 ]
 
-from . import geometry
+from . import geometry, mesh
 from .geometry import (
     CircularBoundary,
     Geometry,
@@ -28,4 +29,5 @@ from .geometry import (
     circular_boundary,
     rectangular_boundary,
 )
+from .mesh import GmshOptions, mesh_unstructured
 from .plot import plot_geometry, plot_polygon  # type: ignore

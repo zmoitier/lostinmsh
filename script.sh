@@ -30,6 +30,8 @@ case "$1" in
     remove_directory ".pytest_cache"
     remove_directory "htmlcov"
     remove_file ".coverage"
+
+    remove_file "*.msh"
     ;;
 -d | --docs)
     make -C ./docs/ clean html

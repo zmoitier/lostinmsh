@@ -1,12 +1,8 @@
 # type: ignore
 
-from .geometry import (
-    CircularBoundary,
-    Geometry,
-    Polygon,
-    RationalAngle,
-    RectangularBoundary,
-)
+from numpy import pi
+
+from .geometry import CircularBoundary, Geometry, Polygon, RectangularBoundary
 
 ENABLE_PLOT = False
 try:
@@ -21,25 +17,25 @@ except ImportError:
     pass
 
 
-def plot_polygon(polygon: Polygon, *, ax=None, show_angle=True) -> None:
+def plot_polygon(polygon: Polygon, *, ax=None, show_pq=False) -> None:
     """Plot polygon.
 
     Parameters
     ----------
     polygon : Polygon
     ax : plt.Axes, optional, default=None
-    show_angle : bool, optional, default=True
+    show_pq : bool, optional, default=False
     """
 
     if ENABLE_PLOT:
-        _plot_polygon(polygon, ax, show_angle)
+        _plot_polygon(polygon, ax, show_pq)
     else:
         raise ModuleNotFoundError(
             "You need to install matplotlib to use this function."
         )
 
 
-def _plot_polygon(polygon: Polygon, ax, show_angle) -> None:
+def _plot_polygon(polygon: Polygon, ax, show_pq) -> None:
     """Plot polygon."""
 
     if ax is None:
@@ -56,37 +52,23 @@ def _plot_polygon(polygon: Polygon, ax, show_angle) -> None:
         )
     )
 
-    if show_angle:
-        for v, a in zip(polygon.vertices, polygon.angles):
+    if show_pq:
+        for v, c in zip(polygon.vertices, polygon.corners):
             ax.text(
                 v[0],
                 v[1],
-                latex(a),
+                f"{c.angle / pi:.2f}π\n({c.p}, {c.q})",
                 color="C1",
                 va="center",
                 ha="center",
-                bbox=dict(boxstyle="round", edgecolor="black", facecolor="white"),
+                bbox=dict(
+                    boxstyle="round", edgecolor="black", facecolor="white", alpha=0.75
+                ),
             )
 
     ax.axis("equal")
     ax.grid(zorder=1)
     ax.legend(loc=1)
-
-
-def latex(angle: RationalAngle) -> str:
-    """Get latex representation."""
-
-    if angle.numerator == 0:
-        return r"$0$"
-
-    if angle.numerator == 1:
-        str_num = ""
-    elif angle.numerator == -1:
-        str_num = "-"
-    else:
-        str_num = f"{angle.numerator}"
-
-    return rf"$\dfrac{{{str_num}\pi}}{{{angle.denominator}}}$"
 
 
 def plot_geometry(geometry: Geometry, ax=None) -> None:

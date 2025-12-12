@@ -1,7 +1,7 @@
 """Geometry module."""
 
 __all__: list[str] = [
-    "RationalAngle",
+    "Corner",
     "Polygon",
     "smallest_circle",
     "smallest_rectangle",
@@ -21,5 +21,5 @@ from .boundary import (
     rectangular_boundary,
 )
 from .geometry import Geometry
-from .polygon import Polygon, RationalAngle
+from .polygon import Corner, Polygon
 from .smallest_boundary import smallest_circle, smallest_rectangle

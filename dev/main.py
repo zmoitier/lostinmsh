@@ -9,6 +9,8 @@ import lostinmsh as lsm
 def main() -> None:
     """Main."""
 
+    # vertices: list[list[float]] = [[0, 0], [1, 0], [0, 1]]
+
     vertices: list[list[float]] = [
         [0, 0],
         [0, np.sqrt(3)],

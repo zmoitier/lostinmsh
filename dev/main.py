@@ -28,7 +28,8 @@ def main() -> None:
     ]
 
     polygon = lsm.Polygon.from_vertices(vertices, "cavity")
-    boundary = lsm.rectangular_boundary([polygon], 0.25, 0.25)
+    boundary = lsm.circular_boundary([polygon], 0.25, 0.25)
+    # boundary = lsm.rectangular_boundary([polygon], 0.25, 0.25)
     geometry = lsm.Geometry.from_polygons([polygon], boundary)
 
     # lsm.plot_geometry(geometry)

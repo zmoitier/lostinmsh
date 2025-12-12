@@ -17,8 +17,8 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Mathematics",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
+requires-python = ">=3.14"
 dynamic = ["version", "description"]
-requires-python = ">=3.13"
 dependencies = ["gmsh", "numpy", "scipy"]
 
 [project.urls]

@@ -104,7 +104,7 @@ class GmshOptions:
         return None
 
     def __str__(self) -> str:
-        data = [
+        data: list[tuple[str, Any]] = [
             ("filename", self.filename),
             ("Launch GMSH GUI", self.show_gui),
             ("Renumber nodes", self.renumber_nodes),

@@ -9,7 +9,7 @@ from numpy.linalg import norm
 from numpy.typing import ArrayLike
 
 from ..circular_iterable import circular_triplewise
-from ..type_alias import MatNx2, Vec2, VecN
+from ..type_alias import Mat2x2, MatNx2, Vec2, VecN
 
 
 @dataclass(slots=True)

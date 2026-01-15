@@ -49,8 +49,3 @@ class Geometry:
     # def critical_interval(self: Self) -> dict[str, tuple[Fraction, Fraction]]:
     #     """Get the critical interval."""
     #     return {polygon.name: polygon.critical_interval() for polygon in self.polygons}
-
-    # def max_corner_radius(self) -> float:
-    #     """Maximum corner radius."""
-    #     points = vstack([polygon.get_vertices() for polygon in self.polygons])
-    #     return min(min_dist(points) / 2, self.border.dist_to_inner_boundary(points))

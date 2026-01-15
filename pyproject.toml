@@ -27,6 +27,7 @@ Source = "https://github.com/zmoitier/lostinmsh"
 
 [project.optional-dependencies]
 dev = [
+    "meshio",
     "matplotlib",
     "scipy-stubs",
     "mypy",

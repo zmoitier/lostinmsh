@@ -1,7 +1,5 @@
 """GMSH as a context manager."""
 
-from collections import defaultdict
-from contextlib import AbstractContextManager
 from dataclasses import dataclass, field
 from pathlib import PurePath
 from types import TracebackType
@@ -9,7 +7,7 @@ from typing import Any, Self
 
 import gmsh
 
-from ..type_alias import DimName
+from ..type_alias import DimName, Tag
 
 
 @dataclass(slots=True)
@@ -120,20 +118,26 @@ class GmshOptions:
 
 
 @dataclass(frozen=True, slots=True)
-class GmshContextManager(AbstractContextManager):
+class GmshContextManager:
     """Context manager for GMSH."""
 
     options: GmshOptions
-    domain_tags: dict[DimName, list[int]] = field(
-        default_factory=lambda: defaultdict(list)
-    )
+    domain_tags: dict[DimName, list[Tag]] = field(default_factory=dict)
+
+    def update_domain_tags(self: Self, domain_tags: dict[DimName, list[Tag]]) -> None:
+        for key, val in domain_tags.items():
+            if key in self.domain_tags:
+                self.domain_tags[key].extend(val)
+            else:
+                self.domain_tags[key] = val
+        return None
 
     def __enter__(self: Self) -> Self:
         # Initialize the Gmsh API.
         gmsh.initialize()
 
         for key, val in self.options.key_val.items():
-            gmsh.option.setNumber(key, val)
+            gmsh.option.set_number(key, val)
 
         # Add a new model and set it as the current model.
         if self.options.filename is None:
@@ -153,7 +157,7 @@ class GmshContextManager(AbstractContextManager):
         gmsh.model.geo.synchronize()
 
         for (dim, name), tags in self.domain_tags.items():
-            gmsh.model.addPhysicalGroup(dim=dim, tags=tags, name=name)
+            gmsh.model.add_physical_group(dim=dim, tags=tags, name=name)
 
         # Generate a mesh of the current model, up to dimension dim 2.
         gmsh.model.mesh.generate(2)

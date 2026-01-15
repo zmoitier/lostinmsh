@@ -82,3 +82,6 @@ uv.lock
 
 ### VisualStudioCode ###
 .vscode/*
+
+### GMSH ###
+*.msh

@@ -2,5 +2,5 @@
 #    uv export --format requirements.txt --frozen --no-hashes --no-annotate -o requirements.txt
 -e .
 gmsh==4.15.0
-numpy==2.3.5
-scipy==1.16.3
+numpy==2.4.1
+scipy==1.17.0

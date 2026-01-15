@@ -38,10 +38,10 @@ def mesh_unstructured(
             poly_loop_tag, dom_tags = mesh_unst_poly(polygon, mesh_size)
             poly_loop_tags.append(poly_loop_tag)
 
-            ctx.domain_tags.update(dom_tags)
+            ctx.update_domain_tags(dom_tags)
 
         dom_tags = mesh_exterior(geometry.boundary, mesh_size, poly_loop_tags)
-        ctx.domain_tags.update(dom_tags)
+        ctx.update_domain_tags(dom_tags)
 
     return gmsh_options.filename
 
@@ -58,16 +58,18 @@ def mesh_unst_poly(polygon: Polygon, h: float) -> tuple[Tag, dict[DimName, list[
 
     Returns
     -------
-    tuple[Domain, LoopTag, SurfaceTag]
+    tuple[Tag, dict[DimName, list[Tag]]]
         return the loop tag and the domain and its associated tags
     """
 
-    node_tags = [
+    point_tags: list[Tag] = [
         gmsh.model.geo.add_point(vertex[0], vertex[1], 0, h)
         for vertex in polygon.vertices
     ]
 
-    line_tags = [gmsh.model.geo.add_line(A, B) for A, B in circular_pairwise(node_tags)]
+    line_tags = [
+        gmsh.model.geo.add_line(a, b) for a, b in circular_pairwise(point_tags)
+    ]
     loop_tag = gmsh.model.geo.add_curve_loop(line_tags)
     surface_tag = gmsh.model.geo.add_plane_surface([loop_tag])
 

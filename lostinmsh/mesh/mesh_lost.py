@@ -9,12 +9,11 @@ from numpy import concatenate, cos, linspace, pi, sin, vstack
 from scipy.spatial import ConvexHull
 from scipy.spatial.distance import pdist
 
-from .mesh_boundary import mesh_exterior
-
 from ..circular_iterable import circular_pairwise
 from ..geometry import Corner, Geometry, Polygon
 from ..type_alias import Tag, Vec2
 from .context_manager import GmshContextManager, GmshOptions
+from .mesh_boundary import mesh_exterior
 
 
 @dataclass(frozen=True, slots=True)
@@ -218,11 +217,11 @@ def _mesh_lost_edge(
     st_inn = gmsh.model.geo.add_plane_surface(
         [gmsh.model.geo.add_curve_loop([-lt0[0], lt_edge[1], -ltp[0], -lt_edge[0]])]
     )
-    gmsh.model.geo.mesh.set_transfinite_surface(st_inn)
+    gmsh.model.geo.mesh.set_transfinite_surface(st_inn, arrangement="Left")
 
     st_out = gmsh.model.geo.add_plane_surface(
         [gmsh.model.geo.add_curve_loop([lt0[1], lt_edge[1], ltp[1], -lt_edge[2]])]
     )
-    gmsh.model.geo.mesh.set_transfinite_surface(st_out)
+    gmsh.model.geo.mesh.set_transfinite_surface(st_out, arrangement="Right")
 
     return (-lt_edge[0], lt_edge[2], st_inn, st_out, lt_edge[1])

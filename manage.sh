@@ -1,7 +1,8 @@
 #!/bin/sh
 
 # shellcheck source=/dev/null
-. "./.venv/bin/activate"
+# . "./.venv/bin/activate"
+# echo 'export TCL_LIBRARY=$HOME/.local/share/uv/python/cpython-3.14.2-linux-x86_64-gnu/lib/tcl8.6' >> .venv/bin/activate
 
 remove_directory() {
     find . \

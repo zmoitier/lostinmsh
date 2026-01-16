@@ -30,7 +30,7 @@ class Corner:
         r = Fraction(angle / pi).limit_denominator(max_denominator)
         s = Fraction(r.numerator, 2 * r.denominator - r.numerator)
         p, q = s.numerator, s.denominator
-        if p == 1 or q == 1:
+        if (p % 2 == 1) or (q % 2 == 1):
             p *= 2
             q *= 2
 

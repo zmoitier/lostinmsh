@@ -1,5 +1,6 @@
 """GMSH as a context manager."""
 
+from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import PurePath
 from types import TracebackType
@@ -122,14 +123,13 @@ class GmshContextManager:
     """Context manager for GMSH."""
 
     options: GmshOptions
-    domain_tags: dict[DimName, list[Tag]] = field(default_factory=dict)
+    domain_tags: dict[DimName, list[Tag]] = field(
+        default_factory=lambda: defaultdict(list)
+    )
 
     def update_domain_tags(self: Self, domain_tags: dict[DimName, list[Tag]]) -> None:
         for key, val in domain_tags.items():
-            if key in self.domain_tags:
-                self.domain_tags[key].extend(val)
-            else:
-                self.domain_tags[key] = val
+            self.domain_tags[key].extend(val)
         return None
 
     def __enter__(self: Self) -> Self:
@@ -192,3 +192,20 @@ class GmshContextManager:
 
         if traceback is not None:
             print(f"\n{traceback}")
+
+
+def open_msh_file(filename: PurePath | str) -> None:
+    """Open a mesh file in GMSH.
+
+    Parameters
+    ----------
+    filename : PurePath | str
+        Path to the mesh file to be opened.
+    """
+
+    gmsh.initialize()
+    gmsh.open(str(filename))
+    gmsh.fltk.run()
+    gmsh.finalize()
+
+    return None

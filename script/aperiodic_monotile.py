@@ -36,6 +36,7 @@ def main(mesh_size: float) -> None:
         geometry,
         mesh_size,
         lsm.GmshOptions(
+            element_order=1,
             # filename="mesh.msh",
             additional_options={
                 "Mesh.MeshSizeMin": mesh_size,

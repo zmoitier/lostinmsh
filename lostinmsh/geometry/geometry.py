@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable
+from typing import Iterable, Self
+
+from numpy import inf
 
 from .boundary import ExteriorBoundary
 from .polygon import Polygon
@@ -46,6 +48,36 @@ class Geometry:
 
         return cls(polygons=list(polygons), boundary=boundary)
 
-    # def critical_interval(self: Self) -> dict[str, tuple[Fraction, Fraction]]:
-    #     """Get the critical interval."""
-    #     return {polygon.name: polygon.critical_interval() for polygon in self.polygons}
+    def critical_interval(self: Self) -> tuple[float, float]:
+        """Compute the critical interval of polygons.
+
+        Returns
+        -------
+        tuple[float, float]
+            Critical interval of the polygon.
+        """
+
+        a, b = (inf, -inf)
+        for polygon in self.polygons:
+            interval = polygon.critical_interval()
+            a = min(a, interval[0])
+            b = max(b, interval[1])
+
+        return (a, b)
+
+    def discrete_critical_interval(self: Self) -> tuple[float, float]:
+        """Compute the discrete critical interval of polygons.
+
+        Returns
+        -------
+        tuple[float, float]
+            Discrete critical interval of the polygon.
+        """
+
+        a, b = (inf, -inf)
+        for polygon in self.polygons:
+            interval = polygon.discrete_critical_interval()
+            a = min(a, interval[0])
+            b = max(b, interval[1])
+
+        return (a, b)

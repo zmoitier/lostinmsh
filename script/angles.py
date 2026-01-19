@@ -4,6 +4,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+def compute_pq(angle: float, max_denominator: int) -> tuple[int, int]:
+    """Compute p and q for a given angle."""
+
+    r = Fraction(angle / np.pi).limit_denominator(max_denominator)
+    s = Fraction(r.numerator, 2 * r.denominator - r.numerator)
+    p, q = s.numerator, s.denominator
+    if ((p + q) % 2 == 1) or (p == 1) or (q == 1):
+        p *= 2
+        q *= 2
+
+    return (p, q)
+
+
 def main(max_dem: int) -> None:
     rat_set = set([Fraction(0, 1)])
     for n in range(1, max_dem + 1):

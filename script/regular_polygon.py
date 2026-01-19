@@ -16,36 +16,14 @@ def main(nb_side: int, mesh_size: float) -> None:
     boundary = lsm.circular_boundary([polygon], 0.25, 0.25)
     geometry = lsm.Geometry.from_polygon(polygon, boundary)
 
+    print(f"         critical interval: {geometry.critical_interval()}")
+    print(f"discrete critical interval: {geometry.discrete_critical_interval()}")
+
     lsm.plot_geometry(geometry)
     plt.show()
 
-    lsm.mesh_unstructured(
-        geometry,
-        mesh_size,
-        lsm.GmshOptions(
-            element_order=1,
-            # filename="mesh.msh",
-            additional_options={
-                "Mesh.MeshSizeMin": mesh_size,
-                "Mesh.MeshSizeMax": mesh_size,
-            },
-            show_gui=True,
-        ),
-    )
-
-    lsm.mesh_loc_struct(
-        geometry,
-        mesh_size,
-        lsm.GmshOptions(
-            element_order=1,
-            # filename="mesh.msh",
-            additional_options={
-                "Mesh.MeshSizeMin": mesh_size,
-                "Mesh.MeshSizeMax": mesh_size,
-            },
-            show_gui=True,
-        ),
-    )
+    lsm.mesh_unstructured(geometry, mesh_size, lsm.GmshOptions(show_gui=True))
+    lsm.mesh_loc_struct(geometry, mesh_size, lsm.GmshOptions(show_gui=True))
 
 
 if __name__ == "__main__":

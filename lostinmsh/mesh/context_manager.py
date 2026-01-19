@@ -47,7 +47,7 @@ class GmshOptions:
         element_order: int = 1,
         additional_options: dict[str, Any] | None = None,
         renumber_nodes: str | None = "RCMK",
-        show_terminal_output: bool = True,
+        show_terminal_output: bool = False,
         show_gui: bool = False,
     ) -> None:
         """Initialized gmsh options.

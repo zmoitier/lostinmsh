@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from fractions import Fraction
 from typing import Self
 
-from numpy import arctan2, asarray, greater, lexsort, pi
+from numpy import abs, arange, arctan2, asarray, greater, inf, lexsort, log, pi
 from numpy.linalg import norm
 from numpy.typing import ArrayLike
 
@@ -12,7 +11,7 @@ from ..circular_iterable import circular_triplewise
 from ..type_alias import Mat2x2, MatNx2, Vec2, VecN
 
 
-@dataclass(slots=True)
+@dataclass(frozen=True, slots=True)
 class Corner:
     """Corner class."""
 
@@ -21,38 +20,39 @@ class Corner:
     p: int
     q: int
 
-    def __init__(
-        self: Self, angle: float, axis: Mat2x2, max_denominator: int = 12
-    ) -> None:
-        self.angle = angle
-        self.axis = axis
+    def critical_interval(self: Self) -> tuple[float, float]:
+        """Return the critical interval of an angle.
 
-        r = Fraction(angle / pi).limit_denominator(max_denominator)
-        s = Fraction(r.numerator, 2 * r.denominator - r.numerator)
-        p, q = s.numerator, s.denominator
-        if (p % 2 == 1) or (q % 2 == 1):
-            p *= 2
-            q *= 2
+        Returns
+        -------
+        tuple[float, float]
+            The critical interval of the angle.
+        """
 
-        self.p = p
-        self.q = q
+        a = float((2 * pi - self.angle) / self.angle)
+        b = 1 / a
 
-    # def critical_interval(self: Self) -> tuple[float, float]:
-    #     """Return the critical interval of an angle.
+        if a < 1:
+            return (-b, -a)
 
-    #     Returns
-    #     -------
-    #     tuple[Fraction, Fraction]
-    #         The critical interval of the angle.
-    #     """
+        return (-a, -b)
 
-    #     a = (2 - self) / self
-    #     b = 1 / a
+    def discrete_critical_interval(self: Self) -> tuple[float, float]:
+        """Return the discrete critical interval of an angle.
 
-    #     if self > 1:
-    #         return (-b, -a)
+        Returns
+        -------
+        tuple[float, float]
+            The discrete critical interval of the angle.
+        """
 
-    #     return (-a, -b)
+        a, b = self.critical_interval()
+        r = float((2 * pi - self.angle) * self.p / (self.angle * self.q))
+
+        if r < 1:
+            return (a / r, b * r)
+
+        return (a * r, b / r)
 
 
 @dataclass(kw_only=True, slots=True)
@@ -66,7 +66,7 @@ class Polygon:
 
     @classmethod
     def from_vertices(
-        cls, vertices: ArrayLike, name: str, *, max_denominator: int = 12
+        cls, vertices: ArrayLike, name: str, *, max_subdiv: int = 16
     ) -> Self:
         """Create a polygon from its vertices.
 
@@ -76,8 +76,8 @@ class Polygon:
             Array like of shape (N, 2) containing the polygon vertices.
         name : str
             Name of the polygon.
-        max_denominator : int, optional, default 32
-            Maximum denominator for angle approximation.
+        max_subdiv : int, optional, default 16
+            Maximum subdivision of the corner.
         Returns
         -------
         Polygon
@@ -87,32 +87,55 @@ class Polygon:
         return cls(
             name=name,
             vertices=pts,
-            corners=_compute_corners(pts, max_denominator),
+            corners=_compute_corners(pts, max_subdiv),
             lengths=_compute_lengths(pts),
         )
 
-    # def critical_interval(self: Self) -> tuple[Fraction, Fraction]:
-    #     """Compute the largest critical interval of all angles.
+    def critical_interval(self: Self) -> tuple[float, float]:
+        """Compute the critical interval of the polygon.
 
-    #     Returns
-    #     -------
-    #     tuple[Fraction, Fraction]
-    #         Critical interval of the polygon.
-    #     """
+        Returns
+        -------
+        tuple[float, float]
+            Critical interval of the polygon.
+        """
 
-    #     a, b = self.corners[0].critical_interval()
-    #     for corner in self.corners[1:]:
-    #         interval = corner.critical_interval()
-    #         a = min(a, interval[0])
-    #         b = max(b, interval[1])
+        a, b = (inf, -inf)
+        for corner in self.corners:
+            interval = corner.critical_interval()
+            a = min(a, interval[0])
+            b = max(b, interval[1])
 
-    #     return (a, b)
+        return (a, b)
+
+    def discrete_critical_interval(self: Self) -> tuple[float, float]:
+        """Compute the discrete critical interval of the polygon.
+
+        Returns
+        -------
+        tuple[float, float]
+            Discrete critical interval of the polygon.
+        """
+
+        a, b = (inf, -inf)
+        for corner in self.corners:
+            interval = corner.discrete_critical_interval()
+            a = min(a, interval[0])
+            b = max(b, interval[1])
+
+        return (a, b)
 
     def __str__(self: Self) -> str:
         lines: list[str] = [f'Polygon "{self.name}"']
         for i, (v, c) in enumerate(zip(self.vertices, self.corners)):
             lines.append(
-                f"  Vertex {i}: ({v[0]:+.4f}, {v[1]:+.4f}), angle: {c.angle / pi:.4f} π"
+                ", ".join(
+                    [
+                        f"  Vertex {i}: ({v[0]:+.4f}, {v[1]:+.4f})",
+                        f"angle: {c.angle / pi:.4f} π",
+                        f"(p, q): ({c.p}, {c.q})",
+                    ]
+                )
             )
         return "\n".join(lines)
 
@@ -161,7 +184,7 @@ def _compute_lengths(vertices: MatNx2) -> VecN:
     return lengths
 
 
-def _compute_corners(vertices: MatNx2, max_denominator: int) -> list[Corner]:
+def _compute_corners(vertices: MatNx2, max_subdiv: int) -> list[Corner]:
     """Compute angles at the polygon's vertices."""
     n = vertices.shape[0]
 
@@ -175,13 +198,8 @@ def _compute_corners(vertices: MatNx2, max_denominator: int) -> list[Corner]:
         if angle < 0:
             angle = 2 * pi + angle
 
-        angles.append(
-            Corner(
-                angle,
-                asarray([[u[0], -u[1]], [u[1], u[0]]]),
-                max_denominator,
-            )
-        )
+        p, q = _compute_pq(angle, max_subdiv)
+        angles.append(Corner(angle, asarray([[u[0], -u[1]], [u[1], u[0]]]), p, q))
 
     return angles
 
@@ -190,3 +208,25 @@ def _normalize(vector: Vec2) -> Vec2:
     """Normalize vector."""
 
     return vector / norm(vector)
+
+
+def _compute_pq(angle: float, max_subdiv: int) -> tuple[int, int]:
+    """Compute p and q for a given angle."""
+
+    r = (2 * pi - angle) / angle
+
+    p_min, q_min = 0, 0
+    _min = abs(log(r))
+    for n in range(4, max_subdiv + 1, 2):
+        p, q = arange(2, n - 1), arange(n - 2, 1, -1)
+        v = abs(log(r * p / q))
+
+        i = v.argmin()
+        if v[i] < _min:
+            p_min, q_min = p[i], q[i]
+            _min = v[i]
+
+        if _min < 1e-12:
+            break
+
+    return (p_min, q_min)

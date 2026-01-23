@@ -86,12 +86,11 @@ class GmshOptions:
         key_val = {
             "General.Terminal": int(show_terminal_output),
             "General.SmallAxes": 0,
-            "Geometry.CopyMeshingMethod": 1,
             "Mesh.ElementOrder": element_order,
             "Mesh.TransfiniteTri": 1,
             "Mesh.Smoothing": 0,
             "Mesh.Algorithm": 6,  # 5 is better than 6 at capturing sharp mesh size transitions.
-            "Mesh.MeshSizeExtendFromBoundary": 0,
+            "Mesh.MeshSizeExtendFromBoundary": 1,
             "Mesh.SurfaceFaces": 1,
             "Mesh.ColorCarousel": 2,
         }

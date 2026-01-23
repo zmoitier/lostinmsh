@@ -1,11 +1,12 @@
 """T-conform mesh a polygon."""
 
 from dataclasses import dataclass
+from itertools import chain
 from pathlib import PurePath
 from typing import Self
 
 import gmsh
-from numpy import concatenate, cos, linspace, pi, sin, vstack
+from numpy import concatenate, cos, linspace, pi, sin, sqrt, vstack
 from scipy.spatial import ConvexHull
 from scipy.spatial.distance import pdist
 
@@ -20,7 +21,8 @@ from .mesh_boundary import mesh_exterior
 class CornerTag:
     """Tags of a corner."""
 
-    r: float
+    r: float  # corner radius
+    h: float  # corner angular mesh size
     p: int  # corner.angle = angles[corner.p]
     pt: list[Tag]
     lt: list[Tag]
@@ -42,12 +44,7 @@ class CornerTag:
 
 
 def mesh_loc_struct(
-    geometry: Geometry,
-    mesh_size: float,
-    gmsh_options: GmshOptions | None = None,
-    *,
-    corner_radius_shrink: float = 0.75,
-    corner_geometric_coef: float = 1.5,
+    geometry: Geometry, mesh_size: float, gmsh_options: GmshOptions | None = None
 ) -> PurePath | None:
     """T-conform mesh a polygon.
 
@@ -56,24 +53,19 @@ def mesh_loc_struct(
     geometry : Geometry
     mesh_size : float
     gmsh_options: GmshOptions, optional
-    corner_radius_shrink : float, default=0.75
-    corner_geometric_coef : float, default=1.5
     """
-
-    if not (0 < corner_radius_shrink < 1):
-        raise ValueError("corner_radius_shrink must be in (0, 1).")
 
     if gmsh_options is None:
         gmsh_options = GmshOptions()
 
     with GmshContextManager(gmsh_options) as ctx:
-        radius_max = _max_corner_radius(geometry) * corner_radius_shrink
+        radius_corner = min(mesh_size, _max_corner_radius(geometry) * 0.5)
 
         loop_tags: list[Tag] = []
         surface_tags_out: list[Tag] = []
         for polygon in geometry.polygons:
             loop_tag, st_inn, st_out, lt_bdy = _mesh_lost_polygon(
-                polygon, radius_max, mesh_size, corner_geometric_coef
+                polygon, radius_corner, mesh_size
             )
             loop_tags.append(loop_tag)
             surface_tags_out.extend(st_out)
@@ -109,7 +101,7 @@ def _max_corner_radius(geometry: Geometry) -> float:
 
 
 def _mesh_lost_polygon(
-    polygon: Polygon, radius_max: float, mesh_size: float, corner_coef: float
+    polygon: Polygon, radius_corner: float, mesh_size: float
 ) -> tuple[Tag, list[Tag], list[Tag], list[Tag]]:
     """T-conform mesh of a polygon."""
 
@@ -120,7 +112,7 @@ def _mesh_lost_polygon(
     corner_tags: list[CornerTag] = []
     for vertex, corner in zip(polygon.vertices, polygon.corners):
         corner_tag, st_inn, st_out, lt_bdy = _mesh_lost_corner(
-            vertex, corner, radius_max, mesh_size, corner_coef
+            vertex, corner, radius_corner, mesh_size
         )
         corner_tags.append(corner_tag)
         surface_tags_inn.extend(st_inn)
@@ -149,15 +141,13 @@ def _mesh_lost_polygon(
 
 
 def _mesh_lost_corner(
-    center: Vec2,
-    corner: Corner,
-    radius_max: float,
-    mesh_size: float,
-    corner_coef: float,
+    center: Vec2, corner: Corner, radius: float, mesh_size: float
 ) -> tuple[CornerTag, list[Tag], list[Tag], list[Tag]]:
     """T-conform mesh of a corner."""
 
-    c_tag: Tag = gmsh.model.geo.add_point(center[0], center[1], 0, mesh_size)
+    h_corner = mesh_size * 2 * pi / (corner.p + corner.q)
+
+    c_tag: Tag = gmsh.model.geo.add_point(center[0], center[1], 0)
 
     # corner.angle = angles[corner.p]
     angles = concatenate(
@@ -166,11 +156,11 @@ def _mesh_lost_corner(
             linspace(corner.angle, 2 * pi, num=corner.q + 1)[0:-1],
         ),
     )
-    points = center.reshape(2, 1) + radius_max * (
+    points = center.reshape(2, 1) + radius * (
         corner.axis @ vstack((cos(angles), sin(angles)))
     )
     pt: list[Tag] = [
-        gmsh.model.geo.add_point(points[0, j], points[1, j], 0, mesh_size)
+        gmsh.model.geo.add_point(points[0, j], points[1, j], 0, h_corner)
         for j in range(points.shape[1])
     ]
 
@@ -178,12 +168,8 @@ def _mesh_lost_corner(
     lt_ang: list[Tag] = [
         gmsh.model.geo.add_line(a, b) for a, b in circular_pairwise(pt)
     ]
-
-    n = max(2, round(1 + radius_max / mesh_size))
-    for t in lt_rad:
-        gmsh.model.geo.mesh.set_transfinite_curve(t, n, coef=corner_coef)
-    for t in lt_ang:
-        gmsh.model.geo.mesh.set_transfinite_curve(t, n)
+    for t in chain.from_iterable((lt_rad, lt_ang)):
+        gmsh.model.geo.mesh.set_transfinite_curve(t, 2)
 
     st: list[Tag] = [
         gmsh.model.geo.add_plane_surface([gmsh.model.geo.add_curve_loop([a, t, -b])])
@@ -193,7 +179,7 @@ def _mesh_lost_corner(
         gmsh.model.geo.mesh.set_transfinite_surface(t)
 
     return (
-        CornerTag(radius_max, corner.p, pt, lt_ang),
+        CornerTag(radius, h_corner, corner.p, pt, lt_ang),
         st[: corner.p],
         st[corner.p :],
         [lt_rad[0], lt_rad[corner.p]],
@@ -210,7 +196,8 @@ def _mesh_lost_edge(
 
     lt_edge = [gmsh.model.geo.add_line(a, b) for a, b in zip(pt0, ptp)]
 
-    n = max(2, round(1 + (length - ct0.r - ctp.r) / mesh_size))
+    h = sqrt(mesh_size * sqrt(ct0.h * ctp.h))
+    n = max(2, round(1 + (length - ct0.r - ctp.r) / h))
     for t in lt_edge:
         gmsh.model.geo.mesh.set_transfinite_curve(t, n)
 

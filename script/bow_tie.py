@@ -14,10 +14,14 @@ def main(mesh_size: float) -> None:
     vertices = np.array([[0.0, 0.0], [c, s], [c, -s]])
 
     polygons = [
-        lsm.Polygon.from_vertices(np.array([0.1, 0.0]) + vertices, "right"),
-        lsm.Polygon.from_vertices(np.array([-0.1, 0.0]) - vertices, "left"),
+        lsm.Polygon.from_vertices(
+            np.array([0.1, 0.0]) + vertices, "right", max_subdiv=32
+        ),
+        lsm.Polygon.from_vertices(
+            np.array([-0.1, 0.0]) - vertices, "left", max_subdiv=32
+        ),
     ]
-    boundary = lsm.rectangular_boundary(polygons, 0.25, 0.25)
+    boundary = lsm.rectangular_boundary(polygons, 0.5, 0.25)
     geometry = lsm.Geometry.from_polygons(polygons, boundary)
 
     print(f"         critical interval: {geometry.critical_interval()}")

@@ -1,5 +1,6 @@
 from fractions import Fraction
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -50,13 +51,71 @@ def print_pq(angle: float, pq: tuple[int, int], name: str) -> None:
     return None
 
 
+def accumulate_ranges(ranges: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    """Accumulate overlapping ranges."""
+
+    if not ranges:
+        return []
+
+    ranges.sort()
+    accumulated = [ranges[0]]
+
+    for current in ranges[1:]:
+        last = accumulated[-1]
+        if current[0] <= last[1]:
+            accumulated[-1] = (last[0], max(last[1], current[1]))
+        else:
+            accumulated.append(current)
+
+    return accumulated
+
+
+def plot_angles(N: int, g: float) -> None:
+    fig, ax = plt.subplots()
+
+    ax.set_xlim(-0.1, np.pi + 0.1)
+    ax.set_xticks(
+        ticks=np.pi * np.array([0.0, 0.25, 0.5, 0.75, 1.0]),
+        labels=[r"$0$", r"$\pi/4$", r"$\pi/2$", r"$3\pi/4$", r"$\pi$"],
+    )
+    ax.grid(True, zorder=1)
+
+    ranges = []
+    for n in range(2, N + 1, 2):
+        p = np.arange(2, n // 2 + 1)
+        q = n - p
+        _min, _max = ((2 * np.pi) * p / (p + g * q), (g * 2 * np.pi) * p / (g * p + q))
+        ranges.extend([(float(a), float(b)) for a, b in zip(_min, _max)])
+
+    for rat in accumulate_ranges(ranges):
+        ax.axvspan(rat[0], rat[1], color="C0", alpha=0.25, zorder=2)
+
+    rationals: set[Fraction] = set()
+    for n in range(1, N + 1):
+        for a in range(1, n + 1):
+            rationals.add(Fraction(a, n))
+
+    angles: list[float] = []
+    denominators: list[int] = []
+    for rat in sorted(rationals):
+        angles.append(float(rat * np.pi))
+        denominators.append(rat.denominator)
+
+    ax.scatter(angles, denominators, marker="x", color="C1", zorder=3)
+
+    plt.show()
+
+    return None
+
+
 def main(n: int) -> None:
     angles = np.linspace(0, np.pi, n + 2)[1:-1]
     for angle in angles:
-        print(f"Angle = {angle}")
+        print(f"Angle = {angle / np.pi:.4f} * pi")
         print_pq(angle, compute_pq_frac(angle, max_denominator=12), "frac")
         print_pq(angle, compute_pq_min(angle, max_subdiv=16), " min")
 
 
 if __name__ == "__main__":
     main(13)
+    plot_angles(16, 1.1)

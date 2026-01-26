@@ -2,27 +2,25 @@
 
 from collections.abc import Collection
 from itertools import cycle, islice
-from typing import Iterable, TypeVar
-
-T = TypeVar("T")
+from typing import Iterable
 
 
-def circular_pairwise(
+def circular_pairwise[T](
     collection: Collection[T], start: int = 0
 ) -> Iterable[tuple[T, T]]:
-    """Return the circular pairwise iterator from a collection.
+    """Return the circular pair-wise iterator from a collection.
 
     Parameters
     ----------
-    collection : Collection
+    collection : Collection[T]
         sequence-like object with a length
     start : int, optional
         starting index, by default 0
 
     Returns
     -------
-    Iterable
-        circular pairwise iterator
+    Iterable[tuple[T, T]]
+        circular pair-wise iterator
     """
     end = start + len(collection)
     return zip(
@@ -31,22 +29,22 @@ def circular_pairwise(
     )
 
 
-def circular_triplewise(
+def circular_triplewise[T](
     collection: Collection[T], start: int = 0
 ) -> Iterable[tuple[T, T, T]]:
-    """Return the circular triplewise iterator from a collection.
+    """Return the circular triple-wise iterator from a collection.
 
     Parameters
     ----------
-    collection : Collection
+    collection : Collection[T]
         sequence-like object with a length
     start : int, optional
         starting index, by default 0
 
     Returns
     -------
-    Iterable
-        circular triplewise iterator
+    Iterable[tuple[T, T, T]]
+        circular triple-wise iterator
     """
     end = start + len(collection)
     return zip(

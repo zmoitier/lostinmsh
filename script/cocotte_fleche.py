@@ -16,7 +16,7 @@ def main(mesh_size: float) -> None:
         lsm.Polygon.from_vertices(cocotte - np.array([3.2, 0]), "cocotte"),
         lsm.Polygon.from_vertices(fleche + np.array([0.2, 0]), "fleche"),
     ]
-    boundary = lsm.rectangular_boundary(polygons, 0.25, 0.25)
+    boundary = lsm.rectangular_boundary(polygons, 0.25, "background", 0.25, "PML")
     geometry = lsm.Geometry.from_polygons(polygons, boundary)
 
     print(f"         critical interval: {geometry.critical_interval()}")

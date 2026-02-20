@@ -1,7 +1,9 @@
 from dataclasses import dataclass
+from typing import Self
 
-from numpy import amax, amin, inf, vstack
+from numpy import amax, amin, asarray, inf, vstack
 from numpy.linalg import norm
+from numpy.typing import ArrayLike
 
 from ..type_alias import MatNx2, Vec2
 from .polygon import Polygon
@@ -22,9 +24,9 @@ class ExteriorBoundary:
         Name of the thickness.
     """
 
-    background_name: str = "background"
-    thickness: float | None = None
-    thickness_name: str = "thickness"
+    background_name: str
+    thickness: float | None
+    thickness_name: str
 
     def dist_to_inner_boundary(self, points: MatNx2) -> float:
         """Sign distance to the inner boundary.
@@ -41,7 +43,7 @@ class ExteriorBoundary:
         raise NotImplementedError()
 
 
-@dataclass(kw_only=True, slots=True)
+@dataclass(init=False, slots=True)
 class CircularBoundary(ExteriorBoundary):
     """Circular boundary.
 
@@ -55,12 +57,27 @@ class CircularBoundary(ExteriorBoundary):
         Name of the background.
     thickness : float, optional
         Thickness of the border.
-    thickness_name : str
+    thickness_name : str, optional
         Name of the thickness.
     """
 
     center: Vec2
     radius: float
+
+    def __init__(
+        self: Self,
+        *,
+        center: ArrayLike,
+        radius: float,
+        background_name: str,
+        thickness: float | None = None,
+        thickness_name: str = "thickness",
+    ) -> None:
+        self.center = _validate_vec2(center)
+        self.radius = float(radius)
+        self.background_name = background_name
+        self.thickness = float(thickness) if thickness is not None else None
+        self.thickness_name = thickness_name
 
     def dist_to_inner_boundary(self, points: MatNx2) -> float:
         return self.radius - norm(points - self.center, axis=1).max()
@@ -69,8 +86,8 @@ class CircularBoundary(ExteriorBoundary):
 def circular_boundary(
     polygons: list[Polygon],
     inner_factor: float,
+    background_name: str,
     thickness_factor: float | None = None,
-    background_name: str = "background",
     thickness_name: str = "thickness",
 ) -> CircularBoundary:
     """Compute the circular boundary.
@@ -79,8 +96,8 @@ def circular_boundary(
     ----------
     polygons : list[Polygon]
     inner_factor : float
+    background_name : str
     thickness_factor : float | None, optional, default None
-    background_name : str, optional, default "background"
     thickness_name : str, optional, default "thickness"
 
     Returns
@@ -106,7 +123,7 @@ def circular_boundary(
     )
 
 
-@dataclass(kw_only=True, slots=True)
+@dataclass(init=False, slots=True)
 class RectangularBoundary(ExteriorBoundary):
     """Rectangular boundary.
 
@@ -120,12 +137,27 @@ class RectangularBoundary(ExteriorBoundary):
         Name of the background.
     thickness : float, optional
         Thickness of the border.
-    thickness_name : str
+    thickness_name : str, optional
         Name of the thickness.
     """
 
     corner_low: Vec2
     corner_high: Vec2
+
+    def __init__(
+        self: Self,
+        *,
+        corner_low: ArrayLike,
+        corner_high: ArrayLike,
+        background_name: str,
+        thickness: float | None = None,
+        thickness_name: str = "thickness",
+    ) -> None:
+        self.corner_low = _validate_vec2(corner_low)
+        self.corner_high = _validate_vec2(corner_high)
+        self.background_name = background_name
+        self.thickness = float(thickness) if thickness is not None else None
+        self.thickness_name = thickness_name
 
     def dist_to_inner_boundary(self, points: MatNx2) -> float:
         _max = amax(points, axis=0)
@@ -136,8 +168,8 @@ class RectangularBoundary(ExteriorBoundary):
 def rectangular_boundary(
     polygons: list[Polygon],
     inner_factor: float,
+    background_name: str,
     thickness_factor: float | None = None,
-    background_name: str = "background",
     thickness_name: str = "thickness",
 ) -> RectangularBoundary:
     """Compute the rectangular boundary.
@@ -146,8 +178,8 @@ def rectangular_boundary(
     ----------
     polygons : list[Polygon]
     inner_factor : float
+    background_name : str
     thickness_factor : float | None, optional, default None
-    background_name : str, optional, default "background"
     thickness_name : str, optional, default "thickness"
 
     Returns
@@ -171,6 +203,17 @@ def rectangular_boundary(
         thickness=thickness,
         thickness_name=thickness_name,
     )
+
+
+def _validate_vec2(vec: ArrayLike) -> Vec2:
+    """Validate that the `vec` is a 2D vector."""
+
+    v = asarray(vec, dtype=float)
+
+    if v.shape != (2,):
+        raise ValueError("Value must be a 2D vector.")
+
+    return v
 
 
 def _get_vertices(polygons: list[Polygon]) -> MatNx2:

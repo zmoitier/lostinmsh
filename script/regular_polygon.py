@@ -13,7 +13,7 @@ def main(nb_side: int, mesh_size: float) -> None:
     vertices = np.vstack((np.cos(t), np.sin(t))).T
 
     polygon = lsm.Polygon.from_vertices(vertices, "cavity")
-    boundary = lsm.circular_boundary([polygon], 0.25, 0.25)
+    boundary = lsm.circular_boundary([polygon], 0.25, "background", 0.25, "PML")
     geometry = lsm.Geometry.from_polygon(polygon, boundary)
 
     print(f"         critical interval: {geometry.critical_interval()}")

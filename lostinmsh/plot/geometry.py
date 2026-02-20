@@ -2,19 +2,16 @@
 
 from numpy import pi
 
-from .geometry import CircularBoundary, Geometry, Polygon, RectangularBoundary
+from ..geometry import CircularBoundary, Geometry, Polygon, RectangularBoundary
 
-ENABLE_PLOT = False
+ENABLE_MATPLOTLIB = True
 try:
     import matplotlib.pyplot as plt
     from matplotlib.patches import Circle as mpl_Circle
     from matplotlib.patches import Polygon as mpl_Polygon
     from matplotlib.patches import Rectangle as mpl_Rectangle
-
-    ENABLE_PLOT = True
-
 except ImportError:
-    pass
+    ENABLE_MATPLOTLIB = False
 
 
 def plot_polygon(polygon: Polygon, *, ax=None, show_pq=False) -> None:
@@ -27,12 +24,14 @@ def plot_polygon(polygon: Polygon, *, ax=None, show_pq=False) -> None:
     show_pq : bool, optional, default=False
     """
 
-    if ENABLE_PLOT:
+    if ENABLE_MATPLOTLIB:
         _plot_polygon(polygon, ax, show_pq)
     else:
         raise ModuleNotFoundError(
             "You need to install matplotlib to use this function."
         )
+
+    return None
 
 
 def _plot_polygon(polygon: Polygon, ax, show_pq) -> None:
@@ -70,6 +69,8 @@ def _plot_polygon(polygon: Polygon, ax, show_pq) -> None:
     ax.grid(zorder=1)
     ax.legend(loc=1)
 
+    return None
+
 
 def plot_geometry(geometry: Geometry, ax=None) -> None:
     """Plot geometry.
@@ -80,12 +81,14 @@ def plot_geometry(geometry: Geometry, ax=None) -> None:
     ax : plt.Axes, optional, default=None
     """
 
-    if ENABLE_PLOT:
+    if ENABLE_MATPLOTLIB:
         _plot_geometry(geometry, ax)
     else:
         raise ModuleNotFoundError(
             "You need to install matplotlib to use this function."
         )
+
+    return None
 
 
 def _plot_geometry(geometry: Geometry, ax=None) -> None:
@@ -139,8 +142,10 @@ def _plot_geometry(geometry: Geometry, ax=None) -> None:
     ax.grid(zorder=1)
     ax.legend(loc=1)
 
+    return None
 
-def _add_circ_boundary(ax, circ: CircularBoundary, options_bak, options_thk):
+
+def _add_circ_boundary(ax, circ: CircularBoundary, options_bak, options_thk) -> None:
     """Add circular boundary."""
 
     ax.plot([circ.center[0]], [circ.center[1]], "ko", zorder=5)
@@ -152,14 +157,12 @@ def _add_circ_boundary(ax, circ: CircularBoundary, options_bak, options_thk):
         )
 
 
-def _add_rect_boundary(ax, rect: RectangularBoundary, options_bak, options_thk):
+def _add_rect_boundary(ax, rect: RectangularBoundary, options_bak, options_thk) -> None:
     """Add rectangular boundary."""
 
     a, b = rect.corner_low, rect.corner_high
-    c = (a + b) / 2
     d = b - a
 
-    ax.plot([c[0]], [c[1]], "ko", zorder=5)
     ax.add_patch(mpl_Rectangle(a, d[0], d[1], **options_bak))
 
     if rect.thickness is not None:

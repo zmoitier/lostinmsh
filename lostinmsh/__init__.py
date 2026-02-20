@@ -1,8 +1,8 @@
 """GMSH toolbox for locally structured meshes on polygon."""
 
-__version__ = "0.1.0"
+__version__ = "1.0.0"
 
-__author__ = "Zoïs Moitier, Camille Carvalho"
+__author__ = "Camille Carvalho, Zoïs Moitier"
 
 __all__: list[str] = [
     "geometry",
@@ -12,16 +12,18 @@ __all__: list[str] = [
     "RectangularBoundary",
     "rectangular_boundary",
     "Geometry",
-    "plot_polygon",
-    "plot_geometry",
     "mesh",
     "GmshOptions",
     "open_msh_file",
     "mesh_unstructured",
     "mesh_loc_struct",
+    "plot",
+    "plot_polygon",
+    "plot_geometry",
+    "plot_mesh",
 ]
 
-from . import geometry, mesh
+from . import geometry, mesh, plot
 from .geometry import (
     CircularBoundary,
     Geometry,
@@ -31,4 +33,4 @@ from .geometry import (
     rectangular_boundary,
 )
 from .mesh import GmshOptions, mesh_loc_struct, mesh_unstructured, open_msh_file
-from .plot import plot_geometry, plot_polygon  # type: ignore
+from .plot import plot_geometry, plot_mesh, plot_polygon  # type: ignore

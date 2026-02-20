@@ -21,7 +21,7 @@ def main(mesh_size: float) -> None:
             np.array([-0.1, 0.0]) - vertices, "left", max_subdiv=32
         ),
     ]
-    boundary = lsm.rectangular_boundary(polygons, 0.5, 0.25)
+    boundary = lsm.rectangular_boundary(polygons, 0.5, "background", 0.25, "PML")
     geometry = lsm.Geometry.from_polygons(polygons, boundary)
 
     print(f"         critical interval: {geometry.critical_interval()}")

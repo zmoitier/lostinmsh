@@ -26,7 +26,7 @@ def main(mesh_size: float) -> None:
     ]
 
     polygon = lsm.Polygon.from_vertices(vertices, "cavity")
-    boundary = lsm.rectangular_boundary([polygon], 0.25, 0.25)
+    boundary = lsm.rectangular_boundary([polygon], 0.25, "background", 0.25, "PML")
     geometry = lsm.Geometry.from_polygon(polygon, boundary)
 
     print(f"         critical interval: {geometry.critical_interval()}")

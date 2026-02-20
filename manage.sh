@@ -32,6 +32,8 @@ case "$1" in
     remove_directory "htmlcov"
     remove_file ".coverage"
 
+    remove_directory "_build"
+
     remove_file "*.msh"
     ;;
 -d | --docs)
@@ -55,7 +57,7 @@ case "$1" in
 -u | --update)
     uv self update
     rm uv.lock
-    uv sync --extra dev
+    uv sync --all-extras
     uv export --format requirements.txt --frozen --no-hashes --no-annotate -o requirements.txt
     ;;
 *)

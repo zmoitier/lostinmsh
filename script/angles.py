@@ -117,5 +117,5 @@ def main(n: int) -> None:
 
 
 if __name__ == "__main__":
-    main(13)
+    main(8)
     plot_angles(16, 1.1)

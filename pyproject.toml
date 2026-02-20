@@ -26,9 +26,8 @@ Documentation = "https://zmoitier.github.io/lostinmsh/"
 Source = "https://github.com/zmoitier/lostinmsh"
 
 [project.optional-dependencies]
+plot = ["matplotlib", "meshio"]
 dev = [
-    "meshio",
-    "matplotlib",
     "scipy-stubs",
     "mypy",
     "ruff",
@@ -41,7 +40,6 @@ dev = [
     "sphinx-autodoc-typehints",
     "sphinx_rtd_theme",
     "sphinx-copybutton",
-    "flit",
 ]
 
 [tool.docformatter]

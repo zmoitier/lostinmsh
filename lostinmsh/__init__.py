@@ -16,7 +16,7 @@ __all__: list[str] = [
     "GmshOptions",
     "open_msh_file",
     "mesh_unstructured",
-    "mesh_loc_struct",
+    "mesh_locally_structured",
     "plot",
     "plot_polygon",
     "plot_geometry",
@@ -32,5 +32,5 @@ from .geometry import (
     circular_boundary,
     rectangular_boundary,
 )
-from .mesh import GmshOptions, mesh_loc_struct, mesh_unstructured, open_msh_file
+from .mesh import GmshOptions, mesh_locally_structured, mesh_unstructured, open_msh_file
 from .plot import plot_geometry, plot_mesh, plot_polygon  # type: ignore

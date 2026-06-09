@@ -20,7 +20,6 @@ def plot_mesh(filename: PurePath | str, *, ax=None) -> None:
     filename : PurePath | str
         Path to .msh file.
     """
-
     if ENABLE_MATPLOTLIB and ENABLE_MESHIO:
         _plot_mesh(filename, ax)
     else:
@@ -33,7 +32,6 @@ def plot_mesh(filename: PurePath | str, *, ax=None) -> None:
 
 def _plot_mesh(filename: PurePath | str, ax) -> None:
     """Plot mesh from .msh file."""
-
     if ax is None:
         _, ax = plt.subplots()
 

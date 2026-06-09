@@ -44,7 +44,7 @@ case "$1" in
     python -m ruff check --select I --fix .
     python -m ruff format .
     echo ">> run docformatter"
-    python -m docformatter --in-place ./
+    python -m docformatter --in-place ./lostinmsh/
     ;;
 -i | --install)
     python -m flit install --symlink

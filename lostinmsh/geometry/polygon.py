@@ -28,7 +28,6 @@ class Corner:
         tuple[float, float]
             The critical interval of the angle.
         """
-
         a = float((2 * pi - self.angle) / self.angle)
         b = 1 / a
 
@@ -45,7 +44,6 @@ class Corner:
         tuple[float, float]
             The discrete critical interval of the angle.
         """
-
         a, b = self.critical_interval()
         r = float((2 * pi - self.angle) * self.p / (self.angle * self.q))
 
@@ -82,7 +80,6 @@ class Polygon:
         -------
         Polygon
         """
-
         pts = _ensure_counterclockwise(_validate_vertices(vertices))
         return cls(
             name=name,
@@ -99,7 +96,6 @@ class Polygon:
         tuple[float, float]
             Critical interval of the polygon.
         """
-
         a, b = (inf, -inf)
         for corner in self.corners:
             interval = corner.critical_interval()
@@ -116,7 +112,6 @@ class Polygon:
         tuple[float, float]
             Discrete critical interval of the polygon.
         """
-
         a, b = (inf, -inf)
         for corner in self.corners:
             interval = corner.discrete_critical_interval()
@@ -142,7 +137,6 @@ class Polygon:
 
 def _validate_vertices(vertices: ArrayLike) -> MatNx2:
     """Validate the shape of the vertices array."""
-
     pts = asarray(vertices, dtype=float)
 
     if len(pts.shape) != 2:
@@ -158,7 +152,6 @@ def _validate_vertices(vertices: ArrayLike) -> MatNx2:
 
 def _ensure_counterclockwise(vertices: MatNx2) -> MatNx2:
     """Return the vertices in the counterclockwise direction."""
-
     # Find the vertex with the smallest x (and y to break ties)
     i: int = lexsort((vertices[:, 1], vertices[:, 0]))[0]
 
@@ -174,7 +167,6 @@ def _ensure_counterclockwise(vertices: MatNx2) -> MatNx2:
 
 def _compute_lengths(vertices: MatNx2) -> VecN:
     """Compute side lengths."""
-
     idx = [*range(vertices.shape[0]), 0]
     lengths = norm(vertices[idx[1:], :] - vertices[idx[:-1], :], axis=1)
 
@@ -206,19 +198,17 @@ def _compute_corners(vertices: MatNx2, max_subdiv: int) -> list[Corner]:
 
 def _normalize(vector: Vec2) -> Vec2:
     """Normalize vector."""
-
     return vector / norm(vector)
 
 
 def _compute_pq(angle: float, max_subdiv: int) -> tuple[int, int]:
     """Compute p and q for a given angle."""
-
     r = (2 * pi - angle) / angle
 
     p_min, q_min = 0, 0
     _min = abs(log(r))
-    for n in range(4, max_subdiv + 1, 2):
-        p, q = arange(2, n - 1), arange(n - 2, 1, -1)
+    for n in range(3, max_subdiv + 1):
+        p, q = arange(1, n - 1), arange(n - 1, 1, -1)
         v = abs(log(r * p / q))
 
         i = v.argmin()

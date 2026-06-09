@@ -5,6 +5,25 @@ from itertools import cycle, islice
 from typing import Iterable
 
 
+def circular[T](collection: Collection[T], start: int = 0) -> Iterable[T]:
+    """Return the circular iterator from a collection.
+
+    Parameters
+    ----------
+    collection : Collection[T]
+        sequence-like object with a length
+    start : int, optional
+        starting index, by default 0
+
+    Returns
+    -------
+    Iterable[T]
+        circular iterator
+    """
+    end = start + len(collection)
+    return islice(cycle(collection), start, end)
+
+
 def circular_pairwise[T](
     collection: Collection[T], start: int = 0
 ) -> Iterable[tuple[T, T]]:

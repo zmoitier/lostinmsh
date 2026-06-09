@@ -23,7 +23,6 @@ def plot_polygon(polygon: Polygon, *, ax=None, show_pq=False) -> None:
     ax : plt.Axes, optional, default=None
     show_pq : bool, optional, default=False
     """
-
     if ENABLE_MATPLOTLIB:
         _plot_polygon(polygon, ax, show_pq)
     else:
@@ -36,7 +35,6 @@ def plot_polygon(polygon: Polygon, *, ax=None, show_pq=False) -> None:
 
 def _plot_polygon(polygon: Polygon, ax, show_pq) -> None:
     """Plot polygon."""
-
     if ax is None:
         _, ax = plt.subplots()
 
@@ -80,7 +78,6 @@ def plot_geometry(geometry: Geometry, ax=None) -> None:
     geometry : Geometry
     ax : plt.Axes, optional, default=None
     """
-
     if ENABLE_MATPLOTLIB:
         _plot_geometry(geometry, ax)
     else:
@@ -93,7 +90,6 @@ def plot_geometry(geometry: Geometry, ax=None) -> None:
 
 def _plot_geometry(geometry: Geometry, ax=None) -> None:
     """Plot geometry."""
-
     if ax is None:
         _, ax = plt.subplots()
 
@@ -147,7 +143,6 @@ def _plot_geometry(geometry: Geometry, ax=None) -> None:
 
 def _add_circ_boundary(ax, circ: CircularBoundary, options_bak, options_thk) -> None:
     """Add circular boundary."""
-
     ax.plot([circ.center[0]], [circ.center[1]], "ko", zorder=5)
     ax.add_patch(mpl_Circle(circ.center, circ.radius, **options_bak))
 
@@ -159,7 +154,6 @@ def _add_circ_boundary(ax, circ: CircularBoundary, options_bak, options_thk) -> 
 
 def _add_rect_boundary(ax, rect: RectangularBoundary, options_bak, options_thk) -> None:
     """Add rectangular boundary."""
-
     a, b = rect.corner_low, rect.corner_high
     d = b - a
 

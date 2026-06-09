@@ -1,6 +1,7 @@
 """Mesh a polygon."""
 
 from pathlib import PurePath
+from typing import Final
 
 import gmsh
 
@@ -10,9 +11,11 @@ from ..type_alias import DimName, Tag
 from .context_manager import GmshContextManager, GmshOptions
 from .mesh_boundary import mesh_exterior
 
+GEO: Final = gmsh.model.geo
+
 
 def mesh_unstructured(
-    geometry: Geometry, mesh_size: float, gmsh_options: GmshOptions | None = None
+    geometry: Geometry, mesh_size: float, gmsh_options: GmshOptions = GmshOptions()
 ) -> PurePath | None:
     """Unstructured mesh of a geometry.
 
@@ -27,10 +30,6 @@ def mesh_unstructured(
     PurePath | None
         Filename of the output mesh file or None if not saved.
     """
-
-    if gmsh_options is None:
-        gmsh_options = GmshOptions()
-
     with GmshContextManager(gmsh_options) as ctx:
         poly_loop_tags: list[Tag] = []
 
@@ -61,17 +60,13 @@ def mesh_unst_poly(polygon: Polygon, h: float) -> tuple[Tag, dict[DimName, list[
     tuple[Tag, dict[DimName, list[Tag]]]
         return the loop tag and the domain and its associated tags
     """
-
     point_tags: list[Tag] = [
-        gmsh.model.geo.add_point(vertex[0], vertex[1], 0, h)
-        for vertex in polygon.vertices
+        GEO.add_point(vertex[0], vertex[1], 0, h) for vertex in polygon.vertices
     ]
 
-    line_tags = [
-        gmsh.model.geo.add_line(a, b) for a, b in circular_pairwise(point_tags)
-    ]
-    loop_tag = gmsh.model.geo.add_curve_loop(line_tags)
-    surface_tag = gmsh.model.geo.add_plane_surface([loop_tag])
+    line_tags = [GEO.add_line(a, b) for a, b in circular_pairwise(point_tags)]
+    loop_tag = GEO.add_curve_loop(line_tags)
+    surface_tag = GEO.add_plane_surface([loop_tag])
 
     return (
         loop_tag,

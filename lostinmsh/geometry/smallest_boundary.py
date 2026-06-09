@@ -24,7 +24,6 @@ def smallest_circle(points: MatNx2) -> Circle:
     -------
     Circle
     """
-
     if points.shape[0] <= 3:
         return trivial_circle(list(points))
 
@@ -37,7 +36,6 @@ def smallest_circle(points: MatNx2) -> Circle:
 
 def welzl(points: MatNx2, boundary: list[Vec2], length: int) -> Circle:
     """Welzl algorithm."""
-
     if length == 0 or len(boundary) == 3:
         return trivial_circle(boundary)
 
@@ -53,7 +51,6 @@ def welzl(points: MatNx2, boundary: list[Vec2], length: int) -> Circle:
 
 def trivial_circle(pts: list[Vec2]) -> Circle:
     """Trivial circle."""
-
     match len(pts):
         case 0:
             return (array([inf, inf], dtype=float64), float64(0))
@@ -73,7 +70,6 @@ def trivial_circle(pts: list[Vec2]) -> Circle:
 
 def _smallest_circle_2_points(a: Vec2, b: Vec2) -> Circle:
     """Compute the smallest enclosing circle of two points."""
-
     center = (a + b) / 2
     radius = norm(a - b) / 2
     return (center, radius)
@@ -81,7 +77,6 @@ def _smallest_circle_2_points(a: Vec2, b: Vec2) -> Circle:
 
 def _smallest_circle_3_points(a: Vec2, b: Vec2, c: Vec2) -> Circle:
     """Compute the smallest enclosing circle of three points."""
-
     for p, q, r in circular_triplewise((a, b, c)):
         circle = _smallest_circle_2_points(p, q)
         if _is_inside(circle, r):
@@ -92,7 +87,6 @@ def _smallest_circle_3_points(a: Vec2, b: Vec2, c: Vec2) -> Circle:
 
 def _is_inside(circle: Circle, a: Vec2) -> bool:
     """Check if the point A is inside the circle."""
-
     c, r = circle
     return (a[0] - c[0]) ** 2 + (a[1] - c[1]) ** 2 < r**2 * EPS_MUL
 
@@ -100,7 +94,6 @@ def _is_inside(circle: Circle, a: Vec2) -> bool:
 def _circumcircle_triangle(a: Vec2, b: Vec2, c: Vec2) -> Circle:
     """Compute the circumcircle of a three points, see
     https://en.wikipedia.org/wiki/Circumcircle#Circumcenter_vector."""
-
     ab_n2 = sum((b - a) ** 2)
     ac_n2 = sum((c - a) ** 2)
     bc_n2 = sum((c - b) ** 2)
@@ -127,5 +120,4 @@ def smallest_rectangle(points: MatNx2) -> tuple[Vec2, Vec2]:
     tuple[Vec2, Vec2]
         lower left and upper right corners of the rectangle
     """
-
     return (amin(points, axis=0), amax(points, axis=0))

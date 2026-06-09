@@ -1,8 +1,12 @@
+from typing import Final
+
 import gmsh
 
 from ..circular_iterable import circular_pairwise
 from ..geometry import CircularBoundary, ExteriorBoundary, RectangularBoundary
 from ..type_alias import DimName, Tag, Vec2
+
+GEO: Final = gmsh.model.geo
 
 
 def mesh_exterior(
@@ -24,7 +28,6 @@ def mesh_exterior(
     ------
     ValueError
     """
-
     if isinstance(boundary, CircularBoundary):
         return _mesh_circular(boundary, mesh_size, inner_loop_tags)
 
@@ -38,15 +41,14 @@ def _mesh_circular(
     circ: CircularBoundary, mesh_size: float, inner_loop_tags: list[Tag]
 ) -> dict[DimName, list[Tag]]:
     """Mesh circular mesh."""
-
-    ct = gmsh.model.geo.add_point(circ.center[0], circ.center[1], 0, mesh_size)
+    ct = GEO.add_point(circ.center[0], circ.center[1], 0, mesh_size)
 
     line_tags = _loop_circle(ct, circ.center, circ.radius, mesh_size)
-    loop_tag_inn = gmsh.model.geo.add_curve_loop(line_tags)
+    loop_tag_inn = GEO.add_curve_loop(line_tags)
 
     domain_tags = {
         (2, circ.background_name): [
-            gmsh.model.geo.add_plane_surface([loop_tag_inn, *inner_loop_tags])
+            GEO.add_plane_surface([loop_tag_inn, *inner_loop_tags])
         ],
         (1, f"{circ.background_name}_boundary"): line_tags,
     }
@@ -59,9 +61,7 @@ def _mesh_circular(
         domain_tags.update(
             {
                 (2, circ.thickness_name): [
-                    gmsh.model.geo.add_plane_surface(
-                        [gmsh.model.geo.add_curve_loop(line_tags), loop_tag_inn]
-                    )
+                    GEO.add_plane_surface([GEO.add_curve_loop(line_tags), loop_tag_inn])
                 ],
                 (1, f"{circ.thickness_name}_boundary"): line_tags,
             }
@@ -74,16 +74,14 @@ def _loop_circle(
     center_tag: Tag, center: Vec2, radius: float, mesh_size: float
 ) -> list[Tag]:
     """Return loop corresponding to a circle."""
-
     cx, cy = center
     point_tags = [
-        gmsh.model.geo.add_point(cx + x, cy + y, 0, mesh_size)
+        GEO.add_point(cx + x, cy + y, 0, mesh_size)
         for x, y in ((radius, 0), (0, radius), (-radius, 0), (0, -radius))
     ]
 
     line_tags = [
-        gmsh.model.geo.add_circle_arc(a, center_tag, b)
-        for a, b in circular_pairwise(point_tags)
+        GEO.add_circle_arc(a, center_tag, b) for a, b in circular_pairwise(point_tags)
     ]
 
     return line_tags
@@ -93,13 +91,12 @@ def _mesh_rectangular(
     rect: RectangularBoundary, mesh_size: float, inner_loop_tags: list[Tag]
 ) -> dict[DimName, list[Tag]]:
     """Mesh rectangular mesh."""
-
     line_tags = _loop_rectangle(rect.corner_low, rect.corner_high, mesh_size)
-    loop_tag_inn = gmsh.model.geo.add_curve_loop(line_tags)
+    loop_tag_inn = GEO.add_curve_loop(line_tags)
 
     domain_tags = {
         (2, rect.background_name): [
-            gmsh.model.geo.add_plane_surface([loop_tag_inn, *inner_loop_tags])
+            GEO.add_plane_surface([loop_tag_inn, *inner_loop_tags])
         ],
         (1, f"{rect.background_name}_boundary"): line_tags,
     }
@@ -110,11 +107,11 @@ def _mesh_rectangular(
             rect.corner_high + rect.thickness,
             mesh_size,
         )
-        loop_tag_out = gmsh.model.geo.add_curve_loop(line_tags)
+        loop_tag_out = GEO.add_curve_loop(line_tags)
         domain_tags.update(
             {
                 (2, rect.thickness_name): [
-                    gmsh.model.geo.add_plane_surface([loop_tag_out, loop_tag_inn])
+                    GEO.add_plane_surface([loop_tag_out, loop_tag_inn])
                 ],
                 (1, f"{rect.thickness_name}_boundary"): line_tags,
             }
@@ -125,9 +122,8 @@ def _mesh_rectangular(
 
 def _loop_rectangle(corner_low: Vec2, corner_high: Vec2, mesh_size: float) -> list[Tag]:
     """Return loop corresponding to a rectangle."""
-
     point_tags = [
-        gmsh.model.geo.add_point(x, y, 0, mesh_size)
+        GEO.add_point(x, y, 0, mesh_size)
         for x, y in (
             (corner_low[0], corner_low[1]),
             (corner_high[0], corner_low[1]),
@@ -136,8 +132,6 @@ def _loop_rectangle(corner_low: Vec2, corner_high: Vec2, mesh_size: float) -> li
         )
     ]
 
-    line_tags = [
-        gmsh.model.geo.add_line(a, b) for a, b in circular_pairwise(point_tags)
-    ]
+    line_tags = [GEO.add_line(a, b) for a, b in circular_pairwise(point_tags)]
 
     return line_tags

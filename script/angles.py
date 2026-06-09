@@ -6,7 +6,6 @@ import numpy as np
 
 def compute_pq_frac(angle: float, max_denominator: int) -> tuple[int, int]:
     """Compute p and q for a given angle."""
-
     r = Fraction(angle / np.pi).limit_denominator(max_denominator)
     if r.numerator == 0:
         r = Fraction(1, max_denominator)
@@ -22,7 +21,6 @@ def compute_pq_frac(angle: float, max_denominator: int) -> tuple[int, int]:
 
 def compute_pq_min(angle: float, max_subdiv: int) -> tuple[int, int]:
     """Compute p and q for a given angle."""
-
     r = (2 * np.pi - angle) / angle
 
     p_min, q_min = 0, 0
@@ -53,7 +51,6 @@ def print_pq(angle: float, pq: tuple[int, int], name: str) -> None:
 
 def accumulate_ranges(ranges: list[tuple[float, float]]) -> list[tuple[float, float]]:
     """Accumulate overlapping ranges."""
-
     if not ranges:
         return []
 

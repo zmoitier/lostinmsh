@@ -23,7 +23,7 @@ def main(nb_side: int, mesh_size: float) -> None:
     plt.show()
 
     lsm.mesh_unstructured(geometry, mesh_size, lsm.GmshOptions(show_gui=True))
-    lsm.mesh_loc_struct(geometry, mesh_size, lsm.GmshOptions(show_gui=True))
+    lsm.mesh_locally_structured(geometry, mesh_size, lsm.GmshOptions(show_gui=True))
 
 
 if __name__ == "__main__":

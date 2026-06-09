@@ -39,7 +39,6 @@ class ExteriorBoundary:
         points : NDArray
             list of points should be an array of shape (N, 2) with N ≥ 1.
         """
-
         raise NotImplementedError()
 
 
@@ -104,7 +103,6 @@ def circular_boundary(
     -------
     CircularBoundary
     """
-
     center, radius = smallest_circle(_get_vertices(polygons))
 
     r0 = float(radius * (1 + inner_factor))
@@ -186,7 +184,6 @@ def rectangular_boundary(
     -------
     RectangularBoundary
     """
-
     corner_low, corner_high = smallest_rectangle(_get_vertices(polygons))
     r = float(norm(corner_high - corner_low, ord=inf) * inner_factor / 2)
 
@@ -207,7 +204,6 @@ def rectangular_boundary(
 
 def _validate_vec2(vec: ArrayLike) -> Vec2:
     """Validate that the `vec` is a 2D vector."""
-
     v = asarray(vec, dtype=float)
 
     if v.shape != (2,):
@@ -218,5 +214,4 @@ def _validate_vec2(vec: ArrayLike) -> Vec2:
 
 def _get_vertices(polygons: list[Polygon]) -> MatNx2:
     """Get the vertices of polygons."""
-
     return vstack([polygon.vertices for polygon in polygons])

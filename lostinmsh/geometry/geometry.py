@@ -31,7 +31,6 @@ class Geometry:
         polygon : Polygon
         boundary : ExteriorBoundary
         """
-
         return cls(polygons=[polygon], boundary=boundary)
 
     @classmethod
@@ -45,7 +44,6 @@ class Geometry:
         polygon : Iterable[Polygon]
         boundary: ExteriorBoundary
         """
-
         return cls(polygons=list(polygons), boundary=boundary)
 
     def critical_interval(self: Self) -> tuple[float, float]:
@@ -56,7 +54,6 @@ class Geometry:
         tuple[float, float]
             Critical interval of the polygon.
         """
-
         a, b = (inf, -inf)
         for polygon in self.polygons:
             interval = polygon.critical_interval()
@@ -73,7 +70,6 @@ class Geometry:
         tuple[float, float]
             Discrete critical interval of the polygon.
         """
-
         a, b = (inf, -inf)
         for polygon in self.polygons:
             interval = polygon.discrete_critical_interval()

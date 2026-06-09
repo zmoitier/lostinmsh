@@ -73,7 +73,6 @@ class GmshOptions:
         ValueError
             If the element order is less than 1.
         """
-
         self.filename = PurePath(filename) if filename is not None else None
 
         if element_order < 1:
@@ -201,7 +200,6 @@ def open_msh_file(filename: PurePath | str) -> None:
     filename : PurePath | str
         Path to the mesh file to be opened.
     """
-
     gmsh.initialize()
     gmsh.open(str(filename))
     gmsh.fltk.run()

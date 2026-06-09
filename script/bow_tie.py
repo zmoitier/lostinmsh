@@ -14,12 +14,8 @@ def main(mesh_size: float) -> None:
     vertices = np.array([[0.0, 0.0], [c, s], [c, -s]])
 
     polygons = [
-        lsm.Polygon.from_vertices(
-            np.array([0.1, 0.0]) + vertices, "right", max_subdiv=32
-        ),
-        lsm.Polygon.from_vertices(
-            np.array([-0.1, 0.0]) - vertices, "left", max_subdiv=32
-        ),
+        lsm.Polygon.from_vertices(np.array([0.1, 0.0]) + vertices, "right"),
+        lsm.Polygon.from_vertices(np.array([-0.1, 0.0]) - vertices, "left"),
     ]
     boundary = lsm.rectangular_boundary(polygons, 0.5, "background", 0.25, "PML")
     geometry = lsm.Geometry.from_polygons(polygons, boundary)
@@ -31,7 +27,7 @@ def main(mesh_size: float) -> None:
     plt.show()
 
     lsm.mesh_unstructured(geometry, mesh_size, lsm.GmshOptions(show_gui=True))
-    lsm.mesh_loc_struct(geometry, mesh_size, lsm.GmshOptions(show_gui=True))
+    lsm.mesh_locally_structured(geometry, mesh_size, lsm.GmshOptions(show_gui=True))
 
 
 if __name__ == "__main__":

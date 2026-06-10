@@ -57,7 +57,6 @@ case "$1" in
     uv sync --all-extras
     uv export --format requirements.txt --frozen --no-hashes --no-annotate -o requirements.txt
     uv export --extra plot --format requirements.txt --frozen --no-hashes --no-annotate -o requirements-plot.txt
-    uv export --extra doc --format requirements.txt --frozen --no-hashes --no-annotate -o docs/requirements.txt
     ;;
 *)
     echo "The choice are:"

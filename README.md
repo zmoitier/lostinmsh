@@ -3,7 +3,7 @@
 [![Doc style: numpy](https://img.shields.io/badge/%20style-numpy-459db9.svg)](https://numpydoc.readthedocs.io/en/latest/format.html)
 
 [![PyPI version](https://badge.fury.io/py/lostinmsh.svg)](https://badge.fury.io/py/lostinmsh)
-[![DOI](https://zenodo.org/badge/602493619.svg)](https://zenodo.org/badge/latestdoi/602493619)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7677383.svg)](https://doi.org/10.5281/zenodo.7677383)
 [![Documentation](https://github.com/zmoitier/lostinmsh/actions/workflows/docs.yml/badge.svg)](https://zmoitier.github.io/lostinmsh)
 
 # lostinmsh

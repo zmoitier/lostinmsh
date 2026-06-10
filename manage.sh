@@ -44,7 +44,7 @@ case "$1" in
     python -m docformatter --in-place ./lostinmsh/
     ;;
 -i | --install)
-    uv pip install -e .
+    uv pip install -e '.[plot]'
     ;;
 -t | --test)
     python -m mypy ./lostinmsh/

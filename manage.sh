@@ -43,7 +43,7 @@ case "$1" in
     python -m docformatter --in-place ./lostinmsh/
     ;;
 -i | --install)
-    python -m flit install --symlink
+    uv pip install -e .
     ;;
 -t | --test)
     python -m mypy ./lostinmsh/
@@ -56,6 +56,7 @@ case "$1" in
     uv sync --all-extras
     uv export --format requirements.txt --frozen --no-hashes --no-annotate -o requirements.txt
     uv export --extra plot --format requirements.txt --frozen --no-hashes --no-annotate -o requirements-plot.txt
+    uv export --extra doc --format requirements.txt --frozen --no-hashes --no-annotate -o docs/requirements.txt
     ;;
 *)
     echo "The choice are:"

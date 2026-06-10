@@ -2,9 +2,8 @@
 
 __version__ = "1.0.0"
 
-__author__ = "Camille Carvalho, Zoïs Moitier"
-
 __all__: list[str] = [
+    "__version__",
     "geometry",
     "Polygon",
     "CircularBoundary",

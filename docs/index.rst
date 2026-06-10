@@ -26,12 +26,11 @@ or clone the repository
 
        $ git clone https://github.com/zmoitier/lostinmsh.git
 
-and then you can locally install it via `flit <https://flit.pypa.io/en/stable/>`_
+and then you can locally install it via `pip`
 
 .. code-block:: shell
 
-       $ flit install --symlink
-
+       $ pip install -e .
 
 .. toctree::
    :maxdepth: 2

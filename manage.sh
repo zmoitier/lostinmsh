@@ -29,6 +29,7 @@ case "$1" in
     remove_file ".coverage"
 
     remove_directory "_build"
+    remove_directory "dist"
 
     remove_file "*.msh"
     ;;

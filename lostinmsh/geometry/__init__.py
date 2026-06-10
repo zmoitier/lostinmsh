@@ -1,27 +1,25 @@
 """Geometry module."""
 
-__all__ = [
-    "RationalAngle",
-    "critical_interval",
-    "elementary_angle",
+__all__: list[str] = [
     "Corner",
     "Polygon",
-    "Geometry",
-    "Border",
-    "CircularBorder",
-    "RectangularBorder",
-    "circular_border",
-    "rectangular_border",
+    "smallest_circle",
     "smallest_rectangle",
+    "ExteriorBoundary",
+    "CircularBoundary",
+    "circular_boundary",
+    "RectangularBoundary",
+    "rectangular_boundary",
+    "Geometry",
 ]
 
-from .border import (
-    Border,
-    CircularBorder,
-    RectangularBorder,
-    circular_border,
-    rectangular_border,
+from .boundary import (
+    CircularBoundary,
+    ExteriorBoundary,
+    RectangularBoundary,
+    circular_boundary,
+    rectangular_boundary,
 )
 from .geometry import Geometry
-from .polygon import Corner, Polygon, RationalAngle, critical_interval, elementary_angle
-from .smallest_boundary import smallest_rectangle
+from .polygon import Corner, Polygon
+from .smallest_boundary import smallest_circle, smallest_rectangle

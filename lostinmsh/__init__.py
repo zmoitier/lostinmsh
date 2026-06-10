@@ -1,30 +1,37 @@
 """GMSH toolbox for locally structured meshes on polygon."""
 
-__version__ = "0.0.3.dev"
+__version__ = "1.0.0"
+__author__ = "Zoïs Moitier and Camille Carvalho"
 
-__author__ = "Zoïs Moitier, Camille Carvalho"
-
-__all__ = [
+__all__: list[str] = [
+    "__version__",
+    "__author__",
+    "geometry",
     "Polygon",
+    "CircularBoundary",
+    "circular_boundary",
+    "RectangularBoundary",
+    "rectangular_boundary",
     "Geometry",
-    "CircularBorder",
-    "circular_border",
-    "RectangularBorder",
-    "rectangular_border",
+    "mesh",
     "GmshOptions",
+    "open_msh_file",
     "mesh_unstructured",
-    "mesh_loc_struct",
-    "plot_geometry",
+    "mesh_locally_structured",
+    "plot",
     "plot_polygon",
+    "plot_geometry",
+    "plot_mesh",
 ]
 
+from . import geometry, mesh, plot
 from .geometry import (
-    CircularBorder,
+    CircularBoundary,
     Geometry,
     Polygon,
-    RectangularBorder,
-    circular_border,
-    rectangular_border,
+    RectangularBoundary,
+    circular_boundary,
+    rectangular_boundary,
 )
-from .mesh import GmshOptions, mesh_loc_struct, mesh_unstructured
-from .plot import plot_geometry, plot_polygon
+from .mesh import GmshOptions, mesh_locally_structured, mesh_unstructured, open_msh_file
+from .plot import plot_geometry, plot_mesh, plot_polygon  # type: ignore

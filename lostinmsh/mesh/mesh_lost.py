@@ -1,231 +1,249 @@
 """T-conform mesh a polygon."""
 
 from dataclasses import dataclass
+from itertools import batched, chain
 from pathlib import PurePath
-from typing import Optional
+from typing import Final, Self
 
 import gmsh
-from numpy import cos, linspace, pi, sin, sqrt
+from numpy import concatenate, cos, linspace, pi, sin, sqrt, vstack
+from scipy.spatial import ConvexHull
+from scipy.spatial.distance import pdist
 
-from ..circular_iterable import circular_pairwise
-from ..geometry import Corner, Geometry, Polygon, RationalAngle
-from .gmsh_context_manager import GmshContextManager, GmshOptions
-from .helper_type import Domain, DomainTags, SurfaceTags, update_domain_tags
-from .mesh_border import _mesh_border
+from ..circular_iterable import circular, circular_pairwise
+from ..geometry import Corner, Geometry, Polygon
+from ..type_alias import Tag, Vec2
+from .context_manager import GmshContextManager, GmshOptions
+from .mesh_boundary import mesh_exterior
+
+GEO: Final = gmsh.model.geo
 
 
-@dataclass(frozen=True, kw_only=True, slots=True)
+@dataclass(frozen=True, slots=True)
 class CornerTag:
-    """Class for corner's tag."""
+    """Tags of a corner."""
 
-    pts_cav: list[int]
-    pts_vac: list[int]
-    lines_cav: list[int]
-    lines_vac: list[int]
+    r: float  # corner radius
+    h: float  # corner angular mesh size
+    k: int  # corner.angle tag = pt[corner.k]
+    pt: list[Tag]  # point tags
+    lt: list[Tag]  # line tags
+
+    def get_edge_0(self: Self) -> tuple[tuple[Tag, Tag, Tag], tuple[Tag, Tag]]:
+        return ((self.pt[1], self.pt[0], self.pt[-1]), (self.lt[0], self.lt[-1]))
+
+    def get_edge_p(self: Self) -> tuple[tuple[Tag, Tag, Tag], tuple[Tag, Tag]]:
+        return (
+            (self.pt[self.k - 1], self.pt[self.k], self.pt[self.k + 1]),
+            (self.lt[self.k - 1], self.lt[self.k]),
+        )
+
+    def get_lt_inn(self: Self) -> list[Tag]:
+        return self.lt[1 : self.k - 1]
+
+    def get_lt_out(self: Self) -> list[Tag]:
+        return self.lt[self.k + 1 : -1]
 
 
-@dataclass(frozen=True, kw_only=True, slots=True)
-class EgdeTag:
-    """Class for edge's tag."""
-
-    line_cav: int
-    line_vac: int
-
-
-def mesh_loc_struct(
-    geometry: Geometry,
-    mesh_size: float,
-    gmsh_options: Optional[GmshOptions] = None,
-    *,
-    corner_radius_shrink: float = 0.75,
-    corner_geometric_coef: float = 1.5,
-) -> Optional[PurePath]:
-    """T-confrom mesh a polygon.
+def mesh_locally_structured(
+    geometry: Geometry, mesh_size: float, gmsh_options: GmshOptions = GmshOptions()
+) -> PurePath | None:
+    """T-conform mesh a polygon.
 
     Parameters
     ----------
-    geom : Geometry
+    geometry : Geometry
     mesh_size : float
     gmsh_options: GmshOptions, optional
-    corner_radius_shrink : float, default=0.75
-    corner_geometric_coef : float, default=1.5
     """
+    with GmshContextManager(gmsh_options) as ctx:
+        corner_radius = min(1.5 * mesh_size, _max_corner_radius(geometry) * 0.5)
 
-    if gmsh_options is None:
-        gmsh_options = GmshOptions()
-
-    domain_tags: DomainTags = {}
-
-    corner_radius = geometry.max_corner_radius() * corner_radius_shrink
-
-    with GmshContextManager(gmsh_options) as gmsh_context_manager:
-        loop_polygons = []
-        surfaces_vac = []
+        loop_tags: list[Tag] = []
+        surface_tags_out: list[Tag] = []
         for polygon in geometry.polygons:
-            l_poly, s_poly, s_vac = _tmesh_polygon(
-                polygon, corner_radius, mesh_size, corner_geometric_coef
+            loop_tag, st_inn, st_out, lt_bdy = _mesh_lost_polygon(
+                polygon, corner_radius, mesh_size
             )
-            loop_polygons.append(l_poly)
-            surfaces_vac.extend(s_vac)
+            loop_tags.append(loop_tag)
+            surface_tags_out.extend(st_out)
 
-            update_domain_tags(domain_tags, {Domain(polygon.name, 2): s_poly})
+            ctx.update_domain_tags(
+                {
+                    (2, polygon.name): st_inn,
+                    (1, f"{polygon.name}_boundary"): lt_bdy,
+                }
+            )
 
-        loop_tag_inn, dom_tags = _mesh_border(geometry.border, mesh_size)
-        domain_tags.update(dom_tags)
-
-        domain_tags.update(
-            {
-                Domain(geometry.border.background_name, 2): [
-                    gmsh.model.geo.addPlaneSurface([loop_tag_inn, *loop_polygons])
-                ],
-            }
+        ctx.update_domain_tags(
+            {(2, geometry.boundary.background_name): surface_tags_out}
         )
 
-        gmsh_context_manager.domain_tags.update(domain_tags)
+        dom_tags = mesh_exterior(geometry.boundary, mesh_size, loop_tags)
+        ctx.update_domain_tags(dom_tags)
 
     return gmsh_options.filename
 
 
-def _tmesh_polygon(
-    polygon: Polygon, corner_radius: float, h: float, corner_coef: float
-) -> tuple[int, SurfaceTags, SurfaceTags]:
-    """T-coform mesh of a polygon."""
+def _max_corner_radius(geometry: Geometry) -> float:
+    """Maximum corner radius."""
+    points = vstack([polygon.vertices for polygon in geometry.polygons])
 
-    ϕ = polygon.get_elementary_angle()
-    r = min(corner_radius, h)  # / (2 * sin(ϕ.value / 2)))
-    h_corner = sqrt(h * r * 2 * sin(ϕ.value / 2))
+    ch = ConvexHull(points)
+    ch_pts = points[ch.vertices]
 
-    corners_tag = []
-    surfaces_cav = []
-    surfaces_vac = []
-    N_corner = max(2, round(1 + r / h))
-
-    for corner in polygon.corners:
-        c_tag, s_cav, s_vac = _mesh_corner(corner, r, ϕ, h, N_corner, corner_coef)
-        corners_tag.append(c_tag)
-        surfaces_cav.extend(s_cav)
-        surfaces_vac.extend(s_vac)
-
-    edges_tag = []
-    for length, (C, D) in zip(polygon.lengths, circular_pairwise(corners_tag)):
-        N_edge = max(2, round(1 + (length - 2 * r) / h_corner))
-        e_tag, s_cav, s_vac = _mesh_edge(C, D, N_edge)
-        edges_tag.append(e_tag)
-        surfaces_cav.extend(s_cav)
-        surfaces_vac.extend(s_vac)
-
-    loop_inn, loop_out = _get_loops(corners_tag, edges_tag)
-
-    surfaces_cav.append(gmsh.model.geo.addPlaneSurface([loop_inn]))
-
-    return (loop_out, surfaces_cav, surfaces_vac)
+    return min(
+        pdist(points).min() / 2, geometry.boundary.dist_to_inner_boundary(ch_pts)
+    )
 
 
-def _mesh_corner(
-    corner: Corner, r: float, ϕ: RationalAngle, h: float, N: int, f: float
-) -> tuple[CornerTag, list[int], list[int]]:
-    """Mesh corner."""
+def _mesh_lost_polygon(
+    polygon: Polygon, corner_radius: float, mesh_size: float
+) -> tuple[Tag, list[Tag], list[Tag], list[Tag]]:
+    """T-conform mesh of a polygon."""
+    surface_tags_inn: list[Tag] = []
+    surface_tags_out: list[Tag] = []
+    line_tags_bdy: list[Tag] = []
 
-    p, q = _compute_pq(corner.angle, ϕ)
+    corner_tags: list[CornerTag] = []
+    for vertex, corner in zip(polygon.vertices, polygon.corners):
+        corner_tag, st_inn, st_out, lt_bdy = _mesh_lost_corner(
+            vertex, corner, corner_radius
+        )
+        corner_tags.append(corner_tag)
+        surface_tags_inn.extend(st_inn)
+        surface_tags_out.extend(st_out)
+        line_tags_bdy.extend(lt_bdy)
 
-    C = gmsh.model.geo.addPoint(corner.center[0], corner.center[1], 0, h)
-    points = [
-        gmsh.model.geo.addPoint(*to_global(corner, r, θ), 0, h)
-        for θ in linspace(0, 2 * pi, num=p + q, endpoint=False)
+    lt_inn: list[Tag] = []
+    lt_out: list[Tag] = []
+    for (ct0, ctp), length in zip(circular_pairwise(corner_tags), polygon.lengths):
+        lt_inn.extend(ct0.get_lt_inn()[::-1])
+        lt_out.extend(ct0.get_lt_out())
+
+        lti, lto, sti, sto, ltb = _mesh_lost_edge(ct0, ctp, length, mesh_size)
+        lt_inn.append(lti)
+        lt_out.append(lto)
+        surface_tags_inn.append(sti)
+        surface_tags_out.append(sto)
+        line_tags_bdy.append(ltb)
+
+    surface_tags_inn.append(GEO.add_plane_surface([GEO.add_curve_loop(lt_inn)]))
+
+    loop_tag_out: Tag = GEO.add_curve_loop(lt_out)
+    return (loop_tag_out, surface_tags_inn, surface_tags_out, line_tags_bdy)
+
+
+def _mesh_lost_corner(
+    center: Vec2, corner: Corner, radius: float
+) -> tuple[CornerTag, list[Tag], list[Tag], list[Tag]]:
+    """T-conform mesh of a corner."""
+    xp = 2 * sin(corner.angle / (4 * corner.p))
+    xq = 2 * sin((2 * pi - corner.angle) / (4 * corner.q))
+    h_corner = radius * sqrt(xp * xq)
+
+    c_tag: Tag = GEO.add_point(center[0], center[1], 0)
+
+    # corner.angle = angles_inn[corner.p] = angles_out[2*corner.p]
+    angles0 = concatenate(
+        (
+            linspace(0, corner.angle, num=corner.p + 1)[0:-1],
+            linspace(corner.angle, 2 * pi, num=corner.q + 1)[0:-1],
+        ),
+    )
+    angles1 = concatenate(
+        (
+            linspace(0, corner.angle, num=2 * corner.p + 1)[0:-1],
+            linspace(corner.angle, 2 * pi, num=2 * corner.q + 1)[0:-1],
+        ),
+    )
+
+    points0 = center.reshape(2, 1) + (radius / 3) * (
+        corner.axis @ vstack((cos(angles0), sin(angles0)))
+    )
+    points1 = center.reshape(2, 1) + radius * (
+        corner.axis @ vstack((cos(angles1), sin(angles1)))
+    )
+
+    pt0: list[Tag] = [
+        GEO.add_point(points0[0, j], points0[1, j], 0, h_corner)
+        for j in range(points0.shape[1])
+    ]
+    pt1: list[Tag] = [
+        GEO.add_point(points1[0, j], points1[1, j], 0, h_corner)
+        for j in range(points1.shape[1])
     ]
 
-    lines_rad = [gmsh.model.geo.addLine(C, A) for A in points]
-    lines_ang = [gmsh.model.geo.addLine(A, B) for A, B in circular_pairwise(points)]
+    lt_rad: list[list[Tag]] = [
+        [GEO.add_line(c_tag, t) for t in pt0],
+        [GEO.add_line(a, b) for a, b in zip(pt0, pt1[::2])],
+        [GEO.add_line(a, b) for a, b in zip(pt0, pt1[1::2])],
+        [GEO.add_line(a, b) for a, b in zip(circular(pt0, start=1), pt1[1::2])],
+    ]
+    lt_ang: list[list[Tag]] = [
+        [GEO.add_line(a, b) for a, b in circular_pairwise(pt0)],
+        [GEO.add_line(a, b) for a, b in circular_pairwise(pt1)],
+    ]
 
-    for line in lines_rad:
-        gmsh.model.geo.mesh.setTransfiniteCurve(line, N, coef=f)
-    for line in lines_ang:
-        gmsh.model.geo.mesh.setTransfiniteCurve(line, N)
+    for t in chain(chain.from_iterable(lt_rad), chain.from_iterable(lt_ang)):
+        GEO.mesh.set_transfinite_curve(t, 2)
 
-    loops = []
-    for i, j in circular_pairwise(range(p + q)):
-        loops.append(
-            gmsh.model.geo.addCurveLoop([lines_rad[i], lines_ang[i], -lines_rad[j]])
+    st_inn: list[Tag] = []
+    st_out: list[Tag] = []
+    for i, ((lr00, lr01), (lr10, lr11), lr2, lr3, la0, (la1, la2)) in enumerate(
+        zip(
+            circular_pairwise(lt_rad[0]),
+            circular_pairwise(lt_rad[1]),
+            lt_rad[2],
+            lt_rad[3],
+            lt_ang[0],
+            batched(lt_ang[1], 2),
         )
-
-    surfaces = []
-    for loop in loops:
-        s = gmsh.model.geo.addPlaneSurface([loop])
-        gmsh.model.geo.mesh.setTransfiniteSurface(s)
-        surfaces.append(s)
-
-    return (
-        CornerTag(
-            pts_cav=points[:p],
-            pts_vac=points[p:],
-            lines_cav=lines_ang[:p],
-            lines_vac=lines_ang[p:],
-        ),
-        surfaces[:p],
-        surfaces[p:],
-    )
-
-
-def _compute_pq(angle: RationalAngle, ϕ: RationalAngle) -> tuple[int, int]:
-    "Compute p and q such that a / b = 2p / (p+q) and p, q >= 2."
-    return (int(angle / ϕ), int((2 - angle) / ϕ))
-
-
-def to_global(corner: Corner, r: float, θ: float) -> tuple[float, float]:
-    """Transform the local corner coordinate to global coordinate."""
-    cosθ, sinθ = cos(θ), sin(θ)
-    return (
-        corner.center[0] + r * (cosθ * corner.e1[0] - sinθ * corner.e1[1]),
-        corner.center[1] + r * (sinθ * corner.e1[0] + cosθ * corner.e1[1]),
-    )
-
-
-def _mesh_edge(
-    C: CornerTag, D: CornerTag, N: int
-) -> tuple[EgdeTag, SurfaceTags, SurfaceTags]:
-    """Mesh edge."""
-    interface = gmsh.model.geo.addLine(C.pts_cav[0], D.pts_vac[0])
-    line_cav = gmsh.model.geo.addLine(D.pts_cav[-1], C.pts_cav[1])
-    line_vac = gmsh.model.geo.addLine(C.pts_vac[-1], D.pts_vac[1])
-
-    for line in (interface, line_cav, line_vac):
-        gmsh.model.geo.mesh.setTransfiniteCurve(line, N)
-
-    surface_cav = gmsh.model.geo.addPlaneSurface(
-        [
-            gmsh.model.geo.addCurveLoop(
-                [interface, -D.lines_cav[-1], line_cav, -C.lines_cav[0]]
-            )
+    ):
+        st: list[Tag] = [
+            GEO.add_plane_surface([GEO.add_curve_loop([lr00, la0, -lr01])]),
+            GEO.add_plane_surface([GEO.add_curve_loop([lr10, la1, -lr2])]),
+            GEO.add_plane_surface([GEO.add_curve_loop([lr2, -lr3, -la0])]),
+            GEO.add_plane_surface([GEO.add_curve_loop([lr3, la2, -lr11])]),
         ]
-    )
-    gmsh.model.geo.mesh.setTransfiniteSurface(surface_cav)
+        if i < corner.p:
+            st_inn.extend(st)
+        else:
+            st_out.extend(st)
 
-    surface_vac = gmsh.model.geo.addPlaneSurface(
-        [
-            gmsh.model.geo.addCurveLoop(
-                [-interface, -D.lines_vac[0], line_vac, -C.lines_vac[-1]]
-            )
-        ]
-    )
-    gmsh.model.geo.mesh.setTransfiniteSurface(surface_vac)
-
-    return (EgdeTag(line_cav=line_cav, line_vac=line_vac), [surface_cav], [surface_vac])
-
-
-def _get_loops(
-    corners_tag: list[CornerTag], edges_tag: list[EgdeTag]
-) -> tuple[int, int]:
-    """Get loop inner and outer."""
-    loop_inn = []
-    loop_out = []
-    for c, e in zip(corners_tag, edges_tag):
-        loop_inn.extend(c.lines_cav[1:-1])
-        loop_inn.append(e.line_cav)
-
-        loop_out.extend(c.lines_vac[1:-1])
-        loop_out.append(e.line_vac)
+    for t in chain(st_inn, st_out):
+        GEO.mesh.set_transfinite_surface(t)
 
     return (
-        gmsh.model.geo.addCurveLoop([-loop for loop in loop_inn]),
-        gmsh.model.geo.addCurveLoop(loop_out),
+        CornerTag(radius, h_corner, 2 * corner.p, pt1, lt_ang[1]),
+        st_inn,
+        st_out,
+        [lt_rad[0][0], lt_rad[1][0], lt_rad[0][corner.p], lt_rad[1][corner.p]],
     )
+
+
+def _mesh_lost_edge(
+    ct0: CornerTag, ctp: CornerTag, length: float, mesh_size: float
+) -> tuple[Tag, Tag, Tag, Tag, Tag]:
+    """T-conform mesh of a edge."""
+    pt0, lt0 = ct0.get_edge_0()
+    ptp, ltp = ctp.get_edge_p()
+
+    lt_edge = [GEO.add_line(a, b) for a, b in zip(pt0, ptp)]
+
+    h = sqrt(mesh_size * sqrt(ct0.h * ctp.h))
+    n = max(2, round(1 + (length - ct0.r - ctp.r) / h))
+    for t in lt_edge:
+        GEO.mesh.set_transfinite_curve(t, n)
+
+    st_inn = GEO.add_plane_surface(
+        [GEO.add_curve_loop([-lt0[0], lt_edge[1], -ltp[0], -lt_edge[0]])]
+    )
+    GEO.mesh.set_transfinite_surface(st_inn, arrangement="Left")
+
+    st_out = GEO.add_plane_surface(
+        [GEO.add_curve_loop([lt0[1], lt_edge[1], ltp[1], -lt_edge[2]])]
+    )
+    GEO.mesh.set_transfinite_surface(st_out, arrangement="Right")
+
+    return (-lt_edge[0], lt_edge[2], st_inn, st_out, lt_edge[1])

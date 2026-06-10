@@ -1,51 +1,65 @@
 [build-system]
-requires = ["flit_core >=3.2,<4"]
-build-backend = "flit_core.buildapi"
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
 
 [project]
 name = "lostinmsh"
 authors = [
-    { name = "Zoïs Moitier", email = "zois.moitier@ensta-paris.fr" },
+    { name = "Zoïs Moitier", email = "zois.moitier@ensta.fr" },
     { name = "Camille Carvalho", email = "camille.carvalho@insa-lyon.fr" },
 ]
+description = "GMSH toolbox for locally structured meshes on polygon."
 readme = "README.md"
 license = { file = "LICENSE" }
 classifiers = [
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering :: Mathematics",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-requires-python = ">=3.10"
-dynamic = ["version", "description"]
-dependencies = ["gmsh", "numpy"]
+requires-python = ">=3.14"
+dynamic = ["version"]
+dependencies = ["gmsh", "numpy", "scipy"]
 
 [project.urls]
-Documentation = "https://zmoitier.github.io/lostinmsh/"
-Source = "https://github.com/zmoitier/lostinmsh"
+Homepage = "https://github.com/zmoitier/lostinmsh"
+Documentation = "https://zmoitier.github.io/lostinmsh"
+Issues = "https://github.com/zmoitier/lostinmsh/issues"
 
 [project.optional-dependencies]
-dev = ["docformatter[tomli]", "flit", "mypy", "pylint", "ruff"]
+plot = ["matplotlib", "meshio"]
+test = ["pytest", "pytest-cov"]
 doc = [
-    "ipython",
     "nbsphinx",
     "Sphinx",
     "sphinx-autodoc-typehints",
-    "sphinx_rtd_theme",
     "sphinx-copybutton",
+    "sphinx_rtd_theme",
 ]
+dev = ["docformatter[tomli]", "ipykernel", "ipython", "mypy", "ruff", "scipy-stubs"]
 
 [tool.ruff]
-target-version = "py312"
+target-version = "py314"
 
 [tool.docformatter]
 recursive = true
 
+[tool.hatch.version]
+path = "lostinmsh/__init__.py"
+pattern = '__version__ = "(?P<version>[^"]+)"'
+
 [tool.mypy]
+python_version = "3.14"
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
-minversion = "6.0"
-addopts = "--cov=lostinmsh --ff -x --no-cov-on-fail --durations=10"
+minversion = "8.0"
+addopts = "--cov=lostinmsh --ff -x --no-cov-on-fail --durations=10 -v"
 testpaths = ["tests"]
+log_cli = true
+log_cli_level = "INFO"
+
+[tool.pyright]
+reportMissingTypeStubs = false

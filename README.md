@@ -9,39 +9,37 @@
 
 # lostinmsh
 
-The Python toolbox `lostinmsh` (_LOcally STructured polygonal INterface MeSH_), is a package using GMSH to construct locally structured triangular meshes of polygons which are useful for sign changing PDE problem.
+The Python toolbox `lostinmsh` (_LOcally STructured polygonal INterface MeSH_), is a package using `GMSH` to construct locally structured triangular meshes of polygons which are useful for sign changing PDE problem.
 
 ## Installation
 
-Use [`pip`](https://pip.pypa.io/en/stable/)
+Using [`pip`](https://pip.pypa.io/en/stable/)
 
 ```bash
-$ pip install lostinmsh
+$ python -m pip install lostinmsh
+$ python -m pip install lostinmsh[plot]  # with plotting dependencies
 ```
 
-or clone the repository
+Using [`uv`](https://docs.astral.sh/uv/)
 
 ```bash
-$ git clone https://github.com/zmoitier/lostinmsh.git
-```
-
-and then you can locally install it via [`flit`](https://flit.pypa.io/en/stable/)
-
-```bash
-$ flit install --symlink
+$ uv add lostinmsh
+$ uv add lostinmsh --optional plot  # with plotting dependencies
 ```
 
 ## [Documentation](https://zmoitier.github.io/lostinmsh)
 
 ## Requirements
 
-- Python ≥ 3.10
-- [GMSH](https://gmsh.info) ≥ 4 (and `import gmsh` must work)
-- [numpy](https://github.com/numpy/numpy)
+- Python ≥ 3.14
+- [`GMSH`](https://gmsh.info) ≥ 4
+- [`numpy`](https://github.com/numpy/numpy)
+- [`scipy`](https://github.com/scipy/scipy)
 
-## Optional requirements
+## Optional requirements (only use for plotting)
 
-- [matplotlib](https://github.com/matplotlib/matplotlib) (only use for plotting)
+- [`matplotlib`](https://github.com/matplotlib/matplotlib)
+- [`meshio`](https://github.com/nschloe/meshio)
 
 ## Acknowledgements
 

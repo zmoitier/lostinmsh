@@ -1,15 +1,12 @@
 """Meshing module."""
 
-__all__ = [
-    "mesh_loc_struct",
-    "to_global",
-    "mesh_unstructured",
-    "C_PML",
-    "C_POLYGON",
-    "C_VACUUM",
+__all__: list[str] = [
     "GmshOptions",
+    "open_msh_file",
+    "mesh_unstructured",
+    "mesh_locally_structured",
 ]
 
-from .gmsh_context_manager import C_PML, C_POLYGON, C_VACUUM, GmshOptions
-from .mesh_lost import mesh_loc_struct, to_global
+from .context_manager import GmshOptions, open_msh_file
+from .mesh_lost import mesh_locally_structured
 from .mesh_unst import mesh_unstructured

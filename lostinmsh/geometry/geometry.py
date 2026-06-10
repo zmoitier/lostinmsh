@@ -1,15 +1,11 @@
-"""Geometry class."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
-from fractions import Fraction
-from typing import Iterable
+from typing import Iterable, Self
 
-from numpy import asarray, vstack
+from numpy import inf
 
-from .border import Border
-from .closest_points import min_dist
+from .boundary import ExteriorBoundary
 from .polygon import Polygon
 
 
@@ -20,66 +16,64 @@ class Geometry:
     Attributes
     ----------
     polygons : list[Polygon]
-    border : Border
+    boundary : ExteriorBoundary
     """
 
     polygons: list[Polygon]
-    border: Border
+    boundary: ExteriorBoundary
 
     @classmethod
-    def from_polygon(cls, polygon: Polygon, border: Border) -> Geometry:
+    def from_polygon(cls, polygon: Polygon, boundary: ExteriorBoundary) -> Geometry:
         """Create a geometry from a polygon.
 
         Parameters
         ----------
         polygon : Polygon
-        border : Union[Border, AutoBorder]
+        boundary : ExteriorBoundary
         """
-
-        if isinstance(border, Border):
-            return cls(
-                polygons=[polygon], border=border.get_border(polygon.get_vertices())
-            )
-
-        if isinstance(border, Border):
-            return cls(polygons=[polygon], border=border)
-
-        raise ValueError("Unknown border shape.")
+        return cls(polygons=[polygon], boundary=boundary)
 
     @classmethod
-    def from_polygons(cls, polygons: Iterable[Polygon], border: Border) -> Geometry:
+    def from_polygons(
+        cls, polygons: Iterable[Polygon], boundary: ExteriorBoundary
+    ) -> Geometry:
         """Create a geometry from polygons.
 
         Parameters
         ----------
         polygon : Iterable[Polygon]
-        border : Union[Border, AutoBorder]
+        boundary: ExteriorBoundary
         """
+        return cls(polygons=list(polygons), boundary=boundary)
 
-        points = vstack([polygon.get_vertices() for polygon in polygons])
+    def critical_interval(self: Self) -> tuple[float, float]:
+        """Compute the critical interval of polygons.
 
-        if isinstance(border, Border):
-            return cls(polygons=list(polygons), border=border.get_border(points))
-
-        if isinstance(border, Border):
-            return cls(polygons=list(polygons), border=border)
-
-        raise ValueError("Unknown border shape.")
-
-    def make_center_origin(self):
-        """Do a translation to set the center at (0, 0)."""
-        center = self.border.center
-
+        Returns
+        -------
+        tuple[float, float]
+            Critical interval of the polygon.
+        """
+        a, b = (inf, -inf)
         for polygon in self.polygons:
-            polygon.translate(-center)
+            interval = polygon.critical_interval()
+            a = min(a, interval[0])
+            b = max(b, interval[1])
 
-        self.border.center = asarray([0, 0])
+        return (a, b)
 
-    def critical_interval(self) -> dict[str, tuple[Fraction, Fraction]]:
-        """Get the critical interval."""
-        return {polygon.name: polygon.critical_interval() for polygon in self.polygons}
+    def discrete_critical_interval(self: Self) -> tuple[float, float]:
+        """Compute the discrete critical interval of polygons.
 
-    def max_corner_radius(self) -> float:
-        """Maximum corner radius."""
-        points = vstack([polygon.get_vertices() for polygon in self.polygons])
-        return min(min_dist(points) / 2, self.border.dist_to_inner_boundary(points))
+        Returns
+        -------
+        tuple[float, float]
+            Discrete critical interval of the polygon.
+        """
+        a, b = (inf, -inf)
+        for polygon in self.polygons:
+            interval = polygon.discrete_critical_interval()
+            a = min(a, interval[0])
+            b = max(b, interval[1])
+
+        return (a, b)

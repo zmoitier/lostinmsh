@@ -1,12 +1,17 @@
-name: docs
+name: Build and Deploy Documentation
 
 on:
   push:
-    branches: ["main"]
-  pull_request:
+    branches:
+      - main
     paths:
-      - "docs/**"
-      - ".github/workflows/docs.yml"
+      - 'docs/**'
+      - '.github/workflows/docs.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
   workflow_dispatch:
 
 permissions:
@@ -16,20 +21,22 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.14"
-          cache: pip
+          python-version: '3.14'
+          cache: 'pip'
           cache-dependency-path: pyproject.toml
 
       - name: Install dependencies
@@ -37,41 +44,25 @@ jobs:
           sudo apt-get update
           sudo apt-get -y install pandoc libglu1-mesa
           python -m pip install --upgrade pip
-          python -m pip install '.[plot,doc]'
+          python -m pip install -e '.[plot,doc]'
 
-      - name: Build Sphinx docs
+      - name: Build documentation
         run: |
           make -C ./docs/ html
 
-      - name: Upload built docs artifact
-        uses: actions/upload-artifact@v7
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v7
         with:
-          name: docs-html
           path: ./docs/_build/html
 
   deploy:
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     needs: build
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     runs-on: ubuntu-latest
     steps:
-      - name: Download built docs artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: docs-html
-          path: ./docs/_build/html
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v6
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: "./docs/_build/html"
-
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5

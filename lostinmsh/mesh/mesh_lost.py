@@ -62,7 +62,7 @@ def mesh_locally_structured(
         loop_tags: list[Tag] = []
         surface_tags_out: list[Tag] = []
         for polygon in geometry.polygons:
-            loop_tag, st_inn, st_out, lt_bdy = _mesh_lost_polygon(
+            loop_tag, st_inn, st_out, poly_lt_bdy = _mesh_lost_polygon(
                 polygon, corner_radius, mesh_size
             )
             loop_tags.append(loop_tag)
@@ -71,7 +71,7 @@ def mesh_locally_structured(
             ctx.update_domain_tags(
                 {
                     (2, polygon.name): st_inn,
-                    (1, f"{polygon.name}_boundary"): lt_bdy,
+                    (1, f"{polygon.name}_boundary"): poly_lt_bdy,
                 }
             )
 
@@ -103,17 +103,17 @@ def _mesh_lost_polygon(
     """T-conform mesh of a polygon."""
     surface_tags_inn: list[Tag] = []
     surface_tags_out: list[Tag] = []
-    line_tags_bdy: list[Tag] = []
+    poly_line_tags: list[Tag] = []
 
     corner_tags: list[CornerTag] = []
     for vertex, corner in zip(polygon.vertices, polygon.corners):
-        corner_tag, st_inn, st_out, lt_bdy = _mesh_lost_corner(
+        corner_tag, st_inn, st_out, poly_lt_bdy = _mesh_lost_corner(
             vertex, corner, corner_radius
         )
         corner_tags.append(corner_tag)
         surface_tags_inn.extend(st_inn)
         surface_tags_out.extend(st_out)
-        line_tags_bdy.extend(lt_bdy)
+        poly_line_tags.extend(poly_lt_bdy)
 
     lt_inn: list[Tag] = []
     lt_out: list[Tag] = []
@@ -121,17 +121,17 @@ def _mesh_lost_polygon(
         lt_inn.extend(ct0.get_lt_inn()[::-1])
         lt_out.extend(ct0.get_lt_out())
 
-        lti, lto, sti, sto, ltb = _mesh_lost_edge(ct0, ctp, length, mesh_size)
+        lti, lto, sti, sto, poly_lt_bdy = _mesh_lost_edge(ct0, ctp, length, mesh_size)
         lt_inn.append(lti)
         lt_out.append(lto)
         surface_tags_inn.append(sti)
         surface_tags_out.append(sto)
-        line_tags_bdy.append(ltb)
+        poly_line_tags.append(poly_lt_bdy)
 
     surface_tags_inn.append(GEO.add_plane_surface([GEO.add_curve_loop(lt_inn)]))
 
     loop_tag_out: Tag = GEO.add_curve_loop(lt_out)
-    return (loop_tag_out, surface_tags_inn, surface_tags_out, line_tags_bdy)
+    return (loop_tag_out, surface_tags_inn, surface_tags_out, poly_line_tags)
 
 
 def _mesh_lost_corner(

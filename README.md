@@ -4,7 +4,6 @@
 
 [![PyPI version](https://badge.fury.io/py/lostinmsh.svg)](https://badge.fury.io/py/lostinmsh)
 [![DOI](https://zenodo.org/badge/602493619.svg)](https://zenodo.org/badge/latestdoi/602493619)
-[![License: MIT](https://img.shields.io/github/license/zmoitier/lostinmsh)](https://github.com/zmoitier/lostinmsh/blob/main/LICENSE)
 [![Documentation](https://github.com/zmoitier/lostinmsh/actions/workflows/docs.yml/badge.svg)](https://zmoitier.github.io/lostinmsh)
 
 # lostinmsh

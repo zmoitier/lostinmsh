@@ -19,11 +19,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -46,6 +42,27 @@ jobs:
       - name: Build Sphinx docs
         run: |
           make -C ./docs/ html
+
+      - name: Upload built docs artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: docs-html
+          path: ./docs/_build/html
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download built docs artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: docs-html
+          path: ./docs/_build/html
 
       - name: Setup Pages
         uses: actions/configure-pages@v3

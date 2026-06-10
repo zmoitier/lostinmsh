@@ -37,8 +37,21 @@ def _plot_mesh(filename: PurePath | str, ax) -> None:
 
     mesh = meshio.read(filename)
     pts = mesh.points[:, :2]
-    triangles = mesh.cells_dict["triangle"]
-    triangle_tags = mesh.cell_data_dict["gmsh:physical"]["triangle"]
+
+    # Handle triangular elements of any order (triangle, triangle6, triangle10, etc.)
+    cell_type = None
+    triangles = None
+
+    for key in mesh.cells_dict.keys():
+        if key.startswith("triangle"):
+            cell_type = key
+            triangles = mesh.cells_dict[key][:, :3]
+            break
+
+    if cell_type is None or triangles is None:
+        raise ValueError("No triangle elements found in mesh")
+
+    triangle_tags = mesh.cell_data_dict["gmsh:physical"][cell_type]
 
     for name, (tag, dim) in mesh.field_data.items():
         if dim != 2:

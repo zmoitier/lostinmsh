@@ -5,7 +5,7 @@ build-backend = "flit_core.buildapi"
 [project]
 name = "lostinmsh"
 authors = [
-    { name = "Zoïs Moitier", email = "zois.moitier@ensta-paris.fr" },
+    { name = "Zoïs Moitier", email = "zois.moitier@ensta.fr" },
     { name = "Camille Carvalho", email = "camille.carvalho@insa-lyon.fr" },
 ]
 readme = "README.md"
@@ -14,6 +14,7 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering :: Mathematics",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
@@ -27,31 +28,32 @@ Source = "https://github.com/zmoitier/lostinmsh"
 
 [project.optional-dependencies]
 plot = ["matplotlib", "meshio"]
-dev = [
-    "scipy-stubs",
-    "mypy",
-    "ruff",
-    "docformatter[tomli]",
-    "pytest",
-    "pytest-cov",
-    "ipython",
+test = ["pytest", "pytest-cov"]
+doc = [
     "nbsphinx",
     "Sphinx",
     "sphinx-autodoc-typehints",
-    "sphinx_rtd_theme",
     "sphinx-copybutton",
+    "sphinx_rtd_theme",
 ]
+dev = ["docformatter[tomli]", "ipykernel", "ipython", "mypy", "ruff", "scipy-stubs"]
+
+[tool.ruff]
+target-version = "py314"
 
 [tool.docformatter]
 recursive = true
 
 [tool.mypy]
+python_version = "3.14"
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
-minversion = "6.0"
-addopts = "--cov=lostinmsh --ff -x --no-cov-on-fail --durations=10"
+minversion = "8.0"
+addopts = "--cov=lostinmsh --ff -x --no-cov-on-fail --durations=10 -v"
 testpaths = ["tests"]
+log_cli = true
+log_cli_level = "INFO"
 
 [tool.pyright]
 reportMissingTypeStubs = false

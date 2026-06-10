@@ -207,7 +207,7 @@ def _compute_pq(angle: float, max_subdiv: int) -> tuple[int, int]:
 
     p_min, q_min = 0, 0
     _min = abs(log(r))
-    for n in range(3, max_subdiv + 1):
+    for n in range(4, max_subdiv + 1):
         p, q = arange(1, n - 1), arange(n - 1, 1, -1)
         v = abs(log(r * p / q))
 

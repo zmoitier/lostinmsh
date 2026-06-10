@@ -1,9 +1,5 @@
 #!/bin/sh
 
-# shellcheck source=/dev/null
-# . "./.venv/bin/activate"
-# echo 'export TCL_LIBRARY=$HOME/.local/share/uv/python/cpython-3.14.2-linux-x86_64-gnu/lib/tcl8.6' >> .venv/bin/activate
-
 remove_directory() {
     find . \
         -type d \
@@ -51,14 +47,15 @@ case "$1" in
     ;;
 -t | --test)
     python -m mypy ./lostinmsh/
-    python3 -m ruff check ./lostinmsh/
-    # python3 -m pytest ./tests/
+    python -m pytest --cov=lostinmsh --cov-report=html ./tests/
+    find ./tests/ -name "*.msh" -delete
     ;;
 -u | --update)
     uv self update
     rm uv.lock
     uv sync --all-extras
     uv export --format requirements.txt --frozen --no-hashes --no-annotate -o requirements.txt
+    uv export --extra plot --format requirements.txt --frozen --no-hashes --no-annotate -o requirements-plot.txt
     ;;
 *)
     echo "The choice are:"

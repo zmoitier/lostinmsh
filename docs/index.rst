@@ -8,8 +8,6 @@ The Python toolbox ``lostinmsh`` (*LOcally STructured polygonal INterface MeSH*)
 **Camille Cavalho**
     *Univ Lyon, INSA Lyon, UJM, UCBL, ECL, CNRS UMR 5208, ICJ, F-69621, France*
 
-    *Department of Applied Mathematics, University of California Merced, 5200 North Lake Road, Merced, CA 95343, USA*
-
 **Zoïs Moitier**
     *IDEFIX, Inria, ENSTA Paris, Institut Polytechnique de Paris, 91120 Palaiseau, France*
 

@@ -6,7 +6,7 @@ from scipy.spatial import ConvexHull
 from ..circular_iterable import circular_triplewise
 from ..type_alias import Float, MatNx2, Vec2
 
-type Circle = tuple[Vec2, Float]
+Circle = tuple[Vec2, Float]
 
 EPS_ADD: Float = float64(1e-12)
 EPS_MUL: Float = float64(1) + EPS_ADD

@@ -10,12 +10,14 @@ markdown-it-py==4.2.0
 matplotlib==3.11.0
 mdurl==0.1.2
 meshio==5.3.5
-numpy==2.5.0
+numpy==2.4.6 ; python_full_version < '3.12'
+numpy==2.5.0 ; python_full_version >= '3.12'
 packaging==26.2
 pillow==12.3.0
 pygments==2.20.0
 pyparsing==3.3.2
 python-dateutil==2.9.0.post0
 rich==15.0.0
-scipy==1.18.0
+scipy==1.17.1 ; python_full_version < '3.12'
+scipy==1.18.0 ; python_full_version >= '3.12'
 six==1.17.0

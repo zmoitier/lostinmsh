@@ -2,5 +2,7 @@
 #    uv export --format requirements.txt --frozen --no-hashes --no-annotate -o requirements.txt
 -e .
 gmsh==4.15.2
-numpy==2.4.6
-scipy==1.18.0
+numpy==2.4.6 ; python_full_version < '3.12'
+numpy==2.5.0 ; python_full_version >= '3.12'
+scipy==1.17.1 ; python_full_version < '3.12'
+scipy==1.18.0 ; python_full_version >= '3.12'

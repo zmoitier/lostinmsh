@@ -1,6 +1,6 @@
 """GMSH toolbox for locally structured meshes on polygon."""
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __author__ = "Zoïs Moitier and Camille Carvalho"
 
 __all__: list[str] = [

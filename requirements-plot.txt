@@ -17,5 +17,5 @@ pygments==2.20.0
 pyparsing==3.3.2
 python-dateutil==2.9.0.post0
 rich==15.0.0
-scipy==1.17.1
+scipy==1.18.0
 six==1.17.0

@@ -28,34 +28,39 @@ def main(mesh_size: float) -> None:
     lsm.plot_polygon(polygon)
     plt.close()
 
-    boundary = lsm.circular_boundary([polygon], 0.25, "background", 0.25, "PML")
-    geometry = lsm.Geometry.from_polygon(polygon, boundary)
+    for boundary in [
+        lsm.circular_boundary([polygon], 0.25, "background"),
+        lsm.circular_boundary([polygon], 0.25, "background", 0.25, "PML"),
+    ]:
+        geometry = lsm.Geometry.from_polygon(polygon, boundary)
 
-    assert geometry.critical_interval() is not None
-    assert geometry.discrete_critical_interval() is not None
+        assert geometry.critical_interval() is not None
+        assert geometry.discrete_critical_interval() is not None
 
-    lsm.plot_geometry(geometry)
-    plt.close()
+        lsm.plot_geometry(geometry)
+        plt.close()
 
-    filename = lsm.mesh_unstructured(
-        geometry,
-        mesh_size,
-        lsm.GmshOptions(filename="tests/aperiodic_monotile_unst.msh", element_order=2),
-    )
-    assert filename is not None
-    lsm.plot_mesh(filename)
-    plt.close()
+        filename = lsm.mesh_unstructured(
+            geometry,
+            mesh_size,
+            lsm.GmshOptions(
+                filename="tests/aperiodic_monotile_unst.msh", element_order=2
+            ),
+        )
+        assert filename is not None
+        lsm.plot_mesh(filename)
+        plt.close()
 
-    filename = lsm.mesh_locally_structured(
-        geometry,
-        mesh_size,
-        lsm.GmshOptions(
-            filename="tests/aperiodic_monotile_lost.msh", renumber_nodes=None
-        ),
-    )
-    assert filename is not None
-    lsm.plot_mesh(filename)
-    plt.close()
+        filename = lsm.mesh_locally_structured(
+            geometry,
+            mesh_size,
+            lsm.GmshOptions(
+                filename="tests/aperiodic_monotile_lost.msh", renumber_nodes=None
+            ),
+        )
+        assert filename is not None
+        lsm.plot_mesh(filename)
+        plt.close()
 
     return None
 

@@ -14,28 +14,36 @@ def main(mesh_size: float) -> None:
         lsm.Polygon.from_vertices(cocotte - np.array([3.2, 0]), "cocotte"),
         lsm.Polygon.from_vertices(fleche + np.array([0.2, 0]), "fleche"),
     ]
-    boundary = lsm.rectangular_boundary(polygons, 0.25, "background", 0.25, "PML")
-    geometry = lsm.Geometry.from_polygons(polygons, boundary)
 
-    assert geometry.critical_interval() is not None
-    assert geometry.discrete_critical_interval() is not None
+    for boundary in [
+        lsm.rectangular_boundary(polygons, 0.25, "background"),
+        lsm.rectangular_boundary(polygons, 0.25, "background", 0.25, "PML"),
+    ]:
+        geometry = lsm.Geometry.from_polygons(polygons, boundary)
 
-    lsm.plot_geometry(geometry)
-    plt.close()
+        assert geometry.critical_interval() is not None
+        assert geometry.discrete_critical_interval() is not None
 
-    filename = lsm.mesh_unstructured(
-        geometry, mesh_size, lsm.GmshOptions(filename="tests/cocotte_fleche_unst.msh")
-    )
-    assert filename is not None
-    lsm.plot_mesh(filename)
-    plt.close()
+        lsm.plot_geometry(geometry)
+        plt.close()
 
-    filename = lsm.mesh_locally_structured(
-        geometry, mesh_size, lsm.GmshOptions(filename="tests/cocotte_fleche_lost.msh")
-    )
-    assert filename is not None
-    lsm.plot_mesh(filename)
-    plt.close()
+        filename = lsm.mesh_unstructured(
+            geometry,
+            mesh_size,
+            lsm.GmshOptions(filename="tests/cocotte_fleche_unst.msh"),
+        )
+        assert filename is not None
+        lsm.plot_mesh(filename)
+        plt.close()
+
+        filename = lsm.mesh_locally_structured(
+            geometry,
+            mesh_size,
+            lsm.GmshOptions(filename="tests/cocotte_fleche_lost.msh"),
+        )
+        assert filename is not None
+        lsm.plot_mesh(filename)
+        plt.close()
 
     return None
 

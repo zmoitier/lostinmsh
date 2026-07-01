@@ -1,7 +1,7 @@
 """T-conform mesh a polygon."""
 
 from dataclasses import dataclass
-from itertools import batched, chain
+from itertools import chain
 from pathlib import PurePath
 from typing import Final, Self
 
@@ -11,6 +11,7 @@ from scipy.spatial import ConvexHull
 from scipy.spatial.distance import pdist
 
 from ..circular_iterable import circular, circular_pairwise
+from ..compatibility import batched
 from ..geometry import Corner, Geometry, Polygon
 from ..type_alias import Tag, Vec2
 from .context_manager import GmshContextManager, GmshOptions
@@ -107,13 +108,13 @@ def _mesh_lost_polygon(
 
     corner_tags: list[CornerTag] = []
     for vertex, corner in zip(polygon.vertices, polygon.corners):
-        corner_tag, st_inn, st_out, poly_lt_bdy = _mesh_lost_corner(
+        corner_tag, st_inn, st_out, poly_lts_bdy = _mesh_lost_corner(
             vertex, corner, corner_radius
         )
         corner_tags.append(corner_tag)
         surface_tags_inn.extend(st_inn)
         surface_tags_out.extend(st_out)
-        poly_line_tags.extend(poly_lt_bdy)
+        poly_line_tags.extend(poly_lts_bdy)
 
     lt_inn: list[Tag] = []
     lt_out: list[Tag] = []

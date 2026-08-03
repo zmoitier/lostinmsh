@@ -47,7 +47,7 @@ class CornerTag:
 
 
 def mesh_locally_structured(
-    geometry: Geometry, mesh_size: float, gmsh_options: GmshOptions = GmshOptions()
+    geometry: Geometry, mesh_size: float, gmsh_options: GmshOptions | None = None
 ) -> PurePath | None:
     """T-conform mesh a polygon.
 
@@ -55,8 +55,11 @@ def mesh_locally_structured(
     ----------
     geometry : Geometry
     mesh_size : float
-    gmsh_options: GmshOptions, optional
+    gmsh_options: GmshOptions | None, optional, default None
     """
+    if gmsh_options is None:
+        gmsh_options = GmshOptions()
+
     with GmshContextManager(gmsh_options) as ctx:
         corner_radius = min(1.5 * mesh_size, _max_corner_radius(geometry) * 0.5)
 

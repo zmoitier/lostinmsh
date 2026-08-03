@@ -37,8 +37,9 @@ case "$1" in
     make -C ./docs/ clean html
     ;;
 -f | --format)
+    echo ">> run ruff check"
+    python -m ruff check --fix .
     echo ">> run ruff format"
-    python -m ruff check --select I --fix .
     python -m ruff format .
     echo ">> run docformatter"
     python -m docformatter --in-place ./lostinmsh/

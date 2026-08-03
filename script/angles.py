@@ -46,8 +46,6 @@ def print_pq(angle: float, pq: tuple[int, int], name: str) -> None:
     r = max(r, 1 / r)
     print(f"{name}: ({p}, {q}) -> {r:.4f}")
 
-    return None
-
 
 def accumulate_ranges(ranges: list[tuple[float, float]]) -> list[tuple[float, float]]:
     """Accumulate overlapping ranges."""
@@ -68,7 +66,7 @@ def accumulate_ranges(ranges: list[tuple[float, float]]) -> list[tuple[float, fl
 
 
 def plot_angles(N: int, g: float) -> None:
-    fig, ax = plt.subplots()
+    _, ax = plt.subplots()
 
     ax.set_xlim(-0.1, np.pi + 0.1)
     ax.set_xticks(
@@ -101,8 +99,6 @@ def plot_angles(N: int, g: float) -> None:
     ax.scatter(angles, denominators, marker="x", color="C1", zorder=3)
 
     plt.show()
-
-    return None
 
 
 def main(n: int) -> None:

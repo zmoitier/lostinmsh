@@ -1,16 +1,16 @@
 """Geometry module."""
 
 __all__: list[str] = [
+    "CircularBoundary",
     "Corner",
+    "ExteriorBoundary",
+    "Geometry",
     "Polygon",
+    "RectangularBoundary",
+    "circular_boundary",
+    "rectangular_boundary",
     "smallest_circle",
     "smallest_rectangle",
-    "ExteriorBoundary",
-    "CircularBoundary",
-    "circular_boundary",
-    "RectangularBoundary",
-    "rectangular_boundary",
-    "Geometry",
 ]
 
 from .boundary import (

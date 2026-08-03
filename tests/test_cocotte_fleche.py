@@ -45,8 +45,6 @@ def main(mesh_size: float) -> None:
         lsm.plot_mesh(filename)
         plt.close()
 
-    return None
-
 
 def test_cocotte_fleche() -> None:
     main(0.25)

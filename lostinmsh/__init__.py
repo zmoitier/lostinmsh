@@ -4,24 +4,24 @@ __version__ = "1.0.1"
 __author__ = "Zoïs Moitier and Camille Carvalho"
 
 __all__: list[str] = [
-    "__version__",
-    "__author__",
-    "geometry",
-    "Polygon",
     "CircularBoundary",
-    "circular_boundary",
-    "RectangularBoundary",
-    "rectangular_boundary",
     "Geometry",
-    "mesh",
     "GmshOptions",
-    "open_msh_file",
-    "mesh_unstructured",
+    "Polygon",
+    "RectangularBoundary",
+    "__author__",
+    "__version__",
+    "circular_boundary",
+    "geometry",
+    "mesh",
     "mesh_locally_structured",
+    "mesh_unstructured",
+    "open_msh_file",
     "plot",
-    "plot_polygon",
     "plot_geometry",
     "plot_mesh",
+    "plot_polygon",
+    "rectangular_boundary",
 ]
 
 from . import geometry, mesh, plot

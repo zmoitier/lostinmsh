@@ -99,8 +99,6 @@ class GmshOptions:
 
         self.key_val = key_val
 
-        return None
-
     def __str__(self) -> str:
         data: list[tuple[str, Any]] = [
             ("filename", self.filename),
@@ -129,7 +127,6 @@ class GmshContextManager:
     def update_domain_tags(self: Self, domain_tags: dict[DimName, list[Tag]]) -> None:
         for key, val in domain_tags.items():
             self.domain_tags[key].extend(val)
-        return None
 
     def __enter__(self: Self) -> Self:
         gmsh.initialize()
@@ -202,5 +199,3 @@ def open_msh_file(filename: PurePath | str) -> None:
     gmsh.open(str(filename))
     gmsh.fltk.run()
     gmsh.finalize()
-
-    return None

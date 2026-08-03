@@ -40,7 +40,10 @@ doc = [
 dev = ["docformatter[tomli]", "ipykernel", "ipython", "mypy", "ruff", "scipy-stubs"]
 
 [tool.ruff]
-target-version = "py314"
+target-version = "py311"
+
+[tool.ruff.lint]
+extend-select = ["I"]
 
 [tool.docformatter]
 recursive = true
@@ -50,7 +53,6 @@ path = "lostinmsh/__init__.py"
 pattern = '__version__ = "(?P<version>[^"]+)"'
 
 [tool.mypy]
-python_version = "3.14"
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

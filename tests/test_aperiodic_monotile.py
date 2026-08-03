@@ -62,8 +62,6 @@ def main(mesh_size: float) -> None:
         lsm.plot_mesh(filename)
         plt.close()
 
-    return None
-
 
 def test_aperiodic_monotile() -> None:
     main(0.25)

@@ -30,7 +30,7 @@ $ uv add lostinmsh --optional plot  # with plotting dependencies
 
 ## Requirements
 
-- Python ≥ 3.14
+- Python ≥ 3.11
 - [`GMSH`](https://gmsh.info) ≥ 4
 - [`numpy`](https://github.com/numpy/numpy)
 - [`scipy`](https://github.com/scipy/scipy)

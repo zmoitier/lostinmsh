@@ -6,7 +6,15 @@ updates:
       interval: "monthly"
     labels:
       - "dependencies"
+    groups:
+      pip-dependencies:
+        patterns:
+          - "*"
   - package-ecosystem: "github-actions"
     directory: "/.github/workflows"
     schedule:
       interval: "monthly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"

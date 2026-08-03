@@ -1,12 +1,14 @@
 """Tests for the cocotte fleche example."""
 
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
 
 import lostinmsh as lsm
 
 
-def main(mesh_size: float) -> None:
+def main(mesh_size: float, out_dir: Path = Path("tests")) -> None:
     cocotte = np.array([[2, 0], [3, 1], [3, 2], [1, 2], [1, 3], [0, 2], [1, 1], [2, 1]])
     fleche = np.array([[2, 0], [2, 1], [3, 1], [2, 2], [1, 2], [1, 3], [0, 3], [0, 2]])
 
@@ -30,7 +32,7 @@ def main(mesh_size: float) -> None:
         filename = lsm.mesh_unstructured(
             geometry,
             mesh_size,
-            lsm.GmshOptions(filename="tests/cocotte_fleche_unst.msh"),
+            lsm.GmshOptions(filename=out_dir / "cocotte_fleche_unst.msh"),
         )
         assert filename is not None
         lsm.plot_mesh(filename)
@@ -39,16 +41,16 @@ def main(mesh_size: float) -> None:
         filename = lsm.mesh_locally_structured(
             geometry,
             mesh_size,
-            lsm.GmshOptions(filename="tests/cocotte_fleche_lost.msh"),
+            lsm.GmshOptions(filename=out_dir / "cocotte_fleche_lost.msh"),
         )
         assert filename is not None
         lsm.plot_mesh(filename)
         plt.close()
 
 
-def test_cocotte_fleche() -> None:
-    main(0.25)
+def test_cocotte_fleche(tmp_path: Path) -> None:
+    main(0.25, tmp_path)
 
 
 if __name__ == "__main__":
-    test_cocotte_fleche()
+    main(0.25)

@@ -27,8 +27,6 @@ def plot_mesh(filename: PurePath | str, *, ax=None) -> None:
             "You need to install matplotlib and meshio to use this function."
         )
 
-    return None
-
 
 def _plot_mesh(filename: PurePath | str, ax) -> None:
     """Plot mesh from .msh file."""
@@ -42,7 +40,7 @@ def _plot_mesh(filename: PurePath | str, ax) -> None:
     cell_type = None
     triangles = None
 
-    for key in mesh.cells_dict.keys():
+    for key in mesh.cells_dict:
         if key.startswith("triangle"):
             cell_type = key
             triangles = mesh.cells_dict[key][:, :3]
@@ -67,5 +65,3 @@ def _plot_mesh(filename: PurePath | str, ax) -> None:
 
     ax.set_aspect("equal")
     ax.legend()
-
-    return None

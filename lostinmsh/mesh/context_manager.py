@@ -3,8 +3,9 @@
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import PurePath
+from traceback import print_exception
 from types import TracebackType
-from typing import Any, Self
+from typing import Any, Literal, Self
 
 import gmsh
 
@@ -98,8 +99,6 @@ class GmshOptions:
 
         self.key_val = key_val
 
-        return None
-
     def __str__(self) -> str:
         data: list[tuple[str, Any]] = [
             ("filename", self.filename),
@@ -128,20 +127,22 @@ class GmshContextManager:
     def update_domain_tags(self: Self, domain_tags: dict[DimName, list[Tag]]) -> None:
         for key, val in domain_tags.items():
             self.domain_tags[key].extend(val)
-        return None
 
     def __enter__(self: Self) -> Self:
-        # Initialize the Gmsh API.
         gmsh.initialize()
 
-        for key, val in self.options.key_val.items():
-            gmsh.option.set_number(key, val)
+        try:
+            for key, val in self.options.key_val.items():
+                gmsh.option.set_number(key, val)
 
-        # Add a new model and set it as the current model.
-        if self.options.filename is None:
-            gmsh.model.add("mesh")
-        else:
-            gmsh.model.add(self.options.filename.stem)
+            if self.options.filename is None:
+                gmsh.model.add("mesh")
+            else:
+                gmsh.model.add(self.options.filename.stem)
+
+        except Exception:
+            gmsh.finalize()
+            raise
 
         return self
 
@@ -149,47 +150,41 @@ class GmshContextManager:
         self: Self,
         exc_type: type[BaseException] | None,
         exc_value: BaseException | None,
-        traceback: TracebackType | None,
-    ) -> None:
-        # Synchronize the built-in CAD representation with the current Gmsh model.
-        gmsh.model.geo.synchronize()
+        tb: TracebackType | None,
+    ) -> Literal[False]:
+        try:
+            if exc_type is not None:
+                print_exception(exc_type, exc_value, tb)
+                return False
 
-        for (dim, name), tags in self.domain_tags.items():
-            gmsh.model.add_physical_group(dim=dim, tags=tags, name=name)
+            gmsh.model.geo.synchronize()
 
-        # Generate a mesh of the current model, up to dimension dim 2.
-        gmsh.model.mesh.generate(2)
+            for (dim, name), tags in self.domain_tags.items():
+                gmsh.model.add_physical_group(dim=dim, tags=tags, name=name)
 
-        if self.options.renumber_nodes is not None:
-            # Renumber the nodes to improve the matrix bandwidth.
-            old, new = gmsh.model.mesh.compute_renumbering(self.options.renumber_nodes)
-            gmsh.model.mesh.renumber_nodes(old, new)
+            gmsh.model.mesh.generate(2)
 
-        if self.options.show_gui:
-            # Create and run the FLTK graphical user interface.
-            gmsh.fltk.run()
+            if self.options.renumber_nodes is not None:
+                old, new = gmsh.model.mesh.compute_renumbering(
+                    self.options.renumber_nodes
+                )
+                gmsh.model.mesh.renumber_nodes(old, new)
 
-        if self.options.filename is not None:
-            # Write a file. The export format is determined by the file extension.
-            match self.options.filename.suffix:
-                case ".msh":
-                    gmsh.write(str(self.options.filename))
-                case _:
-                    gmsh.fltk.initialize()
-                    gmsh.write(str(self.options.filename))
-                    gmsh.fltk.finalize()
+            if self.options.show_gui:
+                gmsh.fltk.run()
 
-        # Finalize the Gmsh API.
-        gmsh.finalize()
+            if self.options.filename is not None:
+                match self.options.filename.suffix:
+                    case ".msh":
+                        gmsh.write(str(self.options.filename))
+                    case _:
+                        gmsh.fltk.initialize()
+                        gmsh.write(str(self.options.filename))
+                        gmsh.fltk.finalize()
+        finally:
+            gmsh.finalize()
 
-        if exc_type is not None:
-            print(f"\n{exc_type}")
-
-        if exc_value is not None:
-            print(f"\n{exc_value}")
-
-        if traceback is not None:
-            print(f"\n{traceback}")
+        return False
 
 
 def open_msh_file(filename: PurePath | str) -> None:
@@ -204,5 +199,3 @@ def open_msh_file(filename: PurePath | str) -> None:
     gmsh.open(str(filename))
     gmsh.fltk.run()
     gmsh.finalize()
-
-    return None

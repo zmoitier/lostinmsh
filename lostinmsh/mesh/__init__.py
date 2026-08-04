@@ -2,9 +2,9 @@
 
 __all__: list[str] = [
     "GmshOptions",
-    "open_msh_file",
-    "mesh_unstructured",
     "mesh_locally_structured",
+    "mesh_unstructured",
+    "open_msh_file",
 ]
 
 from .context_manager import GmshOptions, open_msh_file

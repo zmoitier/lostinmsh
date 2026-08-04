@@ -30,8 +30,6 @@ def plot_polygon(polygon: Polygon, *, ax=None, show_pq=False) -> None:
             "You need to install matplotlib to use this function."
         )
 
-    return None
-
 
 def _plot_polygon(polygon: Polygon, ax, show_pq) -> None:
     """Plot polygon."""
@@ -58,16 +56,17 @@ def _plot_polygon(polygon: Polygon, ax, show_pq) -> None:
                 color="C1",
                 va="center",
                 ha="center",
-                bbox=dict(
-                    boxstyle="round", edgecolor="black", facecolor="white", alpha=0.75
-                ),
+                bbox={
+                    "boxstyle": "round",
+                    "edgecolor": "black",
+                    "facecolor": "white",
+                    "alpha": 0.75,
+                },
             )
 
     ax.axis("equal")
     ax.grid(zorder=1)
     ax.legend(loc=1)
-
-    return None
 
 
 def plot_geometry(geometry: Geometry, ax=None) -> None:
@@ -84,8 +83,6 @@ def plot_geometry(geometry: Geometry, ax=None) -> None:
         raise ModuleNotFoundError(
             "You need to install matplotlib to use this function."
         )
-
-    return None
 
 
 def _plot_geometry(geometry: Geometry, ax=None) -> None:
@@ -132,13 +129,11 @@ def _plot_geometry(geometry: Geometry, ax=None) -> None:
         _add_rect_boundary(ax, geometry.boundary, options_bak, options_thk)
 
     else:
-        raise ValueError("Unknown boundary shape.")
+        raise TypeError("Unknown boundary shape.")
 
     ax.axis("equal")
     ax.grid(zorder=1)
     ax.legend(loc=1)
-
-    return None
 
 
 def _add_circ_boundary(ax, circ: CircularBoundary, options_bak, options_thk) -> None:

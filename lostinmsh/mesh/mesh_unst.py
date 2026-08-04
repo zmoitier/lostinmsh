@@ -15,7 +15,7 @@ GEO: Final = gmsh.model.geo
 
 
 def mesh_unstructured(
-    geometry: Geometry, mesh_size: float, gmsh_options: GmshOptions = GmshOptions()
+    geometry: Geometry, mesh_size: float, gmsh_options: GmshOptions | None = None
 ) -> PurePath | None:
     """Unstructured mesh of a geometry.
 
@@ -30,6 +30,9 @@ def mesh_unstructured(
     PurePath | None
         Filename of the output mesh file or None if not saved.
     """
+    if gmsh_options is None:
+        gmsh_options = GmshOptions()
+
     with GmshContextManager(gmsh_options) as ctx:
         poly_loop_tags: list[Tag] = []
 

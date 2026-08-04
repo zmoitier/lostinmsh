@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Self
 
@@ -11,7 +12,7 @@ from .smallest_boundary import smallest_circle, smallest_rectangle
 
 
 @dataclass(kw_only=True, slots=True)
-class ExteriorBoundary:
+class ExteriorBoundary(ABC):
     """Exterior boundary class.
 
     Attributes
@@ -28,6 +29,7 @@ class ExteriorBoundary:
     thickness: float | None
     thickness_name: str
 
+    @abstractmethod
     def dist_to_inner_boundary(self, points: MatNx2) -> float:
         """Sign distance to the inner boundary.
 
@@ -39,7 +41,6 @@ class ExteriorBoundary:
         points : NDArray
             list of points should be an array of shape (N, 2) with N ≥ 1.
         """
-        raise NotImplementedError()
 
 
 @dataclass(init=False, slots=True)

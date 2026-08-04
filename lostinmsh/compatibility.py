@@ -1,8 +1,9 @@
 import sys
 
 if sys.version_info < (3, 12):
+    from collections.abc import Iterable
     from itertools import islice
-    from typing import Iterable, TypeVar
+    from typing import TypeVar
 
     T = TypeVar("T")
 
@@ -13,4 +14,4 @@ if sys.version_info < (3, 12):
         while batch := tuple(islice(iterator, n)):
             yield batch
 else:
-    from itertools import batched
+    from itertools import batched  # noqa: F401

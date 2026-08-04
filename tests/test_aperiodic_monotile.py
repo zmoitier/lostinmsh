@@ -1,12 +1,14 @@
 """Tests for the aperiodic monotile example."""
 
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
 
 import lostinmsh as lsm
 
 
-def main(mesh_size: float) -> None:
+def main(mesh_size: float, out_dir: Path = Path("tests")) -> None:
     s3 = np.sqrt(3)
     vertices: list[list[float]] = [
         [0, 0],
@@ -44,7 +46,7 @@ def main(mesh_size: float) -> None:
             geometry,
             mesh_size,
             lsm.GmshOptions(
-                filename="tests/aperiodic_monotile_unst.msh", element_order=2
+                filename=out_dir / "aperiodic_monotile_unst.msh", element_order=2
             ),
         )
         assert filename is not None
@@ -55,19 +57,17 @@ def main(mesh_size: float) -> None:
             geometry,
             mesh_size,
             lsm.GmshOptions(
-                filename="tests/aperiodic_monotile_lost.msh", renumber_nodes=None
+                filename=out_dir / "aperiodic_monotile_lost.msh", renumber_nodes=None
             ),
         )
         assert filename is not None
         lsm.plot_mesh(filename)
         plt.close()
 
-    return None
 
-
-def test_aperiodic_monotile() -> None:
-    main(0.25)
+def test_aperiodic_monotile(tmp_path: Path) -> None:
+    main(0.25, tmp_path)
 
 
 if __name__ == "__main__":
-    test_aperiodic_monotile()
+    main(0.25)
